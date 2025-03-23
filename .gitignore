@@ -1,0 +1,4 @@
+conectacaa/conectacaa/settings.py
+.env
+/conectacaa/conectacaa/__pycache__
+conectacaa/db.sqlite3
