@@ -75,3 +75,11 @@
     display: block !important;
   }
 
+  /* Remover completamente o fundo e a sombra do navbar-brand */
+  .navbar-brand {
+    background-color: transparent !important; 
+    background: none !important;
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+  }
+

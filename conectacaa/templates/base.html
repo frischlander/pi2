@@ -18,11 +18,25 @@
   </head>
   <body>
     <nav class="navbar navbar-dark fixed-top flex-md-nowrap p-0 shadow" style="background-color: #00a652;">
-      <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">Conecta CAA</a>
+      <div class="col-sm-3 col-md-2 d-flex text-center px-0">
+        <a class="navbar-brand w-100 py-2 m-2" href="#">Conecta CAA</a>
+      </div>
+      
+      <ul class="navbar-nav mr-auto" style="display: flex; flex-direction: row; margin-left: 20px;">
+        <li class="nav-item">
+          <a class="nav-link px-3" href="#">Dashboard</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link px-3" href="#">Relatórios</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link px-3" href="#">Sobre</a>
+        </li>
+      </ul>
 
       <ul
         class="navbar-nav px-3"
-        style="display: flex; flex-direction: row; align-items: center;"
+        style="display: flex; flex-direction: row; align-items: center; margin-right: 10px;"
       >
         <li class="nav-item text-nowrap">
           <a class="nav-link" href="#">Sair</a>
@@ -32,9 +46,9 @@
 
     <div class="container-fluid">
       <div class="row">
-        {% include 'partials/_sidebar.html' %}
+        {% comment %}Sidebar foi removida{% endcomment %}
 
-        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+        <main role="main" class="col-md-12 ml-sm-auto col-lg-12 px-4" style="padding-top: 60px;">
           {% block content %} {% endblock %}
         </main>
 
