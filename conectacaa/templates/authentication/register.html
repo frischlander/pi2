@@ -17,33 +17,44 @@
         <div class="card-title py-3">
           <center><h4>Crie sua conta de acesso interno</h4></center>
         </div>
-        <form action="" method="post">
-          
+        <form action="{% url 'register' %}" method="post">
+          {% csrf_token %}
+
           <div class="form-group">
+            <label for="usernameField">Nome de usuário autorizado</label>
             <input
               type="text"
               name="username"
-              placeholder="Nome de usuário"
+              placeholder="Digite seu nome de usuário autorizado"
               id="usernameField"
               value=""
               class="form-control form-control-sm"
+              required
             />
           </div>
           <div class="invalid_feedback invalid-feedback" style="display:none">
           </div>
-          <p class="text-sm text-success usernameSuccessOutput"></p>
+          <p class="text-sm text-success usernameSuccessOutput" style="display:none"></p>
 
           <div class="form-group">
+            <label for="passwordField">Senha</label>
             <input
               type="password"
               name="password"
-              placeholder="Senha"
+              placeholder="Digite sua senha"
               class="form-control form-control-sm"
               id="passwordField"
+              required
             />
             <small class="float-right py-3 showPasswordToggle">MOSTRAR</small>
           </div>
-          <input type="submit" value="Registrar" class="btn btn-block submit-btn" style="background-color: #00a652; border-color: #00a652; color: white;"/>
+          <input 
+            type="submit" 
+            value="Registrar" 
+            class="btn btn-block submit-btn" 
+            style="background-color: #00a652; border-color: #00a652; color: white;"
+            disabled
+          />
         </form>
 
       </div>

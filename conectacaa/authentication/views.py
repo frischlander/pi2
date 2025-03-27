@@ -19,7 +19,10 @@ class RegistrationView(View):
     def get(self, request):
         return render(request, 'authentication/register.html')
     
-class LoginView(View):
-    def get(self, request):
-        return render(request, 'authentication/login.html')
-        
+    def post(self, request):
+
+        username = request.POST['username']
+        password = request.POST['password']
+        return render(request, 'authentication/register.html')
+
+
