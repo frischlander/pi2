@@ -1,14 +1,60 @@
 {% extends 'base_auth.html' %}
+{% load static %}
 
 {% block content %}
+<div class="row">
+  <div class="col-md-4"></div>
+  <div class="col-md-4">
+    <div class="card mt-5">
+      <div class="card-body">
+        <div class="text-center mb-2">
+          <img src="{% static 'img/logo.png' %}" alt="Logo Conecta CAA" class="img-fluid" style="max-width: 200px;">
+        </div>
+        <div class="card-title py-3">
+          <center><h4>Login</h4></center>
+        </div>
 
-<div class="card">
+        {% include 'partials/_messages.html' %}
 
-<div class="card-body">
+        <form action="{% url 'login' %}" method="post">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="usernameField">Nome de usuário</label>
+            <input
+              type="text"
+              name="username"
+              placeholder="Digite seu nome de usuário"
+              id="usernameField"
+              class="form-control form-control-sm"
+              required
+            />
+          </div>
 
- <h1>Login</h1>
-            
-            
+          <div class="form-group">
+            <label for="passwordField">Senha</label>
+            <input
+              type="password"
+              name="password"
+              placeholder="Digite sua senha"
+              class="form-control form-control-sm"
+              id="passwordField"
+              required
+            />
+            <small class="float-right py-3 showPasswordToggle">MOSTRAR</small>
+          </div>
+
+          <input 
+            type="submit" 
+            value="Entrar" 
+            class="btn btn-block submit-btn" 
+            style="background-color: #00a652; border-color: #00a652; color: white;"
+          />
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4"></div>
 </div>
-</div>
+
+<script src="{% static 'js/login.js' %}"></script>
 {% endblock %}
