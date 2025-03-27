@@ -75,3 +75,12 @@
     display: block !important;
   }
 
+.showPasswordToggle {
+  cursor: pointer;
+  transition:all;
+}
+
+.showPasswordToggle:hover {
+  transform: scale(1.2);
+  color: #00af2c;
+}
