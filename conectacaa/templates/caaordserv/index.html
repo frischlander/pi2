@@ -9,7 +9,7 @@
                     <i class="bi bi-check-circle-fill"></i>
                 </div>
                 <div>
-                    <div class="number">12</div>
+                    <div class="number">{{ total_finalizadas }}</div>
                     <div class="label">Finalizadas</div>
                 </div>
             </div>
@@ -21,7 +21,7 @@
                     <i class="bi bi-gear-fill"></i>
                 </div>
                 <div>
-                    <div class="number">25</div>
+                    <div class="number">{{ total_em_andamento }}</div>
                     <div class="label">Em Andamento</div>
                 </div>
             </div>
@@ -33,7 +33,7 @@
                     <i class="bi bi-question-circle-fill"></i>
                 </div>
                 <div>
-                    <div class="number">8</div>
+                    <div class="number">{{ total_aguardando }}</div>
                     <div class="label">Aguardando Parecer</div>
                 </div>
             </div>
@@ -45,7 +45,7 @@
                     <i class="bi bi-x-circle-fill"></i>
                 </div>
                 <div>
-                    <div class="number">5</div>
+                    <div class="number">{{ total_canceladas }}</div>
                     <div class="label">Canceladas</div>
                 </div>
             </div>
@@ -61,6 +61,16 @@
         </a>
     </div>
 
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} fade show" role="alert">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
     <table class="table table-striped">
         <thead>
           <tr>
@@ -72,28 +82,47 @@
           </tr>
         </thead>
         <tbody>
+          {% for ordem in ordens %}
           <tr>
-            <th scope="row">CAA001/29032025</th>
-            <td>José da Silva Sauro</td>
-            <td>Atendimento Veterinário</td>
-            <td>Rua 4, 123 - Bairro Jardim das Indústrias</td>
-            <td><span class="badge badge-warning">Aguardando Parecer</span></td>
+            <th scope="row">{{ ordem.processo }}</th>
+            <td>{{ ordem.nome_solicitante }}</td>
+            <td>{{ ordem.get_tipo_display }}</td>
+            <td>{{ ordem.endereco }}</td>
+            <td>
+                {% if ordem.status == 'finalizada' %}
+                    <span class="badge badge-success">Finalizada</span>
+                {% elif ordem.status == 'em_andamento' %}
+                    <span class="badge badge-info">Em Andamento</span>
+                {% elif ordem.status == 'aguardando_parecer' %}
+                    <span class="badge badge-warning">Aguardando Parecer</span>
+                {% elif ordem.status == 'cancelada' %}
+                    <span class="badge badge-danger">Cancelada</span>
+                {% else %}
+                    <span class="badge badge-secondary">{{ ordem.get_status_display }}</span>
+                {% endif %}
+            </td>
           </tr>
+          {% empty %}
           <tr>
-            <th scope="row">CAA002/29032025</th>
-            <td>Jacob</td>
-            <td>Thornton</td>
-            <td>@fat</td>
-            <td><span class="badge badge-info">Em Andamento</span></td>
+            <td colspan="5" class="text-center">Nenhuma ordem de serviço encontrada.</td>
           </tr>
-          <tr>
-            <th scope="row">CAA003/29032025</th>
-            <td>José da Silva e Silva</td>
-            <td>Denúncia Maus Tratos</td>
-            <td>Rua 12, 865 - Parque das Américas</td>
-            <td><span class="badge badge-success">Finalizada</span></td>
-          </tr>
+          {% endfor %}
         </tbody>
     </table>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Fecha automaticamente os alerts após 3 segundos
+    const alerts = document.querySelectorAll('.alert');
+    alerts.forEach(function(alert) {
+        setTimeout(function() {
+            alert.classList.remove('show');
+            setTimeout(function() {
+                alert.remove();
+            }, 150);
+        }, 3000);
+    });
+});
+</script>
 {% endblock content %}
