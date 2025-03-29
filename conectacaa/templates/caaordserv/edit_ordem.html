@@ -43,7 +43,7 @@
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label for="tipo" class="form-label">Tipo de Serviço</label>
+                                <label for="tipo" class="form-label">Tipo de Serviço <span class="text-danger">*</span></label>
                                 <div class="select-wrapper">
                                     <select class="form-select custom-select" id="tipo" name="tipo" required>
                                         <option value="">Selecione o tipo de serviço...</option>
@@ -62,7 +62,7 @@
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="nome" class="form-label">Nome do Solicitante</label>
+                                <label for="nome" class="form-label">Nome do Solicitante <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="nome" name="nome" value="{{ ordem.nome_solicitante }}" required>
                                 <div class="invalid-feedback">
                                     Por favor, informe o nome do solicitante.
@@ -71,16 +71,13 @@
 
                             <div class="col-md-6 mb-3">
                                 <label for="telefone" class="form-label">Telefone</label>
-                                <input type="tel" class="form-control" id="telefone" name="telefone" value="{{ ordem.telefone }}" required>
-                                <div class="invalid-feedback">
-                                    Por favor, informe o telefone.
-                                </div>
+                                <input type="tel" class="form-control" id="telefone" name="telefone" value="{{ ordem.telefone }}">
                             </div>
                         </div>
 
                         <div class="row">
                             <div class="col-12 mb-3">
-                                <label for="endereco" class="form-label">Endereço</label>
+                                <label for="endereco" class="form-label">Endereço <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="endereco" name="endereco" value="{{ ordem.endereco }}" required>
                                 <div class="invalid-feedback">
                                     Por favor, informe o endereço.
@@ -90,7 +87,7 @@
 
                         <div class="row">
                             <div class="col-12 mb-3">
-                                <label for="descricao" class="form-label">Descrição do Serviço</label>
+                                <label for="descricao" class="form-label">Descrição do Serviço <span class="text-danger">*</span></label>
                                 <textarea class="form-control" id="descricao" name="descricao" rows="3" required>{{ ordem.descricao }}</textarea>
                                 <div class="invalid-feedback">
                                     Por favor, descreva o serviço necessário.
