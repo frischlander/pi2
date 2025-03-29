@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.core.files.storage import default_storage
 from django.http import FileResponse
+from django.core.paginator import Paginator
 from .models import OrdemServico, AnexoOrdemServico
 from .templates.pdf.ordem_servico_template import OrdemServicoTemplate
 import os
@@ -10,15 +11,20 @@ from datetime import datetime
 
 # Create your views here.
 def index(request):
-    ordens = OrdemServico.objects.all().order_by('-data_criacao')
+    ordens_list = OrdemServico.objects.all().order_by('-data_criacao')
+    paginator = Paginator(ordens_list, 10)  # 10 itens por página
+    page = request.GET.get('page')
+    ordens = paginator.get_page(page)
     
     # Contagem de ordens por status para os cards
     context = {
         'ordens': ordens,
-        'total_finalizadas': ordens.filter(status='finalizada').count(),
-        'total_em_andamento': ordens.filter(status='em_andamento').count(),
-        'total_aguardando': ordens.filter(status='aguardando_parecer').count(),
-        'total_canceladas': ordens.filter(status='cancelada').count(),
+        'total_finalizadas': ordens_list.filter(status='finalizada').count(),
+        'total_em_andamento': ordens_list.filter(status='em_andamento').count(),
+        'total_aguardando': ordens_list.filter(status='aguardando_parecer').count(),
+        'total_canceladas': ordens_list.filter(status='cancelada').count(),
+        'is_paginated': True,
+        'page_obj': ordens
     }
     
     return render(request, 'caaordserv/index.html', context)
