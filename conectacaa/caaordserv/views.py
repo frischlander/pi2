@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.core.files.storage import default_storage
 from django.http import FileResponse
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from .models import OrdemServico, AnexoOrdemServico
 from .templates.pdf.ordem_servico_template import OrdemServicoTemplate
 import os
@@ -11,10 +11,37 @@ from datetime import datetime
 
 # Create your views here.
 def index(request):
-    ordens_list = OrdemServico.objects.all().order_by('-data_criacao')
-    paginator = Paginator(ordens_list, 10)  # 10 itens por página
-    page = request.GET.get('page')
-    ordens = paginator.get_page(page)
+    # Obtém os parâmetros de filtro da URL
+    processo = request.GET.get('processo', '').strip()
+    nome = request.GET.get('nome', '').strip()
+    tipo = request.GET.get('tipo', '')
+    endereco = request.GET.get('endereco', '').strip()
+    status = request.GET.get('status', '')
+    page = request.GET.get('page', '1')
+
+    # Inicia a query
+    ordens_list = OrdemServico.objects.all()
+
+    # Aplica os filtros
+    if processo:
+        ordens_list = ordens_list.filter(processo__icontains=processo)
+    if nome:
+        ordens_list = ordens_list.filter(nome_solicitante__icontains=nome)
+    if tipo:
+        ordens_list = ordens_list.filter(tipo=tipo)
+    if endereco:
+        ordens_list = ordens_list.filter(endereco__icontains=endereco)
+    if status:
+        ordens_list = ordens_list.filter(status=status)
+
+    # Ordena e aplica a paginação
+    ordens_list = ordens_list.order_by('-data_criacao')
+    paginator = Paginator(ordens_list, 10)
+    
+    try:
+        ordens = paginator.page(page)
+    except (PageNotAnInteger, EmptyPage):
+        ordens = paginator.page(1)
     
     # Contagem de ordens por status para os cards
     context = {
@@ -24,7 +51,15 @@ def index(request):
         'total_aguardando': ordens_list.filter(status='aguardando_parecer').count(),
         'total_canceladas': ordens_list.filter(status='cancelada').count(),
         'is_paginated': True,
-        'page_obj': ordens
+        'page_obj': ordens,
+        # Adiciona os valores dos filtros para manter o estado do formulário
+        'filtros': {
+            'processo': processo,
+            'nome': nome,
+            'tipo': tipo,
+            'endereco': endereco,
+            'status': status
+        }
     }
     
     return render(request, 'caaordserv/index.html', context)

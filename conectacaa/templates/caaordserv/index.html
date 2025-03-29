@@ -56,9 +56,14 @@
 <div class="container-fluid p-5 mt-1">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h3 class="text-center mb-0">LISTA DE ORDENS DE SERVIÇO</h3>
-        <a href="{% url 'add_ordem' %}" class="btn btn-success">
-            <i class="bi bi-plus-circle"></i> Nova Ordem de Serviço
-        </a>
+        <div>
+            <button type="button" class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#filtroModal">
+                <i class="bi bi-funnel"></i> Filtros
+            </button>
+            <a href="{% url 'add_ordem' %}" class="btn btn-success">
+                <i class="bi bi-plus-circle"></i> Nova Ordem de Serviço
+            </a>
+        </div>
     </div>
 
     {% if messages %}
@@ -70,6 +75,75 @@
         {% endfor %}
     </div>
     {% endif %}
+
+    <!-- Modal de Filtros -->
+    <div class="modal fade" id="filtroModal" tabindex="-1" aria-labelledby="filtroModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="filtroModalLabel">Filtros de Busca</h5>
+                    <button type="button" class="btn-close text-dark" data-bs-dismiss="modal" aria-label="Close">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+                <form method="get" id="filtroForm">
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">Processo</label>
+                                    <input type="text" class="form-control" name="processo" value="{{ filtros.processo }}" placeholder="Digite o número do processo...">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">Nome do Solicitante</label>
+                                    <input type="text" class="form-control" name="nome" value="{{ filtros.nome }}" placeholder="Digite o nome...">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">Tipo de Serviço</label>
+                                    <select class="form-select" name="tipo">
+                                        <option value="">Todos</option>
+                                        <option value="atendimento_veterinario" {% if filtros.tipo == 'atendimento_veterinario' %}selected{% endif %}>Atendimento Veterinário</option>
+                                        <option value="denuncia_maus_tratos" {% if filtros.tipo == 'denuncia_maus_tratos' %}selected{% endif %}>Denúncia de Maus Tratos</option>
+                                        <option value="castracao" {% if filtros.tipo == 'castracao' %}selected{% endif %}>Castração</option>
+                                        <option value="captura_grande_porte" {% if filtros.tipo == 'captura_grande_porte' %}selected{% endif %}>Captura de Animais de Grande Porte</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">Endereço</label>
+                                    <input type="text" class="form-control" name="endereco" value="{{ filtros.endereco }}" placeholder="Digite o endereço...">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">Status</label>
+                                    <select class="form-select" name="status">
+                                        <option value="">Todos</option>
+                                        <option value="nao_iniciada" {% if filtros.status == 'nao_iniciada' %}selected{% endif %}>Não Iniciada</option>
+                                        <option value="em_andamento" {% if filtros.status == 'em_andamento' %}selected{% endif %}>Em Andamento</option>
+                                        <option value="aguardando_parecer" {% if filtros.status == 'aguardando_parecer' %}selected{% endif %}>Aguardando Parecer</option>
+                                        <option value="finalizada" {% if filtros.status == 'finalizada' %}selected{% endif %}>Finalizada</option>
+                                        <option value="cancelada" {% if filtros.status == 'cancelada' %}selected{% endif %}>Cancelada</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="{% url 'caaordserv' %}" class="btn btn-secondary">Limpar Filtros</a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-funnel"></i> Aplicar Filtros
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <table class="table table-striped">
         <thead>
@@ -197,6 +271,25 @@
 .modal-header {
     background-color: #f8f9fa;
     border-bottom: 1px solid #dee2e6;
+    padding: 1rem 1.5rem;
+}
+
+.modal-header .btn-close {
+    background: none;
+    font-size: 1.5rem;
+    padding: 0;
+    margin: 0;
+    opacity: 1;
+    width: auto;
+    height: auto;
+}
+
+.modal-header .btn-close i {
+    color: #495057;
+}
+
+.modal-header .btn-close:hover i {
+    color: #000;
 }
 
 .modal-footer {
@@ -205,7 +298,7 @@
 }
 
 .modal-title {
-    color: #dc3545;
+    color: #00a652;
     font-weight: 600;
 }
 
@@ -232,6 +325,77 @@
     border-color: #dee2e6;
     background-color: #fff;
 }
+
+/* Estilos dos filtros */
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #00a652;
+    box-shadow: 0 0 0 0.2rem rgba(0, 166, 82, 0.25);
+}
+
+.form-label {
+    font-weight: 500;
+    color: #495057;
+    margin-bottom: 0.5rem;
+}
+
+.modal-lg {
+    max-width: 800px;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.modal-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #dee2e6;
+}
+
+.btn-success {
+    background-color: #00a652;
+    border-color: #00a652;
+}
+
+.btn-success:hover {
+    background-color: #008f45;
+    border-color: #008f45;
+}
+
+/* Indicador de filtros ativos */
+.btn-success[data-bs-toggle="modal"] {
+    position: relative;
+}
+
+.btn-success[data-bs-toggle="modal"]::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 8px;
+    height: 8px;
+    background-color: #ffc107;
+    border-radius: 50%;
+    display: none;
+}
+
+.btn-success[data-bs-toggle="modal"].has-filters::after {
+    display: block;
+}
+
+/* Ajustes para os campos do modal */
+.form-control, .form-select {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+}
+
+.form-select {
+    background-color: #fff;
+}
 </style>
 
 <script>
@@ -255,6 +419,26 @@ document.addEventListener('DOMContentLoaded', function() {
             backdrop: 'static'
         });
     });
+
+    // Verifica se há filtros ativos
+    const filtroBtn = document.querySelector('[data-bs-toggle="modal"]');
+    const hasFilters = Object.values({{ filtros|safe }}).some(value => value !== '');
+    if (hasFilters) {
+        filtroBtn.classList.add('has-filters');
+    }
+
+    // Mantém os parâmetros de paginação ao aplicar filtros
+    const filtroForm = document.getElementById('filtroForm');
+    const urlParams = new URLSearchParams(window.location.search);
+    const page = urlParams.get('page');
+    
+    if (page) {
+        const pageInput = document.createElement('input');
+        pageInput.type = 'hidden';
+        pageInput.name = 'page';
+        pageInput.value = page;
+        filtroForm.appendChild(pageInput);
+    }
 });
 </script>
 {% endblock content %}
