@@ -41,6 +41,7 @@ class OrdemServico(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='nao_iniciada')
     data_criacao = models.DateTimeField(default=timezone.now)
     data_atualizacao = models.DateTimeField(auto_now=True)
+    justificativa_cancelamento = models.TextField(null=True, blank=True)
 
     class Meta:
         verbose_name = 'Ordem de Serviço'
@@ -54,3 +55,28 @@ class OrdemServico(models.Model):
         if not self.processo:
             self.processo = self.gerar_numero_processo()
         super().save(*args, **kwargs)
+
+class AnexoOrdemServico(models.Model):
+    ordem = models.ForeignKey(OrdemServico, on_delete=models.CASCADE, related_name='anexos')
+    arquivo = models.FileField(upload_to='ordens_servico/anexos/%Y/%m/%d/')
+    descricao = models.CharField(max_length=200, blank=True)
+    data_upload = models.DateTimeField(auto_now_add=True)
+    tipo = models.CharField(max_length=50, choices=[
+        ('foto', 'Foto'),
+        ('documento', 'Documento'),
+        ('outro', 'Outro')
+    ])
+
+    class Meta:
+        verbose_name = 'Anexo'
+        verbose_name_plural = 'Anexos'
+        ordering = ['-data_upload']
+
+    def __str__(self):
+        return f"Anexo {self.id} - {self.ordem.processo}"
+
+    def delete(self, *args, **kwargs):
+        # Remove o arquivo físico antes de deletar o registro
+        if self.arquivo:
+            self.arquivo.delete()
+        super().delete(*args, **kwargs)

@@ -79,6 +79,7 @@
             <th scope="col">Tipo</th>
             <th scope="col">Endereço</th>
             <th scope="col">Status</th>
+            <th scope="col">Ações</th>
           </tr>
         </thead>
         <tbody>
@@ -101,15 +102,69 @@
                     <span class="badge badge-secondary">{{ ordem.get_status_display }}</span>
                 {% endif %}
             </td>
+            <td>
+                <a href="{% url 'view_ordem' ordem.id %}" class="btn btn-sm btn-link text-info fs-5" title="Visualizar">
+                    <i class="bi bi-eye-fill"></i>
+                </a>
+                <a href="{% url 'edit_ordem' ordem.id %}" class="btn btn-sm btn-link text-primary fs-5" title="Editar">
+                    <i class="bi bi-pencil-fill"></i>
+                </a>
+                <button type="button" class="btn btn-sm btn-link text-danger fs-5" data-bs-toggle="modal" data-bs-target="#deleteModal{{ ordem.id }}" title="Excluir">
+                    <i class="bi bi-x-circle-fill"></i>
+                </button>
+            </td>
           </tr>
+
+          <!-- Modal de Confirmação de Exclusão -->
+          <div class="modal fade" id="deleteModal{{ ordem.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ ordem.id }}" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="deleteModalLabel{{ ordem.id }}">Confirmar Exclusão</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <p>Tem certeza que deseja excluir a ordem de serviço <strong>{{ ordem.processo }}</strong>?</p>
+                  <p class="text-danger">Esta ação não poderá ser desfeita.</p>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                  <a href="{% url 'delete_ordem' ordem.id %}" class="btn btn-danger">
+                    <i class="bi bi-trash"></i> Confirmar Exclusão
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
           {% empty %}
           <tr>
-            <td colspan="5" class="text-center">Nenhuma ordem de serviço encontrada.</td>
+            <td colspan="6" class="text-center">Nenhuma ordem de serviço encontrada.</td>
           </tr>
           {% endfor %}
         </tbody>
     </table>
 </div>
+
+<style>
+.btn-sm {
+    margin-right: 5px;
+}
+
+.modal-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.modal-footer {
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+}
+
+.modal-title {
+    color: #dc3545;
+    font-weight: 600;
+}
+</style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -122,6 +177,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert.remove();
             }, 150);
         }, 3000);
+    });
+
+    // Inicializa todos os modais
+    var modals = document.querySelectorAll('.modal');
+    modals.forEach(function(modal) {
+        new bootstrap.Modal(modal, {
+            keyboard: false,
+            backdrop: 'static'
+        });
     });
 });
 </script>

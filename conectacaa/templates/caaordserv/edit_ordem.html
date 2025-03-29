@@ -1,0 +1,228 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid p-4 mt-3">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4">Editar Ordem de Serviço</h1>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <form method="POST" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="processo" class="form-label">Número do Processo</label>
+                                <input type="text" class="form-control bg-light" id="processo" value="{{ ordem.processo }}" readonly>
+                                <small class="text-muted">Número do processo não pode ser alterado</small>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="tipo" class="form-label">Tipo de Serviço</label>
+                                <div class="select-wrapper">
+                                    <select class="form-select custom-select" id="tipo" name="tipo" required>
+                                        <option value="">Selecione o tipo de serviço...</option>
+                                        <option value="atendimento_veterinario" {% if ordem.tipo == 'atendimento_veterinario' %}selected{% endif %}>Atendimento Veterinário</option>
+                                        <option value="denuncia_maus_tratos" {% if ordem.tipo == 'denuncia_maus_tratos' %}selected{% endif %}>Denúncia de Maus Tratos</option>
+                                        <option value="castracao" {% if ordem.tipo == 'castracao' %}selected{% endif %}>Castração</option>
+                                        <option value="captura_grande_porte" {% if ordem.tipo == 'captura_grande_porte' %}selected{% endif %}>Captura de Animais de Grande Porte</option>
+                                    </select>
+                                    <div class="select-arrow"></div>
+                                </div>
+                                <div class="invalid-feedback">
+                                    Por favor, selecione o tipo de serviço.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="nome" class="form-label">Nome do Solicitante</label>
+                                <input type="text" class="form-control" id="nome" name="nome" value="{{ ordem.nome_solicitante }}" required>
+                                <div class="invalid-feedback">
+                                    Por favor, informe o nome do solicitante.
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="telefone" class="form-label">Telefone</label>
+                                <input type="tel" class="form-control" id="telefone" name="telefone" value="{{ ordem.telefone }}" required>
+                                <div class="invalid-feedback">
+                                    Por favor, informe o telefone.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <label for="endereco" class="form-label">Endereço</label>
+                                <input type="text" class="form-control" id="endereco" name="endereco" value="{{ ordem.endereco }}" required>
+                                <div class="invalid-feedback">
+                                    Por favor, informe o endereço.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <label for="descricao" class="form-label">Descrição do Serviço</label>
+                                <textarea class="form-control" id="descricao" name="descricao" rows="3" required>{{ ordem.descricao }}</textarea>
+                                <div class="invalid-feedback">
+                                    Por favor, descreva o serviço necessário.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="status" class="form-label">Status da Ordem</label>
+                                <div class="select-wrapper">
+                                    <select class="form-select custom-select" id="status" name="status" required onchange="toggleJustificativa()">
+                                        <option value="">Selecione o status...</option>
+                                        <option value="nao_iniciada" {% if ordem.status == 'nao_iniciada' %}selected{% endif %}>Não Iniciada</option>
+                                        <option value="em_andamento" {% if ordem.status == 'em_andamento' %}selected{% endif %}>Em Andamento</option>
+                                        <option value="aguardando_parecer" {% if ordem.status == 'aguardando_parecer' %}selected{% endif %}>Aguardando Parecer</option>
+                                        <option value="finalizada" {% if ordem.status == 'finalizada' %}selected{% endif %}>Finalizada</option>
+                                        <option value="cancelada" {% if ordem.status == 'cancelada' %}selected{% endif %}>Cancelada</option>
+                                    </select>
+                                    <div class="select-arrow"></div>
+                                </div>
+                                <div class="invalid-feedback">
+                                    Por favor, selecione o status da ordem.
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Datas</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">Criação</span>
+                                    <input type="text" class="form-control bg-light" value="{{ ordem.data_criacao|date:'d/m/Y H:i' }}" readonly>
+                                </div>
+                                <div class="input-group mt-2">
+                                    <span class="input-group-text">Última Atualização</span>
+                                    <input type="text" class="form-control bg-light" value="{{ ordem.data_atualizacao|date:'d/m/Y H:i' }}" readonly>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="justificativaContainer" style="display: none;">
+                            <div class="row">
+                                <div class="col-12 mb-3">
+                                    <label for="justificativa_cancelamento" class="form-label">Justificativa do Cancelamento</label>
+                                    <textarea class="form-control" id="justificativa_cancelamento" name="justificativa_cancelamento" rows="3" required>{{ ordem.justificativa_cancelamento }}</textarea>
+                                    <div class="invalid-feedback">
+                                        Por favor, informe a justificativa do cancelamento.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-success">
+                                    <i class="bi bi-check-circle"></i> Salvar Alterações
+                                </button>
+                                <a href="{% url 'caaordserv' %}" class="btn btn-secondary">
+                                    <i class="bi bi-x-circle"></i> Cancelar
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.select-wrapper {
+    position: relative;
+}
+
+.select-wrapper select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    padding-right: 40px;
+    cursor: pointer;
+    background-color: white;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.select-wrapper select:focus {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.select-arrow {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid #6c757d;
+    pointer-events: none;
+}
+
+.form-control:read-only {
+    background-color: #f8f9fa;
+    cursor: not-allowed;
+}
+
+.btn i {
+    margin-right: 5px;
+}
+
+.input-group-text {
+    min-width: 140px;
+}
+</style>
+
+<script>
+// Validação do formulário
+(function() {
+    'use strict'
+    var forms = document.querySelectorAll('.needs-validation')
+    Array.prototype.slice.call(forms).forEach(function(form) {
+        form.addEventListener('submit', function(event) {
+            if (!form.checkValidity()) {
+                event.preventDefault()
+                event.stopPropagation()
+            }
+            form.classList.add('was-validated')
+        }, false)
+    })
+})()
+
+// Função para mostrar/esconder o campo de justificativa
+function toggleJustificativa() {
+    var statusSelect = document.getElementById('status');
+    var justificativaContainer = document.getElementById('justificativaContainer');
+    var justificativaInput = document.getElementById('justificativa_cancelamento');
+    
+    if (statusSelect.value === 'cancelada') {
+        justificativaContainer.style.display = 'block';
+        justificativaInput.required = true;
+    } else {
+        justificativaContainer.style.display = 'none';
+        justificativaInput.required = false;
+    }
+}
+
+// Chama a função ao carregar a página
+document.addEventListener('DOMContentLoaded', function() {
+    toggleJustificativa();
+});
+</script>
+{% endblock %}
