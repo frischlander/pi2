@@ -3,7 +3,12 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h2 class="mb-4">Relatórios</h2>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Relatórios</h2>
+        <button id="gerarPDF" class="btn btn-primary">
+            <i class="bi bi-file-pdf"></i> Gerar PDF
+        </button>
+    </div>
     
     <div class="row">
         <div class="col-md-6">
@@ -28,6 +33,9 @@
 
 <!-- Incluir Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Incluir jspdf e html2canvas -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <!-- Dados para os gráficos -->
 {{ status_data|json_script:"status-data" }}
@@ -84,5 +92,165 @@
             options: chartOptions
         });
     };
+
+    // Função para gerar PDF
+    document.getElementById('gerarPDF').addEventListener('click', async function() {
+        try {
+            const pdf = new jspdf.jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4'
+            });
+
+            // Função para criar um elemento temporário
+            function createTempElement(html) {
+                const element = document.createElement('div');
+                element.style.position = 'absolute';
+                element.style.left = '-9999px';
+                element.style.top = '-9999px';
+                element.style.width = '595px'; // Largura A4 em pixels
+                element.style.backgroundColor = 'white';
+                element.style.padding = '20px';
+                element.innerHTML = html;
+                return element;
+            }
+
+            // Função para adicionar uma página ao PDF
+            async function addPageToPDF(element, addPage = true) {
+                if (addPage && pdf.internal.getNumberOfPages() > 0) {
+                    pdf.addPage();
+                }
+
+                const canvas = await html2canvas(element, {
+                    scale: 2,
+                    useCORS: true,
+                    backgroundColor: '#ffffff',
+                    logging: false,
+                    width: 595, // Largura A4 em pixels
+                    height: element.scrollHeight
+                });
+
+                const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                const pageWidth = 210; // A4 width in mm
+                const pageHeight = 297; // A4 height in mm
+                const imgWidth = pageWidth - 20; // Margem de 10mm em cada lado
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+                pdf.addImage(imgData, 'JPEG', 10, 10, imgWidth, imgHeight);
+            }
+
+            // Página 1: Cabeçalho e Total + Gráfico de Status
+            const page1Element = createTempElement(`
+                <div style="font-family: Arial, sans-serif; max-width: 100%; margin: 0 auto;">
+                    <div style="text-align: center; margin-bottom: 20px; border-bottom: 2px solid #00a652; padding-bottom: 10px;">
+                        <img src="{% static 'img/logo.png' %}" style="width: 80px; height: 80px; margin-bottom: 10px;">
+                        <h1 style="color: #00a652; margin: 0; font-size: 20px;">Relatório de Ordens de Serviço</h1>
+                    </div>
+
+                    <div style="margin-bottom: 20px; background-color: #fff; padding: 15px; border-radius: 8px; border: 1px solid #c7c7c7;">
+                        <h3 style="margin: 0; color: #000; font-size: 16px;">Total de Ordens: ${statusData.values.reduce((a, b) => a + b, 0)}</h3>
+                    </div>
+
+                    <div style="margin-top: 30px;">
+                        <h3 style="color: #333; font-size: 16px; margin-bottom: 15px;">Ordens por Status</h3>
+                        <div style="display: flex; justify-content: center;">
+                            <canvas id="statusChartPDF" width="400" height="300"></canvas>
+                        </div>
+                    </div>
+                </div>
+            `);
+            document.body.appendChild(page1Element);
+            const statusChart = new Chart(document.getElementById('statusChartPDF'), {
+                type: 'pie',
+                data: {
+                    labels: statusData.labels,
+                    datasets: [{
+                        data: statusData.values,
+                        backgroundColor: ['#28a745', '#17a2b8', '#e98604', '#dc3545']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { font: { size: 12 } }
+                        }
+                    }
+                }
+            });
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            await addPageToPDF(page1Element, false);
+            document.body.removeChild(page1Element);
+
+            // Página 2: Gráfico de Tipo + Tabela
+            const page2Element = createTempElement(`
+                <div style="font-family: Arial, sans-serif; max-width: 100%; margin: 0 auto;">
+                    <div style="margin-bottom: 30px;">
+                        <h3 style="color: #333; font-size: 16px; margin-bottom: 15px;">Ordens por Tipo</h3>
+                        <div style="display: flex; justify-content: center;">
+                            <canvas id="tipoChartPDF" width="400" height="300"></canvas>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 30px;">
+                        <h3 style="color: #333; font-size: 16px; margin-bottom: 15px;">Detalhamento por Tipo</h3>
+                        <table style="width: 100%; border-collapse: collapse; margin-top: 10px; border: 1px solid #dee2e6;">
+                            <tr style="background-color: #f8f9fa;">
+                                <th style="padding: 10px; border: 1px solid #dee2e6; text-align: left; font-size: 12px;">Tipo</th>
+                                <th style="padding: 10px; border: 1px solid #dee2e6; text-align: right; font-size: 12px;">Quantidade</th>
+                            </tr>
+                            ${tipoData.labels.map((label, index) => `
+                                <tr>
+                                    <td style="padding: 10px; border: 1px solid #dee2e6; font-size: 12px;">${label}</td>
+                                    <td style="padding: 10px; border: 1px solid #dee2e6; text-align: right; font-size: 12px;">${tipoData.values[index]}</td>
+                                </tr>
+                            `).join('')}
+                        </table>
+                    </div>
+
+                    <div style="margin-top: 30px; text-align: center; border-top: 1px solid #dee2e6; padding-top: 15px;">
+                        <p style="margin: 0; color: #666; font-size: 11px;">Gerado por {{ request.user.get_full_name|default:request.user.username }} em ${new Date().toLocaleString('pt-BR')}</p>
+                    </div>
+                </div>
+            `);
+            document.body.appendChild(page2Element);
+            const tipoChart = new Chart(document.getElementById('tipoChartPDF'), {
+                type: 'pie',
+                data: {
+                    labels: tipoData.labels,
+                    datasets: [{
+                        data: tipoData.values,
+                        backgroundColor: ['#28a745', '#17a2b8', '#e98604', '#dc3545']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { font: { size: 12 } }
+                        }
+                    }
+                }
+            });
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            await addPageToPDF(page2Element);
+            document.body.removeChild(page2Element);
+
+            // Abrir em nova guia
+            const pdfOutput = pdf.output('blob');
+            const url = window.URL.createObjectURL(pdfOutput);
+            window.open(url, '_blank');
+            window.URL.revokeObjectURL(url);
+
+        } catch (error) {
+            console.error('Erro ao gerar PDF:', error);
+            alert('Erro ao gerar o PDF. Por favor, tente novamente.');
+        }
+    });
 </script>
 {% endblock %}
+
