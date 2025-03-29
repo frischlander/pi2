@@ -1,0 +1,79 @@
+/* Estilos gerais */
+body {
+    background-color: #f8f9fa;
+}
+
+/* Cards de estatísticas */
+.card-stats {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    transition: transform 0.2s ease-in-out;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.card-stats:hover {
+    transform: translateY(-5px);
+}
+
+.card-stats .icon {
+    font-size: 2rem;
+    opacity: 0.8;
+}
+
+.card-stats .number {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+}
+
+.card-stats .label {
+    font-size: 0.875rem;
+    opacity: 0.9;
+}
+
+/* Badges de status */
+.badge {
+    padding: 0.5em 0.75em;
+    font-weight: 500;
+    font-size: 0.875rem;
+}
+
+.badge-warning {
+    background-color: #e98604;
+    color: white;
+}
+
+.badge-info {
+    background-color: #17a2b8;
+    color: white;
+}
+
+.badge-success {
+    background-color: #28a745;
+    color: white;
+}
+
+.badge-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+/* Tabela responsiva */
+.table-responsive {
+    border-radius: 0.25rem;
+}
+
+.table th {
+    border-top: none;
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+
+.table td {
+    vertical-align: middle;
+} 

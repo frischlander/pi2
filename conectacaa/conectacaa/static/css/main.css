@@ -84,3 +84,24 @@
   transform: scale(1.2);
   color: #00af2c;
 }
+
+.card-stats {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-radius: 8px;
+            color: white;
+        }
+        .card-stats .icon {
+            margin-right: 15px;
+            font-size: 2.5rem;
+            opacity: 0.7;
+        }
+        .card-stats .number {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+        .card-stats .label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }

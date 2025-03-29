@@ -1,13 +1,94 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1> Lista de Ordens de Serviço</h1>
+<div class="container-fluid p-4 mt-3">
+    <div class="row g-3">
+        <div class="col-md-3">
+            <div class="card-stats" style="background-color: #28a745;">
+                <div class="icon">
+                    <i class="bi bi-check-circle-fill"></i>
+                </div>
+                <div>
+                    <div class="number">12</div>
+                    <div class="label">Finalizadas</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card-stats" style="background-color: #17a2b8;">
+                <div class="icon">
+                    <i class="bi bi-gear-fill"></i>
+                </div>
+                <div>
+                    <div class="number">25</div>
+                    <div class="label">Em Andamento</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card-stats" style="background-color: #e98604;">
+                <div class="icon">
+                    <i class="bi bi-question-circle-fill"></i>
+                </div>
+                <div>
+                    <div class="number">8</div>
+                    <div class="label">Aguardando Parecer</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card-stats" style="background-color: #dc3545;">
+                <div class="icon">
+                    <i class="bi bi-x-circle-fill"></i>
+                </div>
+                <div>
+                    <div class="number">5</div>
+                    <div class="label">Canceladas</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-<ul class="list-group">
-<li class="list-group-item">CAA01</li>
-<li class="list-group-item">CAA02</li>
-<li class="list-group-item">CAA03</li>
-<li class="list-group-item">CAA04</li>
-<li class="list-group-item">CAA05</li>
-</ul>
+<div class="container-fluid p-5 mt-1">
+    <h3 class="mb-4 text-center">LISTA DE ORDENS DE SERVIÇO</h3>
+
+    <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">Processo</th>
+            <th scope="col">Nome</th>
+            <th scope="col">Tipo</th>
+            <th scope="col">Endereço</th>
+            <th scope="col">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">CAA001/29032025</th>
+            <td>José da Silva Sauro</td>
+            <td>Atendimento Veterinário</td>
+            <td>Rua 4, 123 - Bairro Jardim das Indústrias</td>
+            <td><span class="badge badge-warning">Aguardando Parecer</span></td>
+          </tr>
+          <tr>
+            <th scope="row">CAA002/29032025</th>
+            <td>Jacob</td>
+            <td>Thornton</td>
+            <td>@fat</td>
+            <td><span class="badge badge-info">Em Andamento</span></td>
+          </tr>
+          <tr>
+            <th scope="row">CAA003/29032025</th>
+            <td>José da Silva e Silva</td>
+            <td>Denúncia Maus Tratos</td>
+            <td>Rua 12, 865 - Parque das Américas</td>
+            <td><span class="badge badge-success">Finalizada</span></td>
+          </tr>
+        </tbody>
+    </table>
+</div>
 {% endblock content %}
