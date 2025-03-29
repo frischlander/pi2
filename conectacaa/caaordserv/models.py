@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from datetime import datetime
+from django.contrib.auth.models import User
 
 class OrdemServico(models.Model):
     TIPO_CHOICES = [
@@ -39,9 +40,11 @@ class OrdemServico(models.Model):
     endereco = models.TextField()
     descricao = models.TextField()
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='nao_iniciada')
-    data_criacao = models.DateTimeField(default=timezone.now)
-    data_atualizacao = models.DateTimeField(auto_now=True)
+    data_criacao = models.DateTimeField(default=timezone.now, verbose_name='Data de Criação')
+    data_atualizacao = models.DateTimeField(auto_now=True, verbose_name='Data de Atualização')
     justificativa_cancelamento = models.TextField(null=True, blank=True)
+    parecer = models.TextField(null=True, blank=True, help_text="Parecer técnico para finalização da ordem de serviço")
+    ultimo_usuario = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Último Usuário')
 
     class Meta:
         verbose_name = 'Ordem de Serviço'

@@ -74,35 +74,35 @@
     <table class="table table-striped">
         <thead>
           <tr>
-            <th scope="col">Processo</th>
-            <th scope="col">Nome</th>
-            <th scope="col">Tipo</th>
-            <th scope="col">Endereço</th>
-            <th scope="col">Status</th>
-            <th scope="col">Ações</th>
+            <th scope="col" class="text-center">Processo</th>
+            <th scope="col" class="text-center">Nome</th>
+            <th scope="col" class="text-center">Tipo</th>
+            <th scope="col" class="text-center">Endereço</th>
+            <th scope="col" class="text-center">Status</th>
+            <th scope="col" class="text-center">Ações</th>
           </tr>
         </thead>
         <tbody>
           {% for ordem in ordens %}
           <tr>
-            <th scope="row">{{ ordem.processo }}</th>
-            <td>{{ ordem.nome_solicitante }}</td>
-            <td>{{ ordem.get_tipo_display }}</td>
-            <td>{{ ordem.endereco }}</td>
-            <td>
+            <th scope="row" class="text-center">{{ ordem.processo }}</th>
+            <td class="text-center">{{ ordem.nome_solicitante }}</td>
+            <td class="text-center">{{ ordem.get_tipo_display }}</td>
+            <td class="text-center">{{ ordem.endereco }}</td>
+            <td class="text-center">
                 {% if ordem.status == 'finalizada' %}
-                    <span class="badge badge-success">Finalizada</span>
+                    <span class="badge badge-success rounded-pill px-4 py-2 fs-6 d-inline-block" style="min-width: 180px; max-width: 180px;">Finalizada</span>
                 {% elif ordem.status == 'em_andamento' %}
-                    <span class="badge badge-info">Em Andamento</span>
+                    <span class="badge badge-info rounded-pill px-4 py-2 fs-6 d-inline-block" style="min-width: 180px; max-width: 180px;">Em Andamento</span>
                 {% elif ordem.status == 'aguardando_parecer' %}
-                    <span class="badge badge-warning">Aguardando Parecer</span>
+                    <span class="badge badge-warning rounded-pill px-4 py-2 fs-6 d-inline-block" style="min-width: 180px; max-width: 180px;">Aguardando Parecer</span>
                 {% elif ordem.status == 'cancelada' %}
-                    <span class="badge badge-danger">Cancelada</span>
+                    <span class="badge badge-danger rounded-pill px-4 py-2 fs-6 d-inline-block" style="min-width: 180px; max-width: 180px;">Cancelada</span>
                 {% else %}
-                    <span class="badge badge-secondary">{{ ordem.get_status_display }}</span>
+                    <span class="badge badge-secondary rounded-pill px-4 py-2 fs-6 d-inline-block" style="min-width: 180px; max-width: 180px;">{{ ordem.get_status_display }}</span>
                 {% endif %}
             </td>
-            <td>
+            <td class="text-center">
                 <a href="{% url 'view_ordem' ordem.id %}" class="btn btn-sm btn-link text-info fs-5" title="Visualizar">
                     <i class="bi bi-eye-fill"></i>
                 </a>

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h2 class="text-center mb-4">Sobre o Centro de Acolhimento Animal</h2>
+                    
+                    <!-- Espaço para a foto -->
+                    <div class="text-center mb-4">
+                        <img src="{% static 'img/centro-acolhimento.jpeg' %}" 
+                             alt="Centro de Acolhimento Animal São Francisco de Assis" 
+                             class="img-fluid rounded"
+                             style="max-height: 400px; width: auto;">
+                    </div>
+
+                    <div class="text-justify">
+                        <p class="lead">
+                            O Centro de Acolhimento Animal "São Francisco de Assis", que está sob coordenação da secretaria de Zeladoria e Meio Ambiente.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

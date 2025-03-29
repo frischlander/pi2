@@ -29,34 +29,14 @@
 <!-- Incluir Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<script>
-    // Dados para o gráfico de Status
-    const statusData = {
-        labels: ['Pendente', 'Em Andamento', 'Concluído', 'Cancelado'],
-        datasets: [{
-            data: [30, 25, 35, 10],
-            backgroundColor: [
-                '#FFA500',  // Laranja para Pendente
-                '#4169E1',  // Azul para Em Andamento
-                '#32CD32',  // Verde para Concluído
-                '#FF4444'   // Vermelho para Cancelado
-            ]
-        }]
-    };
+<!-- Dados para os gráficos -->
+{{ status_data|json_script:"status-data" }}
+{{ tipo_data|json_script:"tipo-data" }}
 
-    // Dados para o gráfico de Tipo
-    const tipoData = {
-        labels: ['Manutenção', 'Instalação', 'Suporte', 'Outros'],
-        datasets: [{
-            data: [40, 30, 20, 10],
-            backgroundColor: [
-                '#FF6B6B',  // Vermelho claro para Manutenção
-                '#4ECDC4',  // Turquesa para Instalação
-                '#45B7D1',  // Azul claro para Suporte
-                '#96CEB4'   // Verde claro para Outros
-            ]
-        }]
-    };
+<script>
+    // Recuperar dados do JSON
+    const statusData = JSON.parse(document.getElementById('status-data').textContent);
+    const tipoData = JSON.parse(document.getElementById('tipo-data').textContent);
 
     // Configuração dos gráficos
     const chartOptions = {
@@ -72,13 +52,35 @@
     window.onload = function() {
         new Chart(document.getElementById('statusChart'), {
             type: 'pie',
-            data: statusData,
+            data: {
+                labels: statusData.labels,
+                datasets: [{
+                    data: statusData.values,
+                    backgroundColor: [
+                        '#28a745',  // Verde para Finalizadas
+                        '#17a2b8',  // Azul para Em Andamento
+                        '#e98604',  // Laranja para Aguardando Parecer
+                        '#dc3545'   // Vermelho para Canceladas
+                    ]
+                }]
+            },
             options: chartOptions
         });
 
         new Chart(document.getElementById('tipoChart'), {
             type: 'pie',
-            data: tipoData,
+            data: {
+                labels: tipoData.labels,
+                datasets: [{
+                    data: tipoData.values,
+                    backgroundColor: [
+                        '#28a745',  // Verde para Atendimento Veterinário
+                        '#17a2b8',  // Azul para Denúncia de Maus Tratos
+                        '#e98604',  // Laranja para Castração
+                        '#dc3545'   // Vermelho para Captura de Animais de Grande Porte
+                    ]
+                }]
+            },
             options: chartOptions
         });
     };

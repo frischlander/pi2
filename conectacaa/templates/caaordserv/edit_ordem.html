@@ -15,6 +15,26 @@
                     <form method="POST" class="needs-validation" novalidate enctype="multipart/form-data">
                         {% csrf_token %}
                         
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="d-flex flex-column align-items-center">
+                                    <label class="form-label mb-2">Status da Ordem</label>
+                                    <div class="select-wrapper" style="min-width: 300px;">
+                                        <select class="form-select custom-select fs-5" id="status" name="status" required onchange="toggleCampos()">
+                                            <option value="">Selecione o status...</option>
+                                            <option value="nao_iniciada" {% if ordem.status == 'nao_iniciada' %}selected{% endif %}>Não Iniciada</option>
+                                            <option value="em_andamento" {% if ordem.status == 'em_andamento' %}selected{% endif %}>Em Andamento</option>
+                                            <option value="aguardando_parecer" {% if ordem.status == 'aguardando_parecer' %}selected{% endif %}>Aguardando Parecer</option>
+                                            <option value="finalizada" {% if ordem.status == 'finalizada' %}selected{% endif %}>Finalizada</option>
+                                            <option value="cancelada" {% if ordem.status == 'cancelada' %}selected{% endif %}>Cancelada</option>
+                                        </select>
+                                        <div class="select-arrow"></div>
+                                    </div>
+                                    <small class="text-muted mt-2">Altere o status da ordem de serviço para atualizar seu progresso</small>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="processo" class="form-label">Número do Processo</label>
@@ -78,38 +98,6 @@
                             </div>
                         </div>
 
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="status" class="form-label">Status da Ordem</label>
-                                <div class="select-wrapper">
-                                    <select class="form-select custom-select" id="status" name="status" required onchange="toggleJustificativa()">
-                                        <option value="">Selecione o status...</option>
-                                        <option value="nao_iniciada" {% if ordem.status == 'nao_iniciada' %}selected{% endif %}>Não Iniciada</option>
-                                        <option value="em_andamento" {% if ordem.status == 'em_andamento' %}selected{% endif %}>Em Andamento</option>
-                                        <option value="aguardando_parecer" {% if ordem.status == 'aguardando_parecer' %}selected{% endif %}>Aguardando Parecer</option>
-                                        <option value="finalizada" {% if ordem.status == 'finalizada' %}selected{% endif %}>Finalizada</option>
-                                        <option value="cancelada" {% if ordem.status == 'cancelada' %}selected{% endif %}>Cancelada</option>
-                                    </select>
-                                    <div class="select-arrow"></div>
-                                </div>
-                                <div class="invalid-feedback">
-                                    Por favor, selecione o status da ordem.
-                                </div>
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Datas</label>
-                                <div class="input-group">
-                                    <span class="input-group-text">Criação</span>
-                                    <input type="text" class="form-control bg-light" value="{{ ordem.data_criacao|date:'d/m/Y H:i' }}" readonly>
-                                </div>
-                                <div class="input-group mt-2">
-                                    <span class="input-group-text">Última Atualização</span>
-                                    <input type="text" class="form-control bg-light" value="{{ ordem.data_atualizacao|date:'d/m/Y H:i' }}" readonly>
-                                </div>
-                            </div>
-                        </div>
-
                         <div id="justificativaContainer" style="display: none;">
                             <div class="row">
                                 <div class="col-12 mb-3">
@@ -117,6 +105,18 @@
                                     <textarea class="form-control" id="justificativa_cancelamento" name="justificativa_cancelamento" rows="3" required>{{ ordem.justificativa_cancelamento }}</textarea>
                                     <div class="invalid-feedback">
                                         Por favor, informe a justificativa do cancelamento.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="parecerContainer" style="display: none;">
+                            <div class="row">
+                                <div class="col-12 mb-3">
+                                    <label for="parecer" class="form-label">Parecer Técnico</label>
+                                    <textarea class="form-control" id="parecer" name="parecer" rows="3" required>{{ ordem.parecer }}</textarea>
+                                    <div class="invalid-feedback">
+                                        Por favor, informe o parecer técnico para finalização da ordem.
                                     </div>
                                 </div>
                             </div>
@@ -186,7 +186,45 @@
                             </div>
                         </div>
                     </form>
+
+                    <!-- Informações de Data e Usuário -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <hr>
+                            <div class="d-flex justify-content-center align-items-center text-muted small">
+                                <div class="d-flex align-items-center">
+                                    <span><strong>Data de Criação:</strong> {{ ordem.data_criacao|date:"d/m/Y H:i" }}</span>
+                                    <span class="mx-3">|</span>
+                                    <span><strong>Última Atualização:</strong> {{ ordem.data_atualizacao|date:"d/m/Y H:i" }}</span>
+                                    <span class="mx-3">|</span>
+                                    {% if ordem.ultimo_usuario %}
+                                    <span><strong>Último Usuário:</strong> {{ ordem.ultimo_usuario.get_full_name|default:ordem.ultimo_usuario.username }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Sucesso -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="successModalLabel">Sucesso!</h5>
+            </div>
+            <div class="modal-body text-center">
+                <i class="bi bi-check-circle-fill text-success display-4 mb-3"></i>
+                <p class="mb-0">Ordem de serviço salva com sucesso!</p>
+            </div>
+            <div class="modal-footer">
+                <a href="{% url 'caaordserv' %}" class="btn btn-success w-100">
+                    <i class="bi bi-check-circle"></i> OK
+                </a>
             </div>
         </div>
     </div>
@@ -329,35 +367,37 @@
 </style>
 
 <script>
-// Validação do formulário
-(function() {
-    'use strict'
-    var forms = document.querySelectorAll('.needs-validation')
-    Array.prototype.slice.call(forms).forEach(function(form) {
-        form.addEventListener('submit', function(event) {
-            if (!form.checkValidity()) {
-                event.preventDefault()
-                event.stopPropagation()
-            }
-            form.classList.add('was-validated')
-        }, false)
-    })
-})()
-
-// Função para mostrar/esconder o campo de justificativa
-function toggleJustificativa() {
+// Função para mostrar/esconder campos baseado no status
+function toggleCampos() {
     var statusSelect = document.getElementById('status');
     var justificativaContainer = document.getElementById('justificativaContainer');
+    var parecerContainer = document.getElementById('parecerContainer');
     var justificativaInput = document.getElementById('justificativa_cancelamento');
+    var parecerInput = document.getElementById('parecer');
     
+    // Esconde todos os containers primeiro
+    justificativaContainer.style.display = 'none';
+    parecerContainer.style.display = 'none';
+    justificativaInput.required = false;
+    parecerInput.required = false;
+    
+    // Mostra o container apropriado baseado no status
     if (statusSelect.value === 'cancelada') {
         justificativaContainer.style.display = 'block';
         justificativaInput.required = true;
-    } else {
-        justificativaContainer.style.display = 'none';
-        justificativaInput.required = false;
+    } else if (statusSelect.value === 'finalizada') {
+        parecerContainer.style.display = 'block';
+        parecerInput.required = true;
     }
 }
+
+// Adiciona o evento onchange ao select de status
+document.getElementById('status').addEventListener('change', toggleCampos);
+
+// Chama a função quando a página carrega para configurar o estado inicial
+document.addEventListener('DOMContentLoaded', function() {
+    toggleCampos();
+});
 
 // Preview de arquivos
 document.getElementById('anexos').addEventListener('change', function(e) {
@@ -386,5 +426,20 @@ document.getElementById('anexos').addEventListener('change', function(e) {
         container.appendChild(previewItem);
     });
 });
+
+// Validação do formulário
+(function() {
+    'use strict'
+    var forms = document.querySelectorAll('.needs-validation')
+    Array.prototype.slice.call(forms).forEach(function(form) {
+        form.addEventListener('submit', function(event) {
+            if (!form.checkValidity()) {
+                event.preventDefault()
+                event.stopPropagation()
+            }
+            form.classList.add('was-validated')
+        }, false)
+    })
+})()
 </script>
 {% endblock %}

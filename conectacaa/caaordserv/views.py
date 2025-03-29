@@ -28,7 +28,8 @@ def add_ordem(request):
                 nome_solicitante=request.POST.get('nome'),
                 telefone=request.POST.get('telefone'),
                 endereco=request.POST.get('endereco'),
-                descricao=request.POST.get('descricao')
+                descricao=request.POST.get('descricao'),
+                ultimo_usuario=request.user
             )
             
             # Processa os anexos
@@ -57,10 +58,16 @@ def edit_ordem(request, ordem_id):
         try:
             novo_status = request.POST.get('status')
             justificativa = request.POST.get('justificativa_cancelamento')
+            parecer = request.POST.get('parecer')
             
             # Validação da justificativa quando o status é cancelada
             if novo_status == 'cancelada' and not justificativa:
                 messages.error(request, 'É necessário informar uma justificativa para cancelar a ordem de serviço.')
+                return render(request, 'caaordserv/edit_ordem.html', {'ordem': ordem})
+            
+            # Validação do parecer quando o status é finalizada
+            if novo_status == 'finalizada' and not parecer:
+                messages.error(request, 'É necessário informar um parecer técnico para finalizar a ordem de serviço.')
                 return render(request, 'caaordserv/edit_ordem.html', {'ordem': ordem})
             
             ordem.tipo = request.POST.get('tipo')
@@ -70,6 +77,8 @@ def edit_ordem(request, ordem_id):
             ordem.descricao = request.POST.get('descricao')
             ordem.status = novo_status
             ordem.justificativa_cancelamento = justificativa if novo_status == 'cancelada' else None
+            ordem.parecer = parecer if novo_status == 'finalizada' else None
+            ordem.ultimo_usuario = request.user
             ordem.save()
             
             # Processa os novos anexos

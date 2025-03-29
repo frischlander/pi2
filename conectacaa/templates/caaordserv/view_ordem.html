@@ -36,17 +36,12 @@
                         <div class="col-md-6">
                             <h5 class="card-title">Detalhes da Ordem</h5>
                             <p><strong>Tipo:</strong> {{ ordem.get_tipo_display }}</p>
-                            <p><strong>Status:</strong> 
-                                <span class="badge {% if ordem.status == 'finalizada' %}bg-success
-                                                  {% elif ordem.status == 'cancelada' %}bg-danger
-                                                  {% elif ordem.status == 'em_andamento' %}bg-primary
-                                                  {% elif ordem.status == 'aguardando_parecer' %}bg-warning
-                                                  {% else %}bg-secondary{% endif %}">
-                                    {{ ordem.get_status_display }}
-                                </span>
-                            </p>
-                            <p><strong>Data de Criação:</strong> {{ ordem.data_criacao|date:"d/m/Y H:i" }}</p>
-                            <p><strong>Última Atualização:</strong> {{ ordem.data_atualizacao|date:"d/m/Y H:i" }}</p>
+                            <p><strong>Status:</strong> <span class="badge {% if ordem.status == 'nao_iniciada' %}badge-secondary
+                                                    {% elif ordem.status == 'em_andamento' %}badge-info
+                                                    {% elif ordem.status == 'aguardando_parecer' %}badge-warning
+                                                    {% elif ordem.status == 'finalizada' %}badge-success
+                                                    {% elif ordem.status == 'cancelada' %}badge-danger{% endif %} 
+                                         rounded-pill px-3 py-2">{{ ordem.get_status_display }}</span></p>
                         </div>
                     </div>
                     
@@ -56,6 +51,19 @@
                             <p class="card-text">{{ ordem.descricao|linebreaks }}</p>
                         </div>
                     </div>
+
+                    {% if ordem.status == 'finalizada' and ordem.parecer %}
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <h5 class="card-title">Parecer Técnico</h5>
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    {{ ordem.parecer|linebreaks }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
 
                     {% if ordem.status == 'cancelada' and ordem.justificativa_cancelamento %}
                     <div class="row mt-4">
@@ -104,6 +112,24 @@
                             {% endif %}
                         </div>
                     </div>
+
+                    <!-- Informações de Data e Usuário -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <hr>
+                            <div class="d-flex justify-content-between align-items-center text-muted small">
+                                <div class="d-flex align-items-center">
+                                    <span><strong>Data de Criação:</strong> {{ ordem.data_criacao|date:"d/m/Y H:i" }}</span>
+                                    <span class="mx-3">|</span>
+                                    <span><strong>Última Atualização:</strong> {{ ordem.data_atualizacao|date:"d/m/Y H:i" }}</span>
+                                    <span class="mx-3">|</span>
+                                    {% if ordem.ultimo_usuario %}
+                                    <span><strong>Último Usuário:</strong> {{ ordem.ultimo_usuario.get_full_name|default:ordem.ultimo_usuario.username }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -149,7 +175,9 @@
 
 .badge {
     font-size: 0.9em;
-    padding: 0.5em 0.75em;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .modal-header {
@@ -165,6 +193,88 @@
 .modal-title {
     color: #dc3545;
     font-weight: 600;
+}
+
+/* Cores personalizadas para os badges */
+.bg-primary-subtle {
+    background-color: rgba(13, 110, 253, 0.1) !important;
+}
+
+.bg-secondary-subtle {
+    background-color: rgba(108, 117, 125, 0.1) !important;
+}
+
+.bg-success-subtle {
+    background-color: rgba(25, 135, 84, 0.1) !important;
+}
+
+.bg-danger-subtle {
+    background-color: rgba(220, 53, 69, 0.1) !important;
+}
+
+.bg-warning-subtle {
+    background-color: rgba(255, 193, 7, 0.1) !important;
+}
+
+.bg-info-subtle {
+    background-color: rgba(13, 202, 240, 0.1) !important;
+}
+
+.text-primary {
+    color: #0d6efd !important;
+}
+
+.text-secondary {
+    color: #6c757d !important;
+}
+
+.text-success {
+    color: #198754 !important;
+}
+
+.text-danger {
+    color: #dc3545 !important;
+}
+
+.text-warning {
+    color: #ffc107 !important;
+}
+
+.text-info {
+    color: #0dcaf0 !important;
+}
+
+.border-primary-subtle {
+    border-color: rgba(13, 110, 253, 0.2) !important;
+}
+
+.border-secondary-subtle {
+    border-color: rgba(108, 117, 125, 0.2) !important;
+}
+
+.border-success-subtle {
+    border-color: rgba(25, 135, 84, 0.2) !important;
+}
+
+.border-danger-subtle {
+    border-color: rgba(220, 53, 69, 0.2) !important;
+}
+
+.border-warning-subtle {
+    border-color: rgba(255, 193, 7, 0.2) !important;
+}
+
+.border-info-subtle {
+    border-color: rgba(13, 202, 240, 0.2) !important;
+}
+
+/* Ajustes para os ícones e texto */
+.bi {
+    font-size: 1.1em;
+}
+
+.d-flex.flex-column.gap-2 > div {
+    padding: 0.5rem 0;
 }
 </style>
 

@@ -8,6 +8,9 @@
     />
     <title>Conecta CAA {% block title %} {% endblock %}</title>
 
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{% static 'img/logo.png' %}">
+
     <!-- Bootstrap core CSS -->
     <link href="{% static 'css/bootstrap.min.css'%}" rel="stylesheet" />
     <link href="{% static 'css/main.css'%}" rel="stylesheet" />
@@ -28,10 +31,10 @@
           <a class="nav-link px-3" href="{% url 'caaordserv' %}">Dashboard</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link px-3" href="#">Relatórios</a>
+          <a class="nav-link px-3" href="{% url 'relatorios:index' %}">Relatórios</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link px-3" href="#">Sobre</a>
+          <a class="nav-link px-3" href="{% url 'sobre' %}">Sobre</a>
         </li>
       </ul>
 

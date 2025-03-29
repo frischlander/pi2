@@ -18,9 +18,12 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from . import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('caaordserv.urls')),
     path('authentication/', include('authentication.urls')),
+    path('relatorios/', include('relatorios.urls')),
+    path('sobre/', views.sobre, name='sobre'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
