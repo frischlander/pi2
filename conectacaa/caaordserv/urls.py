@@ -9,4 +9,5 @@ urlpatterns = [
     path('view-ordem/<int:ordem_id>/', views.view_ordem, name='view_ordem'),
     path('delete-anexo/<int:anexo_id>/', views.delete_anexo, name='delete_anexo'),
     path('download-anexo/<int:anexo_id>/', views.download_anexo, name='download_anexo'),
+    path('gerar-pdf/<int:ordem_id>/', views.gerar_pdf_ordem, name='gerar_pdf_ordem'),
 ]

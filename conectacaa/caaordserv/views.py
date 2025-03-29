@@ -3,7 +3,10 @@ from django.contrib import messages
 from django.core.files.storage import default_storage
 from django.http import FileResponse
 from .models import OrdemServico, AnexoOrdemServico
+from .templates.pdf.ordem_servico_template import OrdemServicoTemplate
 import os
+from io import BytesIO
+from datetime import datetime
 
 # Create your views here.
 def index(request):
@@ -134,3 +137,18 @@ def download_anexo(request, anexo_id):
     except Exception as e:
         messages.error(request, f'Erro ao baixar anexo: {str(e)}')
         return redirect('edit_ordem', ordem_id=anexo.ordem.id)
+
+def gerar_pdf_ordem(request, ordem_id):
+    ordem = get_object_or_404(OrdemServico, id=ordem_id)
+    
+    # Criar um buffer para armazenar o PDF
+    buffer = BytesIO()
+    
+    # Criar o template e gerar o PDF
+    template = OrdemServicoTemplate(buffer)
+    template.build(ordem)
+    
+    # Criar a resposta para exibir o PDF
+    response = FileResponse(buffer, content_type='application/pdf')
+    response['Content-Disposition'] = f'inline; filename="ordem_servico_{ordem.processo}.pdf"'
+    return response

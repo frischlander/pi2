@@ -139,6 +139,9 @@
                                             <div class="card-body">
                                                 <p class="card-text small">{{ anexo.descricao }}</p>
                                                 <div class="btn-group w-100">
+                                                    <a href="{{ anexo.arquivo.url }}" target="_blank" class="btn btn-sm btn-outline-info">
+                                                        <i class="bi bi-eye"></i>
+                                                    </a>
                                                     <a href="{% url 'download_anexo' anexo.id %}" class="btn btn-sm btn-outline-primary">
                                                         <i class="bi bi-download"></i>
                                                     </a>
