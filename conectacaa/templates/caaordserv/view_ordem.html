@@ -65,6 +65,45 @@
                         </div>
                     </div>
                     {% endif %}
+
+                    <!-- Seção de Anexos -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <h5 class="card-title">Anexos</h5>
+                            {% if ordem.anexos.exists %}
+                                <div class="row">
+                                    {% for anexo in ordem.anexos.all %}
+                                        <div class="col-md-4 mb-3">
+                                            <div class="card h-100">
+                                                <div class="card-body">
+                                                    {% if anexo.tipo == 'foto' %}
+                                                        <img src="{{ anexo.arquivo.url }}" class="img-fluid rounded mb-2" alt="{{ anexo.descricao }}">
+                                                    {% else %}
+                                                        <div class="text-center mb-2">
+                                                            <i class="bi bi-file-earmark-text display-4"></i>
+                                                        </div>
+                                                    {% endif %}
+                                                    <p class="card-text small text-muted mb-1">{{ anexo.descricao }}</p>
+                                                    <p class="card-text small text-muted mb-2">Enviado em: {{ anexo.data_upload|date:"d/m/Y H:i" }}</p>
+                                                    <div class="d-flex justify-content-center gap-2">
+                                                        <a href="{% url 'download_anexo' anexo.id %}" class="btn btn-sm btn-primary flex-grow-1">
+                                                            <i class="bi bi-download"></i> Baixar
+                                                        </a>
+                                                        <a href="{% url 'delete_anexo' anexo.id %}" class="btn btn-sm btn-danger flex-grow-1" 
+                                                           onclick="return confirm('Tem certeza que deseja excluir este anexo?')">
+                                                            <i class="bi bi-trash"></i> Excluir
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <p class="text-muted">Nenhum anexo disponível para esta ordem de serviço.</p>
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -131,10 +170,10 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Inicializa o modal
+    // Inicializa o modal com configurações básicas
     var deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'), {
         keyboard: false,
-        backdrop: 'static'
+        backdrop: true
     });
 });
 </script>

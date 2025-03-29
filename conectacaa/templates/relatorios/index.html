@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Relatórios</h2>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Ordens por Status</h5>
+                    <canvas id="statusChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Ordens por Tipo</h5>
+                    <canvas id="tipoChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Incluir Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    // Dados para o gráfico de Status
+    const statusData = {
+        labels: ['Pendente', 'Em Andamento', 'Concluído', 'Cancelado'],
+        datasets: [{
+            data: [30, 25, 35, 10],
+            backgroundColor: [
+                '#FFA500',  // Laranja para Pendente
+                '#4169E1',  // Azul para Em Andamento
+                '#32CD32',  // Verde para Concluído
+                '#FF4444'   // Vermelho para Cancelado
+            ]
+        }]
+    };
+
+    // Dados para o gráfico de Tipo
+    const tipoData = {
+        labels: ['Manutenção', 'Instalação', 'Suporte', 'Outros'],
+        datasets: [{
+            data: [40, 30, 20, 10],
+            backgroundColor: [
+                '#FF6B6B',  // Vermelho claro para Manutenção
+                '#4ECDC4',  // Turquesa para Instalação
+                '#45B7D1',  // Azul claro para Suporte
+                '#96CEB4'   // Verde claro para Outros
+            ]
+        }]
+    };
+
+    // Configuração dos gráficos
+    const chartOptions = {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    };
+
+    // Criar os gráficos
+    window.onload = function() {
+        new Chart(document.getElementById('statusChart'), {
+            type: 'pie',
+            data: statusData,
+            options: chartOptions
+        });
+
+        new Chart(document.getElementById('tipoChart'), {
+            type: 'pie',
+            data: tipoData,
+            options: chartOptions
+        });
+    };
+</script>
+{% endblock %}
