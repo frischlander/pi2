@@ -54,7 +54,7 @@ class OrdemServicoTemplate:
             'aberta': '#373a3c',     
             'em_andamento': '#17a2b8', 
             'finalizada': '#27ae60',  
-            'cancelada': '##dc3545',   
+            'cancelada': '#dc3545',   
             'pendente': '#f1c40f',     
             'aguardando_parecer': '#e98604',
         }
