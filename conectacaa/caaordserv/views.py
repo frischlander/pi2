@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.core.files.storage import default_storage
 from django.http import FileResponse
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.contrib.auth.decorators import login_required
 from .models import OrdemServico, AnexoOrdemServico
 from .templates.pdf.ordem_servico_template import OrdemServicoTemplate
 import os
@@ -10,6 +11,7 @@ from io import BytesIO
 from datetime import datetime
 
 # Create your views here.
+@login_required
 def index(request):
     # Obtém os parâmetros de filtro da URL
     processo = request.GET.get('processo', '').strip()
@@ -64,6 +66,7 @@ def index(request):
     
     return render(request, 'caaordserv/index.html', context)
 
+@login_required
 def add_ordem(request):
     if request.method == 'POST':
         try:
@@ -95,6 +98,7 @@ def add_ordem(request):
     numero_processo = OrdemServico.gerar_numero_processo()
     return render(request, 'caaordserv/add_ordem.html', {'numero_processo': numero_processo})
 
+@login_required
 def edit_ordem(request, ordem_id):
     ordem = get_object_or_404(OrdemServico, id=ordem_id)
     
@@ -142,6 +146,7 @@ def edit_ordem(request, ordem_id):
     
     return render(request, 'caaordserv/edit_ordem.html', {'ordem': ordem})
 
+@login_required
 def delete_ordem(request, ordem_id):
     ordem = get_object_or_404(OrdemServico, id=ordem_id)
     try:
@@ -152,6 +157,7 @@ def delete_ordem(request, ordem_id):
     
     return redirect('caaordserv')
 
+@login_required
 def view_ordem(request, ordem_id):
     try:
         ordem = get_object_or_404(OrdemServico, id=ordem_id)
@@ -160,6 +166,7 @@ def view_ordem(request, ordem_id):
         messages.error(request, f'Erro ao carregar ordem de serviço: {str(e)}')
         return redirect('caaordserv')
 
+@login_required
 def delete_anexo(request, anexo_id):
     anexo = get_object_or_404(AnexoOrdemServico, id=anexo_id)
     ordem_id = anexo.ordem.id
@@ -171,6 +178,7 @@ def delete_anexo(request, anexo_id):
     
     return redirect('edit_ordem', ordem_id=ordem_id)
 
+@login_required
 def download_anexo(request, anexo_id):
     anexo = get_object_or_404(AnexoOrdemServico, id=anexo_id)
     try:
@@ -179,6 +187,7 @@ def download_anexo(request, anexo_id):
         messages.error(request, f'Erro ao baixar anexo: {str(e)}')
         return redirect('edit_ordem', ordem_id=anexo.ordem.id)
 
+@login_required
 def gerar_pdf_ordem(request, ordem_id):
     ordem = get_object_or_404(OrdemServico, id=ordem_id)
     
