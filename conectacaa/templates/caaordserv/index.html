@@ -425,7 +425,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Verifica se há filtros ativos
     const filtroBtn = document.querySelector('[data-bs-toggle="modal"]');
-    const hasFilters = Object.values({{ filtros|safe }}).some(value => value !== '');
+    const filtros = JSON.parse('{{ filtros|safe }}');
+    const hasFilters = Object.values(filtros).some(value => value !== '');
     if (hasFilters) {
         filtroBtn.classList.add('has-filters');
     }
