@@ -65,6 +65,15 @@
         plugins: {
             legend: {
                 position: 'bottom'
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        const label = context.label || '';
+                        const value = context.raw || 0;
+                        return `${label}: ${value}`;
+                    }
+                }
             }
         }
     };
@@ -101,11 +110,11 @@
                 datasets: [{
                     data: statusData.values,
                     backgroundColor: [
-                        '#28a745',  // Verde para Finalizadas
+                        '#404140',  // Cinza para Não Iniciadas
                         '#17a2b8',  // Azul para Em Andamento
                         '#e98604',  // Laranja para Aguardando Parecer
-                        '#dc3545',  // Vermelho para Canceladas
-                        '#404140'   // Cinza para Não Iniciadas
+                        '#28a745',  // Verde para Finalizadas
+                        '#dc3545'   // Vermelho para Canceladas
                     ]
                 }]
             },
@@ -164,6 +173,7 @@
                 element.style.width = '595px';
                 element.style.backgroundColor = 'white';
                 element.style.padding = '20px';
+                element.style.marginBottom = '40px'; // Adiciona margem inferior para o rodapé
                 element.innerHTML = html;
                 return element;
             }
@@ -190,116 +200,160 @@
                 const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
                 pdf.addImage(imgData, 'JPEG', 10, 10, imgWidth, imgHeight);
+
+                // Adiciona o rodapé em cada página
+                pdf.setFontSize(8);
+                pdf.setTextColor(102, 102, 102); // Cor cinza (#666)
+                const rodape = `Gerado por {{ request.user.get_full_name|default:request.user.username }} em ${new Date().toLocaleString('pt-BR')}`;
+                const rodapeWidth = pdf.getStringUnitWidth(rodape) * 8 / pdf.internal.scaleFactor;
+                const rodapeX = (pageWidth - rodapeWidth) / 2;
+                const rodapeY = pageHeight - 10;
+                pdf.text(rodape, rodapeX, rodapeY);
             }
 
-            // Página 1: Visão Geral
-            const page1Element = createTempElement(`
-                <div style="font-family: Arial, sans-serif; max-width: 100%; margin: 0 auto;">
-                    <div style="text-align: center; margin-bottom: 20px; border-bottom: 2px solid #00a652; padding-bottom: 10px;">
-                        <img src="{% static 'img/logo.png' %}" style="width: 80px; height: 80px; margin-bottom: 10px;">
-                        <h1 style="color: #00a652; margin: 0; font-size: 20px;">Relatório de Ordens de Serviço</h1>
-                        <p style="color: #666; margin: 5px 0;">Visão Geral</p>
-                    </div>
+            // Obter o ano selecionado
+            const anoSelecionado = document.getElementById('anoSelect').value;
 
-                    <div style="margin-bottom: 20px; background-color: #fff; padding: 15px; border-radius: 8px; border: 1px solid #c7c7c7;">
-                        <h3 style="margin: 0; color: #000; font-size: 16px;">Total de Ordens: ${statusData.values.reduce((a, b) => a + b, 0)}</h3>
-                    </div>
+            if (anoSelecionado === 'geral') {
+                // Página 1: Visão Geral - Status
+                const page1Element = createTempElement(`
+                    <div style="font-family: Arial, sans-serif; max-width: 100%; margin: 0 auto;">
+                        <div style="text-align: center; margin-bottom: 20px; border-bottom: 2px solid #00a652; padding-bottom: 10px;">
+                            <img src="{% static 'img/logo.png' %}" style="width: 80px; height: 80px; margin-bottom: 10px;">
+                            <h1 style="color: #00a652; margin: 0; font-size: 20px;">Relatório de Ordens de Serviço</h1>
+                            <p style="color: #666; margin: 5px 0;">Visão Geral</p>
+                        </div>
 
-                    <div style="margin-top: 30px;">
-                        <h3 style="color: #333; font-size: 16px; margin-bottom: 15px;">Ordens por Status</h3>
-                        <div style="display: flex; justify-content: center;">
-                            <canvas id="statusChartPDF1" width="400" height="300"></canvas>
+                        <div style="margin-bottom: 20px; background-color: #fff; padding: 15px; border-radius: 8px; border: 1px solid #c7c7c7;">
+                            <h3 style="margin: 0; color: #000; font-size: 16px;">Total de Ordens: ${statusData.values.reduce((a, b) => a + b, 0)}</h3>
+                        </div>
+
+                        <div style="margin-top: 30px;">
+                            <h3 style="color: #333; font-size: 16px; margin-bottom: 15px;">Ordens por Status</h3>
+                            <div style="display: flex; justify-content: center;">
+                                <canvas id="statusChartPDF1" width="400" height="300"></canvas>
+                            </div>
                         </div>
                     </div>
-                </div>
-            `);
-            document.body.appendChild(page1Element);
-            const statusChartPDF1 = new Chart(document.getElementById('statusChartPDF1'), {
-                type: 'pie',
-                data: {
-                    labels: statusData.labels,
-                    datasets: [{
-                        data: statusData.values,
-                        backgroundColor: ['#28a745', '#17a2b8', '#e98604', '#dc3545', '#404140']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: { font: { size: 12 } }
+                `);
+                document.body.appendChild(page1Element);
+                const statusChartPDF1 = new Chart(document.getElementById('statusChartPDF1'), {
+                    type: 'pie',
+                    data: {
+                        labels: statusData.labels,
+                        datasets: [{
+                            data: statusData.values,
+                            backgroundColor: [
+                                '#404140',  // Cinza para Não Iniciadas
+                                '#17a2b8',  // Azul para Em Andamento
+                                '#e98604',  // Laranja para Aguardando Parecer
+                                '#28a745',  // Verde para Finalizadas
+                                '#dc3545'   // Vermelho para Canceladas
+                            ]
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: { 
+                                    font: { size: 12 },
+                                    generateLabels: function(chart) {
+                                        const data = chart.data;
+                                        return data.labels.map((label, i) => ({
+                                            text: `${label}: ${data.datasets[0].data[i]}`,
+                                            fillStyle: data.datasets[0].backgroundColor[i],
+                                            hidden: false
+                                        }));
+                                    }
+                                }
+                            }
                         }
                     }
-                }
-            });
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            await addPageToPDF(page1Element, false);
-            document.body.removeChild(page1Element);
+                });
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                await addPageToPDF(page1Element, false);
+                document.body.removeChild(page1Element);
 
-            // Página 2: Visão Geral - Gráfico de Tipo
-            const page2Element = createTempElement(`
-                <div style="font-family: Arial, sans-serif; max-width: 100%; margin: 0 auto;">
-                    <div style="margin-bottom: 30px;">
-                        <h3 style="color: #333; font-size: 16px; margin-bottom: 15px;">Ordens por Tipo</h3>
-                        <div style="display: flex; justify-content: center;">
-                            <canvas id="tipoChartPDF1" width="400" height="300"></canvas>
+                // Página 2: Visão Geral - Tipo
+                const page2Element = createTempElement(`
+                    <div style="font-family: Arial, sans-serif; max-width: 100%; margin: 0 auto;">
+                        <div style="margin-bottom: 30px;">
+                            <h3 style="color: #333; font-size: 16px; margin-bottom: 15px;">Ordens por Tipo</h3>
+                            <div style="display: flex; justify-content: center;">
+                                <canvas id="tipoChartPDF1" width="400" height="300"></canvas>
+                            </div>
                         </div>
-                    </div>
 
-                    <div style="margin-top: 30px;">
-                        <h3 style="color: #333; font-size: 16px; margin-bottom: 15px;">Detalhamento por Tipo</h3>
-                        <table style="width: 100%; border-collapse: collapse; margin-top: 10px; border: 1px solid #dee2e6;">
-                            <tr style="background-color: #f8f9fa;">
-                                <th style="padding: 10px; border: 1px solid #dee2e6; text-align: left; font-size: 12px;">Tipo</th>
-                                <th style="padding: 10px; border: 1px solid #dee2e6; text-align: right; font-size: 12px;">Quantidade</th>
-                            </tr>
-                            ${tipoData.labels.map((label, index) => `
-                                <tr>
-                                    <td style="padding: 10px; border: 1px solid #dee2e6; font-size: 12px;">${label}</td>
-                                    <td style="padding: 10px; border: 1px solid #dee2e6; text-align: right; font-size: 12px;">${tipoData.values[index]}</td>
+                        <div style="margin-top: 30px;">
+                            <h3 style="color: #333; font-size: 16px; margin-bottom: 15px;">Detalhamento por Tipo</h3>
+                            <table style="width: 100%; border-collapse: collapse; margin-top: 10px; border: 1px solid #dee2e6;">
+                                <tr style="background-color: #f8f9fa;">
+                                    <th style="padding: 10px; border: 1px solid #dee2e6; text-align: left; font-size: 12px;">Tipo</th>
+                                    <th style="padding: 10px; border: 1px solid #dee2e6; text-align: right; font-size: 12px;">Quantidade</th>
                                 </tr>
-                            `).join('')}
-                        </table>
+                                ${tipoData.labels.map((label, index) => `
+                                    <tr>
+                                        <td style="padding: 10px; border: 1px solid #dee2e6; font-size: 12px;">${label}</td>
+                                        <td style="padding: 10px; border: 1px solid #dee2e6; text-align: right; font-size: 12px;">${tipoData.values[index]}</td>
+                                    </tr>
+                                `).join('')}
+                            </table>
+                        </div>
                     </div>
-                </div>
-            `);
-            document.body.appendChild(page2Element);
-            const tipoChartPDF1 = new Chart(document.getElementById('tipoChartPDF1'), {
-                type: 'pie',
-                data: {
-                    labels: tipoData.labels,
-                    datasets: [{
-                        data: tipoData.values,
-                        backgroundColor: ['#28a745', '#17a2b8', '#e98604', '#dc3545']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: { font: { size: 12 } }
+                `);
+                document.body.appendChild(page2Element);
+                const tipoChartPDF1 = new Chart(document.getElementById('tipoChartPDF1'), {
+                    type: 'pie',
+                    data: {
+                        labels: tipoData.labels,
+                        datasets: [{
+                            data: tipoData.values,
+                            backgroundColor: [
+                                '#52ba6a',  // Verde para Atendimento Veterinário
+                                '#17a2b8',  // Azul para Denúncia de Maus Tratos
+                                '#e98604',  // Laranja para Castração
+                                '#dc3545'   // Vermelho para Captura de Animais de Grande Porte
+                            ]
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: { 
+                                    font: { size: 12 },
+                                    generateLabels: function(chart) {
+                                        const data = chart.data;
+                                        return data.labels.map((label, i) => ({
+                                            text: `${label}: ${data.datasets[0].data[i]}`,
+                                            fillStyle: data.datasets[0].backgroundColor[i],
+                                            hidden: false
+                                        }));
+                                    }
+                                }
+                            }
                         }
                     }
-                }
-            });
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            await addPageToPDF(page2Element);
-            document.body.removeChild(page2Element);
-
-            // Páginas adicionais para cada ano
-            for (const ano in dadosPorAno) {
-                const dadosAno = dadosPorAno[ano];
+                });
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                await addPageToPDF(page2Element);
+                document.body.removeChild(page2Element);
+            } else {
+                // Gerar PDF para o ano específico
+                const dadosAno = dadosPorAno[anoSelecionado];
                 
                 // Página de Status por Ano
                 const pageAnoStatus = createTempElement(`
                     <div style="font-family: Arial, sans-serif; max-width: 100%; margin: 0 auto;">
                         <div style="text-align: center; margin-bottom: 20px; border-bottom: 2px solid #00a652; padding-bottom: 10px;">
+                            <img src="{% static 'img/logo.png' %}" style="width: 80px; height: 80px; margin-bottom: 10px;">
                             <h1 style="color: #00a652; margin: 0; font-size: 20px;">Relatório de Ordens de Serviço</h1>
-                            <p style="color: #666; margin: 5px 0;">Ano ${ano}</p>
+                            <p style="color: #666; margin: 5px 0;">Ano ${anoSelecionado}</p>
                         </div>
 
                         <div style="margin-bottom: 20px; background-color: #fff; padding: 15px; border-radius: 8px; border: 1px solid #c7c7c7;">
@@ -309,19 +363,25 @@
                         <div style="margin-top: 30px;">
                             <h3 style="color: #333; font-size: 16px; margin-bottom: 15px;">Ordens por Status</h3>
                             <div style="display: flex; justify-content: center;">
-                                <canvas id="statusChartPDF${ano}" width="400" height="300"></canvas>
+                                <canvas id="statusChartPDF${anoSelecionado}" width="400" height="300"></canvas>
                             </div>
                         </div>
                     </div>
                 `);
                 document.body.appendChild(pageAnoStatus);
-                const statusChartPDFAno = new Chart(document.getElementById(`statusChartPDF${ano}`), {
+                const statusChartPDFAno = new Chart(document.getElementById(`statusChartPDF${anoSelecionado}`), {
                     type: 'pie',
                     data: {
                         labels: dadosAno.status.labels,
                         datasets: [{
                             data: dadosAno.status.values,
-                            backgroundColor: ['#28a745', '#17a2b8', '#e98604', '#dc3545', '#404140']
+                            backgroundColor: [
+                                '#404140',  // Cinza para Não Iniciadas
+                                '#17a2b8',  // Azul para Em Andamento
+                                '#e98604',  // Laranja para Aguardando Parecer
+                                '#28a745',  // Verde para Finalizadas
+                                '#dc3545'   // Vermelho para Canceladas
+                            ]
                         }]
                     },
                     options: {
@@ -330,13 +390,23 @@
                         plugins: {
                             legend: {
                                 position: 'bottom',
-                                labels: { font: { size: 12 } }
+                                labels: { 
+                                    font: { size: 12 },
+                                    generateLabels: function(chart) {
+                                        const data = chart.data;
+                                        return data.labels.map((label, i) => ({
+                                            text: `${label}: ${data.datasets[0].data[i]}`,
+                                            fillStyle: data.datasets[0].backgroundColor[i],
+                                            hidden: false
+                                        }));
+                                    }
+                                }
                             }
                         }
                     }
                 });
                 await new Promise(resolve => setTimeout(resolve, 1000));
-                await addPageToPDF(pageAnoStatus);
+                await addPageToPDF(pageAnoStatus, false);
                 document.body.removeChild(pageAnoStatus);
 
                 // Página de Tipo por Ano
@@ -345,7 +415,7 @@
                         <div style="margin-bottom: 30px;">
                             <h3 style="color: #333; font-size: 16px; margin-bottom: 15px;">Ordens por Tipo</h3>
                             <div style="display: flex; justify-content: center;">
-                                <canvas id="tipoChartPDF${ano}" width="400" height="300"></canvas>
+                                <canvas id="tipoChartPDF${anoSelecionado}" width="400" height="300"></canvas>
                             </div>
                         </div>
 
@@ -367,13 +437,18 @@
                     </div>
                 `);
                 document.body.appendChild(pageAnoTipo);
-                const tipoChartPDFAno = new Chart(document.getElementById(`tipoChartPDF${ano}`), {
+                const tipoChartPDFAno = new Chart(document.getElementById(`tipoChartPDF${anoSelecionado}`), {
                     type: 'pie',
                     data: {
                         labels: dadosAno.tipo.labels,
                         datasets: [{
                             data: dadosAno.tipo.values,
-                            backgroundColor: ['#28a745', '#17a2b8', '#e98604', '#dc3545']
+                            backgroundColor: [
+                                '#52ba6a',  // Verde para Atendimento Veterinário
+                                '#17a2b8',  // Azul para Denúncia de Maus Tratos
+                                '#e98604',  // Laranja para Castração
+                                '#dc3545'   // Vermelho para Captura de Animais de Grande Porte
+                            ]
                         }]
                     },
                     options: {
@@ -382,7 +457,17 @@
                         plugins: {
                             legend: {
                                 position: 'bottom',
-                                labels: { font: { size: 12 } }
+                                labels: { 
+                                    font: { size: 12 },
+                                    generateLabels: function(chart) {
+                                        const data = chart.data;
+                                        return data.labels.map((label, i) => ({
+                                            text: `${label}: ${data.datasets[0].data[i]}`,
+                                            fillStyle: data.datasets[0].backgroundColor[i],
+                                            hidden: false
+                                        }));
+                                    }
+                                }
                             }
                         }
                     }
@@ -391,18 +476,6 @@
                 await addPageToPDF(pageAnoTipo);
                 document.body.removeChild(pageAnoTipo);
             }
-
-            // Página final com informações de geração
-            const pageFinal = createTempElement(`
-                <div style="font-family: Arial, sans-serif; max-width: 100%; margin: 0 auto; text-align: center;">
-                    <div style="margin-top: 30px; border-top: 1px solid #dee2e6; padding-top: 15px;">
-                        <p style="margin: 0; color: #666; font-size: 11px;">Gerado por {{ request.user.get_full_name|default:request.user.username }} em ${new Date().toLocaleString('pt-BR')}</p>
-                    </div>
-                </div>
-            `);
-            document.body.appendChild(pageFinal);
-            await addPageToPDF(pageFinal);
-            document.body.removeChild(pageFinal);
 
             // Abrir em nova guia
             const pdfOutput = pdf.output('blob');
