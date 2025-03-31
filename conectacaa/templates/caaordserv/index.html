@@ -57,12 +57,12 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h3 class="text-center mb-0">LISTA DE ORDENS DE SERVIÇO</h3>
         <div>
-            <button type="button" class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#filtroModal" data-filtros='{{ filtros|safe }}'>
+            <button type="button" class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#filtroModal">
                 <i class="bi bi-funnel"></i> Filtros
             </button>
-            <button id="gerarPDFOrdens" class="btn btn-success me-2">
+            <a href="#" class="btn btn-success me-2">
                 <i class="bi bi-file-pdf"></i> Gerar PDF
-            </button>
+            </a>
             <a href="{% url 'add_ordem' %}" class="btn btn-success">
                 <i class="bi bi-plus-circle"></i> Nova Ordem de Serviço
             </a>
@@ -425,58 +425,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Verifica se há filtros ativos
     const filtroBtn = document.querySelector('[data-bs-toggle="modal"]');
-    if (filtroBtn && filtroBtn.dataset.filtros) {
-        try {
-            const filtrosData = JSON.parse(filtroBtn.dataset.filtros);
-            const hasFilters = Object.values(filtrosData).some(value => value !== '');
-            if (hasFilters) {
-                filtroBtn.classList.add('has-filters');
-            }
-        } catch (e) {
-            console.error('Erro ao processar filtros:', e);
-        }
+    const hasFilters = Object.values({{ filtros|safe }}).some(value => value !== '');
+    if (hasFilters) {
+        filtroBtn.classList.add('has-filters');
     }
 
     // Mantém os parâmetros de paginação ao aplicar filtros
     const filtroForm = document.getElementById('filtroForm');
-    if (filtroForm) {
-        const urlParams = new URLSearchParams(window.location.search);
-        const page = urlParams.get('page');
-        
-        if (page) {
-            const pageInput = document.createElement('input');
-            pageInput.type = 'hidden';
-            pageInput.name = 'page';
-            pageInput.value = page;
-            filtroForm.appendChild(pageInput);
-        }
-    }
-
-    // Configuração do botão Gerar PDF
-    const btnGerarPDF = document.getElementById('gerarPDFOrdens');
-    if (btnGerarPDF) {
-        btnGerarPDF.addEventListener('click', function() {
-            // Obtém os valores dos filtros atuais
-            const status = document.querySelector('select[name="status"]')?.value;
-            const tipo = document.querySelector('select[name="tipo"]')?.value;
-            const processo = document.querySelector('input[name="processo"]')?.value;
-            const nome = document.querySelector('input[name="nome"]')?.value;
-            const endereco = document.querySelector('input[name="endereco"]')?.value;
-            
-            // Constrói a URL com os parâmetros
-            let url = "{% url 'relatorios:gerar_pdf_ordens' %}?";
-            if (status) url += `status=${status}&`;
-            if (tipo) url += `tipo=${tipo}&`;
-            if (processo) url += `processo=${processo}&`;
-            if (nome) url += `nome=${nome}&`;
-            if (endereco) url += `endereco=${endereco}&`;
-            
-            // Remove o último & se existir
-            url = url.replace(/&$/, '');
-            
-            // Faz o download do PDF
-            window.location.href = url;
-        });
+    const urlParams = new URLSearchParams(window.location.search);
+    const page = urlParams.get('page');
+    
+    if (page) {
+        const pageInput = document.createElement('input');
+        pageInput.type = 'hidden';
+        pageInput.name = 'page';
+        pageInput.value = page;
+        filtroForm.appendChild(pageInput);
     }
 });
 </script>
