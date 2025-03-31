@@ -75,5 +75,31 @@
     ></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.9.0/feather.min.js"></script>
     <script src="{% static 'js/main.js' %}"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const btnGerarPDF = document.getElementById('gerarPDFOrdens');
+            if (btnGerarPDF) {
+                btnGerarPDF.addEventListener('click', function() {
+                    // Obtém os valores dos filtros atuais
+                    const status = document.getElementById('statusFilter')?.value;
+                    const tipo = document.getElementById('tipoFilter')?.value;
+                    const ano = document.getElementById('anoFilter')?.value;
+                    
+                    // Constrói a URL com os parâmetros
+                    let url = "{% url 'relatorios:gerar_pdf_ordens' %}?";
+                    if (status) url += `status=${status}&`;
+                    if (tipo) url += `tipo=${tipo}&`;
+                    if (ano) url += `ano=${ano}&`;
+                    
+                    // Remove o último & se existir
+                    url = url.replace(/&$/, '');
+                    
+                    // Faz o download do PDF
+                    window.location.href = url;
+                });
+            }
+        });
+    </script>
   </body>
 </html>
