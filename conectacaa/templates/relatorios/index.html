@@ -5,7 +5,7 @@
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Relatórios</h2>
-        <button id="gerarPDF" class="btn btn-primary">
+        <button id="gerarPDF" class="btn btn-success" style="background-color: #28a745; border-color: #28a745;">
             <i class="bi bi-file-pdf"></i> Gerar PDF
         </button>
     </div>
@@ -68,7 +68,8 @@
                         '#28a745',  // Verde para Finalizadas
                         '#17a2b8',  // Azul para Em Andamento
                         '#e98604',  // Laranja para Aguardando Parecer
-                        '#dc3545'   // Vermelho para Canceladas
+                        '#dc3545',  // Vermelho para Canceladas
+                        '#404140'   // Cinza para Não Iniciadas
                     ]
                 }]
             },
@@ -82,7 +83,7 @@
                 datasets: [{
                     data: tipoData.values,
                     backgroundColor: [
-                        '#28a745',  // Verde para Atendimento Veterinário
+                        '#52ba6a',  // Verde para Atendimento Veterinário
                         '#17a2b8',  // Azul para Denúncia de Maus Tratos
                         '#e98604',  // Laranja para Castração
                         '#dc3545'   // Vermelho para Captura de Animais de Grande Porte
@@ -166,7 +167,7 @@
                     labels: statusData.labels,
                     datasets: [{
                         data: statusData.values,
-                        backgroundColor: ['#28a745', '#17a2b8', '#e98604', '#dc3545']
+                        backgroundColor: ['#28a745', '#17a2b8', '#e98604', '#dc3545', '#404140']
                     }]
                 },
                 options: {
