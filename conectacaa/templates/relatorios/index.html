@@ -9,6 +9,30 @@
             <i class="bi bi-file-pdf"></i> Gerar PDF
         </button>
     </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-md-3">
+                    <label for="anoSelect" class="form-label mb-0">Selecione o Ano:</label>
+                    <select id="anoSelect" class="form-select">
+                        <option value="">Todos</option>
+                        {% for ano in anos_disponiveis %}
+                            <option value="{{ ano.ano }}" {% if ano.ano|stringformat:"s" == ano_selecionado %}selected{% endif %}>
+                                {{ ano.ano }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-9">
+                    <div class="alert alert-info mb-0">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Selecione um ano específico para visualizar os dados daquele período ou escolha "Todos os Anos" para ver o histórico completo.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     
     <div class="row">
         <div class="col-md-6">
@@ -56,9 +80,26 @@
         }
     };
 
+    // Variáveis para os gráficos
+    let statusChart, tipoChart;
+
+    // Função para atualizar os gráficos
+    function atualizarGraficos() {
+        const anoSelecionado = document.getElementById('anoSelect').value;
+        const url = new URL(window.location.href);
+        
+        if (anoSelecionado) {
+            url.searchParams.set('ano', anoSelecionado);
+        } else {
+            url.searchParams.delete('ano');
+        }
+        
+        window.location.href = url.toString();
+    }
+
     // Criar os gráficos
     window.onload = function() {
-        new Chart(document.getElementById('statusChart'), {
+        statusChart = new Chart(document.getElementById('statusChart'), {
             type: 'pie',
             data: {
                 labels: statusData.labels,
@@ -76,7 +117,7 @@
             options: chartOptions
         });
 
-        new Chart(document.getElementById('tipoChart'), {
+        tipoChart = new Chart(document.getElementById('tipoChart'), {
             type: 'pie',
             data: {
                 labels: tipoData.labels,
@@ -92,6 +133,9 @@
             },
             options: chartOptions
         });
+
+        // Adicionar evento de mudança ao select
+        document.getElementById('anoSelect').addEventListener('change', atualizarGraficos);
     };
 
     // Função para gerar PDF
@@ -150,6 +194,7 @@
 
                     <div style="margin-bottom: 20px; background-color: #fff; padding: 15px; border-radius: 8px; border: 1px solid #c7c7c7;">
                         <h3 style="margin: 0; color: #000; font-size: 16px;">Total de Ordens: ${statusData.values.reduce((a, b) => a + b, 0)}</h3>
+                        ${document.getElementById('anoSelect').value ? `<p style="margin: 5px 0 0 0; color: #666; font-size: 14px;">Ano: ${document.getElementById('anoSelect').value}</p>` : ''}
                     </div>
 
                     <div style="margin-top: 30px;">
@@ -161,7 +206,7 @@
                 </div>
             `);
             document.body.appendChild(page1Element);
-            const statusChart = new Chart(document.getElementById('statusChartPDF'), {
+            const statusChartPDF = new Chart(document.getElementById('statusChartPDF'), {
                 type: 'pie',
                 data: {
                     labels: statusData.labels,
@@ -217,7 +262,7 @@
                 </div>
             `);
             document.body.appendChild(page2Element);
-            const tipoChart = new Chart(document.getElementById('tipoChartPDF'), {
+            const tipoChartPDF = new Chart(document.getElementById('tipoChartPDF'), {
                 type: 'pie',
                 data: {
                     labels: tipoData.labels,
