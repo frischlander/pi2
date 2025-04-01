@@ -99,7 +99,7 @@
                             <div class="row">
                                 <div class="col-12 mb-3">
                                     <label for="justificativa_cancelamento" class="form-label">Justificativa do Cancelamento</label>
-                                    <textarea class="form-control" id="justificativa_cancelamento" name="justificativa_cancelamento" rows="3" required>{{ ordem.justificativa_cancelamento }}</textarea>
+                                    <textarea class="form-control" id="justificativa_cancelamento" name="justificativa_cancelamento" rows="3" required>{{ ordem.justificativa_cancelamento|default:'' }}</textarea>
                                     <div class="invalid-feedback">
                                         Por favor, informe a justificativa do cancelamento.
                                     </div>
@@ -111,7 +111,7 @@
                             <div class="row">
                                 <div class="col-12 mb-3">
                                     <label for="parecer" class="form-label">Parecer Técnico</label>
-                                    <textarea class="form-control" id="parecer" name="parecer" rows="3" required>{{ ordem.parecer }}</textarea>
+                                    <textarea class="form-control" id="parecer" name="parecer" rows="3" required>{{ ordem.parecer|default:'' }}</textarea>
                                     <div class="invalid-feedback">
                                         Por favor, informe o parecer técnico para finalização da ordem.
                                     </div>
@@ -385,7 +385,7 @@ function toggleCampos() {
     if (statusSelect.value === 'cancelada') {
         justificativaContainer.style.display = 'block';
         justificativaInput.required = true;
-    } else if (statusSelect.value === 'finalizada') {
+    } else if (statusSelect.value === 'aguardando_parecer' || statusSelect.value === 'finalizada') {
         parecerContainer.style.display = 'block';
         parecerInput.required = true;
     }
