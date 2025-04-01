@@ -83,8 +83,11 @@
     {% if messages %}
     <div class="messages">
         {% for message in messages %}
-        <div class="alert alert-{{ message.tags }}" role="alert">
-            {{ message }}
+        <div class="alert alert-{{ message.tags }} alert-dismissible d-flex align-items-center" role="alert">
+            <div class="flex-grow-1">{{ message }}</div>
+            <button type="button" class="btn-close ms-3" data-bs-dismiss="alert" aria-label="Close" style="background: none; border: none; font-size: 1.5rem; line-height: 1; padding: 0; opacity: 0.5; transition: opacity 0.2s;">
+                <i class="bi bi-x"></i>
+            </button>
         </div>
         {% endfor %}
     </div>
@@ -493,9 +496,22 @@
 .alert {
     transition: opacity 0.3s ease-in-out;
     opacity: 1;
+    position: relative;
+    padding-right: 3rem;
 }
 
-.alert.hide {
+.alert .btn-close {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.alert .btn-close:hover {
+    opacity: 1;
+}
+
+.alert.fade {
     opacity: 0;
 }
 </style>
@@ -506,10 +522,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const alerts = document.querySelectorAll('.alert');
     alerts.forEach(function(alert) {
         setTimeout(function() {
-            alert.classList.add('hide');
-            setTimeout(function() {
-                alert.remove();
-            }, 300);
+            alert.remove();
         }, 3000);
     });
 
