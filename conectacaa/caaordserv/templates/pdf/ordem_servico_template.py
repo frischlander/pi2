@@ -2,8 +2,8 @@ from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image, Frame, PageBreak, Flowable
-from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image, Frame, PageBreak, Flowable, KeepTogether
+from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT, TA_JUSTIFY
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
@@ -31,7 +31,7 @@ class NumberedCanvas(canvas.Canvas):
         width, height = A4
         
         # Desenha a linha verde clara
-        self.setStrokeColor(colors.HexColor('#90EE90'))
+        self.setStrokeColor(colors.HexColor('#00a652'))
         self.setLineWidth(1)
         self.line(72, 35, width - 72, 35)  # Margens de 72px e posição Y ajustada
         
@@ -49,14 +49,14 @@ class StatusPill(Flowable):
         Flowable.__init__(self)
         self.text = text
         self.color = color
-        self.width = width or (len(text) * 0.15 * inch)
+        self.width = width or 1.5*inch  # Largura fixa para todas as pills
         self.height = 0.25 * inch
         self.fontSize = 8
         
     def draw(self):
         # Desenha o retângulo arredondado
         self.canv.setFillColor(self.color)
-        self.canv.roundRect(0, 0, self.width, self.height, 4, fill=1, stroke=0)  # Reduzido para 4 e removida a borda
+        self.canv.roundRect(0, 0, self.width, self.height, 4, fill=1, stroke=0)
         
         # Configura o texto
         self.canv.setFillColor(colors.white)
@@ -76,9 +76,9 @@ class OrdemServicoTemplate:
         self.doc = SimpleDocTemplate(
             buffer,
             pagesize=A4,
-            rightMargin=72,
+            rightMargin=30,
             leftMargin=72,
-            topMargin=30,  # Reduzindo a margem superior
+            topMargin=10,  # Aumentando a margem superior para as pills
             bottomMargin=72
         )
         self.elements = []
@@ -183,6 +183,32 @@ class OrdemServicoTemplate:
         return StatusPill(text, color)
 
     def add_header(self, ordem):
+        # Primeiro adiciona as pills no topo direito
+        tipo_pill = self.create_status_pill(
+            ordem.get_tipo_display(),
+            colors.HexColor(self.tipo_colors.get(ordem.tipo, '#95a5a6'))
+        )
+        status_pill = self.create_status_pill(
+            ordem.get_status_display(),
+            colors.HexColor(self.status_colors.get(ordem.status, '#95a5a6'))
+        )
+        
+        # Criar uma tabela com as pills alinhadas à direita
+        pills_table = Table(
+            [[tipo_pill, Spacer(1, 0.2*inch), status_pill]],
+            colWidths=[1.2*inch, 0.20*inch, 1.2*inch],  # Aumentei o espaço entre as pills para 0.3 inch
+            hAlign='RIGHT'  # Alinha a tabela à direita
+        )
+        pills_table.setStyle(TableStyle([
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ('LEFTPADDING', (0, 0), (-1, -1), 0),
+            ('RIGHTPADDING', (0, 0), (-1, -1), 0),
+        ]))
+        
+        self.elements.append(pills_table)
+        self.elements.append(Spacer(1, 20))  # Espaço entre as pills e o cabeçalho
+
         # Tabela para o cabeçalho com logo e informações
         logo_path = os.path.join(settings.BASE_DIR, 'conectacaa', 'static', 'img', 'logo.png')
         
@@ -245,102 +271,169 @@ class OrdemServicoTemplate:
             self.elements.append(header_table)
             self.elements.append(Spacer(1, 20))
 
-        # Adiciona uma linha decorativa
-        line = Table([['']], colWidths=[self.doc.width - 144])
-        line.setStyle(TableStyle([
-            ('LINEBELOW', (0, 0), (-1, -1), 1, colors.HexColor('#00a652')),
-            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-        ]))
-        self.elements.append(line)
-        self.elements.append(Spacer(1, 20))
-
         # Número do Processo centralizado
         self.elements.append(Paragraph(f"Processo: {ordem.get_processo_display()}", self.processo_style))
-        
-        # Detalhes do processo em texto com tipo e status em pill
-        tipo_pill = self.create_status_pill(
-            ordem.get_tipo_display(),
-            colors.HexColor(self.tipo_colors.get(ordem.tipo, '#95a5a6'))
-        )
-        status_pill = self.create_status_pill(
-            ordem.get_status_display(),
-            colors.HexColor(self.status_colors.get(ordem.status, '#95a5a6'))
-        )
-        
-        details_table = Table(
-            [[tipo_pill, status_pill]],
-            colWidths=[self.doc.width/2 - 72, self.doc.width/2 - 72]
-        )
-        details_table.setStyle(TableStyle([
-            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-        ]))
-        self.elements.append(details_table)
-        self.elements.append(Spacer(1, 20))
     
     def add_solicitante(self, ordem):
+        # Adiciona mais espaço antes da seção
+        self.elements.append(Spacer(1, 30))  # Aumentado de 12 para 30
         self.elements.append(Paragraph("Dados do Solicitante", self.subtitle_style))
         
+        # Criar tabela com fundo cinza claro
         solicitante_data = [
             ["Nome:", ordem.nome_solicitante],
             ["Telefone:", ordem.telefone],
             ["Endereço:", ordem.endereco]
         ]
         
-        t = Table(solicitante_data, colWidths=[1.5*inch, 4*inch])
-        t.setStyle(self.table_style)
+        t = Table(solicitante_data, colWidths=[2*inch, 4.5*inch])  # Aumentado a largura da coluna de labels
+        t.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#f8f9fa')),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, -1), 10),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+            ('TEXTCOLOR', (0, 0), (0, -1), colors.HexColor('#2c3e50')),
+            ('TEXTCOLOR', (1, 0), (-1, -1), colors.HexColor('#34495e')),
+            ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#dee2e6')),
+            ('LEFTPADDING', (0, 0), (-1, -1), 6),
+            ('RIGHTPADDING', (0, 0), (-1, -1), 6),
+            ('TOPPADDING', (0, 0), (-1, -1), 6),
+        ]))
         self.elements.append(t)
         self.elements.append(Spacer(1, 12))
     
     def add_detalhes(self, ordem):
         self.elements.append(Paragraph("Detalhes da Ordem", self.subtitle_style))
         
+        # Criar tabela com fundo cinza claro
         ordem_data = [
             ["Tipo:", ordem.get_tipo_display()],
             ["Última Atualização:", ordem.data_atualizacao.strftime("%d/%m/%Y %H:%M")],
             ["Responsável:", ordem.ultimo_usuario.get_full_name() if ordem.ultimo_usuario else "Não informado"]
         ]
         
-        t = Table(ordem_data, colWidths=[1.5*inch, 4*inch])
-        t.setStyle(self.table_style)
+        t = Table(ordem_data, colWidths=[2*inch, 4.5*inch])  # Aumentado a largura da coluna de labels
+        t.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#f8f9fa')),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, -1), 10),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+            ('TEXTCOLOR', (0, 0), (0, -1), colors.HexColor('#2c3e50')),
+            ('TEXTCOLOR', (1, 0), (-1, -1), colors.HexColor('#34495e')),
+            ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#dee2e6')),
+            ('LEFTPADDING', (0, 0), (-1, -1), 6),
+            ('RIGHTPADDING', (0, 0), (-1, -1), 6),
+            ('TOPPADDING', (0, 0), (-1, -1), 6),
+        ]))
         self.elements.append(t)
         self.elements.append(Spacer(1, 12))
     
     def add_descricao(self, ordem):
-        self.elements.append(Paragraph("Descrição", self.subtitle_style))
-        self.elements.append(Paragraph(ordem.descricao, self.styles['Normal']))
-        self.elements.append(Spacer(1, 12))
+        # Criar estilo para o texto dentro da tabela
+        texto_style = ParagraphStyle(
+            'TextoTabela',
+            parent=self.styles['Normal'],
+            fontSize=10,
+            textColor=colors.HexColor('#34495e'),
+            spaceBefore=0,
+            spaceAfter=0,
+            leading=12,
+            alignment=TA_JUSTIFY  # Alterado para justificado
+        )
+        
+        # Criar o parágrafo com o texto formatado
+        texto_formatado = Paragraph(ordem.descricao, texto_style)
+        
+        # Criar tabela com fundo cinza claro
+        descricao_data = [[texto_formatado]]
+        
+        # Criar a tabela com o título
+        elementos_descricao = []
+        elementos_descricao.append(Paragraph("Descrição", self.subtitle_style))
+        
+        t = Table(descricao_data, colWidths=[6.5*inch])
+        t.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#f8f9fa')),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#dee2e6')),
+            ('LEFTPADDING', (0, 0), (-1, -1), 20),  # Aumentado o padding
+            ('RIGHTPADDING', (0, 0), (-1, -1), 20),  # Aumentado o padding
+            ('TOPPADDING', (0, 0), (-1, -1), 15),  # Aumentado o padding
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 15),  # Aumentado o padding
+            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+        ]))
+        
+        elementos_descricao.append(t)
+        
+        # Manter título e conteúdo juntos
+        keepTogether = KeepTogether(elementos_descricao)
+        self.elements.append(keepTogether)
+        self.elements.append(Spacer(1, 30))  # Aumentado o espaço após a descrição
     
     def add_parecer(self, ordem):
         if ordem.status == 'finalizada' and ordem.parecer:
-            # Estilo para o título do parecer
-            parecer_title_style = ParagraphStyle(
-                'ParecerTitle',
-                parent=self.subtitle_style,
-                spaceBefore=10,
-                spaceAfter=5,
+            # Criar estilo para o texto dentro da tabela
+            texto_style = ParagraphStyle(
+                'TextoTabela',
+                parent=self.styles['Normal'],
+                fontSize=10,
+                textColor=colors.HexColor('#34495e'),
+                spaceBefore=0,
+                spaceAfter=0,
+                leading=12,
+                alignment=TA_JUSTIFY  # Alterado para justificado
             )
             
-            self.elements.append(Paragraph("Parecer Técnico", parecer_title_style))
-            self.elements.append(Paragraph(ordem.parecer, self.styles['Normal']))
-            self.elements.append(Spacer(1, 30))  # Espaço entre o parecer e a assinatura
+            # Criar o parágrafo com o texto formatado
+            texto_formatado = Paragraph(ordem.parecer, texto_style)
+            
+            # Criar tabela com fundo cinza claro
+            parecer_data = [[texto_formatado]]
+            
+            # Criar a tabela com o título
+            elementos_parecer = []
+            elementos_parecer.append(Paragraph("Parecer Técnico", self.subtitle_style))
+            
+            t = Table(parecer_data, colWidths=[6.5*inch])
+            t.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#f8f9fa')),
+                ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+                ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#dee2e6')),
+                ('LEFTPADDING', (0, 0), (-1, -1), 20),  # Aumentado o padding
+                ('RIGHTPADDING', (0, 0), (-1, -1), 20),  # Aumentado o padding
+                ('TOPPADDING', (0, 0), (-1, -1), 15),  # Aumentado o padding
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 15),  # Aumentado o padding
+                ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+            ]))
+            
+            elementos_parecer.append(t)
+            
+            # Adicionar mais espaço antes do parecer técnico
+            self.elements.append(Spacer(1, 50))  # Aumentado o espaço antes do parecer
+            
+            # Manter título e conteúdo juntos
+            keepTogether = KeepTogether(elementos_parecer)
+            self.elements.append(keepTogether)
+            self.elements.append(Spacer(1, 50))  # Aumentado o espaço após o parecer
             
             # Cria uma tabela com a linha de assinatura e o texto abaixo
             signature_table = Table(
-                [[''], ['Veterinário(a) Responsável']],
-                colWidths=[2.5*inch],  # Reduzindo um pouco a largura da linha
-                rowHeights=[15, 12]  # Reduzindo a altura da linha e do texto
+                [[''], ['Responsável do CAA']],
+                colWidths=[2.5*inch],
+                rowHeights=[15, 8]
             )
             signature_table.setStyle(TableStyle([
-                ('LINEABOVE', (0, 0), (0, 0), 0.5, colors.HexColor('#00a652')),  # Linha mais fina
+                ('LINEABOVE', (0, 0), (0, 0), 0.5, colors.black),
                 ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
                 ('FONTNAME', (0, 1), (-1, 1), 'Helvetica'),
                 ('FONTSIZE', (0, 1), (-1, 1), 8),
                 ('TEXTCOLOR', (0, 1), (-1, 1), colors.HexColor('#666666')),
-                ('TOPPADDING', (0, 1), (-1, 1), 2),  # Reduz o espaço entre a linha e o texto
+                ('TOPPADDING', (0, 1), (-1, 1), 0),  # Removido o padding superior
+                ('BOTTOMPADDING', (0, 1), (-1, 1), 0),  # Removido o padding inferior
             ]))
             
-            # Centraliza a tabela de assinatura
             signature_wrapper = Table(
                 [[signature_table]],
                 colWidths=[self.doc.width - 144]
@@ -350,12 +443,28 @@ class OrdemServicoTemplate:
             ]))
             
             self.elements.append(signature_wrapper)
-            self.elements.append(Spacer(1, 20))  # Reduzindo o espaço após a assinatura
+            self.elements.append(Spacer(1, 20))
     
     def add_cancelamento(self, ordem):
         if ordem.status == 'cancelada' and ordem.justificativa_cancelamento:
             self.elements.append(Paragraph("Justificativa do Cancelamento", self.subtitle_style))
-            self.elements.append(Paragraph(ordem.justificativa_cancelamento, self.styles['Normal']))
+            
+            # Criar tabela com fundo cinza claro
+            cancelamento_data = [[ordem.justificativa_cancelamento]]
+            
+            t = Table(cancelamento_data, colWidths=[5.5*inch])
+            t.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#f8f9fa')),
+                ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+                ('FONTSIZE', (0, 0), (-1, -1), 10),
+                ('TEXTCOLOR', (0, 0), (-1, -1), colors.HexColor('#dc3545')),
+                ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#dee2e6')),
+                ('LEFTPADDING', (0, 0), (-1, -1), 6),
+                ('RIGHTPADDING', (0, 0), (-1, -1), 6),
+                ('TOPPADDING', (0, 0), (-1, -1), 6),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+            ]))
+            self.elements.append(t)
             self.elements.append(Spacer(1, 12))
     
     def add_footer(self):

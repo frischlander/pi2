@@ -7,3 +7,4 @@ conectacaa/caaordserv/__pycache__/views.cpython-313.pyc
 
 conectacaa/caaordserv/management/commands/criar_ordens_harry_potter.py
 conectacaa/caaordserv/management/commands/deletar_ordens.py
+/conectacaa/media
