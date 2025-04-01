@@ -38,7 +38,7 @@ def index(request):
         ordens_list = ordens_list.filter(status=status)
 
     # Ordena e aplica a paginação
-    ordens_list = ordens_list.order_by('-data_criacao')
+    ordens_list = ordens_list.order_by('-processo')
     paginator = Paginator(ordens_list, 10)
     
     try:
@@ -100,8 +100,8 @@ def add_ordem(request):
     return render(request, 'caaordserv/add_ordem.html', {'numero_processo': numero_processo})
 
 @login_required
-def edit_ordem(request, ordem_id):
-    ordem = get_object_or_404(OrdemServico, id=ordem_id)
+def edit_ordem(request, processo):
+    ordem = get_object_or_404(OrdemServico, processo=processo)
     
     if request.method == 'POST':
         try:
@@ -148,8 +148,8 @@ def edit_ordem(request, ordem_id):
     return render(request, 'caaordserv/edit_ordem.html', {'ordem': ordem})
 
 @login_required
-def delete_ordem(request, ordem_id):
-    ordem = get_object_or_404(OrdemServico, id=ordem_id)
+def delete_ordem(request, processo):
+    ordem = get_object_or_404(OrdemServico, processo=processo)
     try:
         ordem.delete()
         messages.success(request, f'Ordem de serviço {ordem.processo} excluída com sucesso!')
@@ -159,9 +159,9 @@ def delete_ordem(request, ordem_id):
     return redirect('caaordserv')
 
 @login_required
-def view_ordem(request, ordem_id):
+def view_ordem(request, processo):
     try:
-        ordem = get_object_or_404(OrdemServico, id=ordem_id)
+        ordem = get_object_or_404(OrdemServico, processo=processo)
         return render(request, 'caaordserv/view_ordem.html', {'ordem': ordem})
     except Exception as e:
         messages.error(request, f'Erro ao carregar ordem de serviço: {str(e)}')
@@ -170,14 +170,14 @@ def view_ordem(request, ordem_id):
 @login_required
 def delete_anexo(request, anexo_id):
     anexo = get_object_or_404(AnexoOrdemServico, id=anexo_id)
-    ordem_id = anexo.ordem.id
+    processo = anexo.ordem.processo
     try:
         anexo.delete()
         messages.success(request, 'Anexo excluído com sucesso!')
     except Exception as e:
         messages.error(request, f'Erro ao excluir anexo: {str(e)}')
     
-    return redirect('edit_ordem', ordem_id=ordem_id)
+    return redirect('edit_ordem', processo=processo)
 
 @login_required
 def download_anexo(request, anexo_id):
@@ -186,11 +186,11 @@ def download_anexo(request, anexo_id):
         return FileResponse(anexo.arquivo, as_attachment=True)
     except Exception as e:
         messages.error(request, f'Erro ao baixar anexo: {str(e)}')
-        return redirect('edit_ordem', ordem_id=anexo.ordem.id)
+        return redirect('edit_ordem', processo=anexo.ordem.processo)
 
 @login_required
-def gerar_pdf_ordem(request, ordem_id):
-    ordem = get_object_or_404(OrdemServico, id=ordem_id)
+def gerar_pdf_ordem(request, processo):
+    ordem = get_object_or_404(OrdemServico, processo=processo)
     
     # Criar um buffer para armazenar o PDF
     buffer = BytesIO()
@@ -229,7 +229,7 @@ def gerar_pdf_lista(request):
         ordens_list = ordens_list.filter(status=status)
 
     # Ordena por data de criação
-    ordens_list = ordens_list.order_by('-data_criacao')
+    ordens_list = ordens_list.order_by('-processo')
     
     try:
         # Criar um buffer para armazenar o PDF

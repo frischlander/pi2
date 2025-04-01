@@ -26,7 +26,7 @@ class OrdemServico(models.Model):
         
         if ultima_ordem:
             # Extrai o número da última ordem (CAA001 -> 001)
-            ultimo_numero = int(ultima_ordem.processo.split('/')[0][3:])
+            ultimo_numero = int(ultima_ordem.processo[3:6])
             novo_numero = str(ultimo_numero + 1).zfill(3)
         else:
             novo_numero = '001'
@@ -49,7 +49,7 @@ class OrdemServico(models.Model):
     class Meta:
         verbose_name = 'Ordem de Serviço'
         verbose_name_plural = 'Ordens de Serviço'
-        ordering = ['-data_criacao']
+        ordering = ['-processo']
 
     def __str__(self):
         return f"{self.processo} - {self.nome_solicitante}"
