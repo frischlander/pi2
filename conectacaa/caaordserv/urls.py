@@ -10,4 +10,5 @@ urlpatterns = [
     path('delete-anexo/<int:anexo_id>/', views.delete_anexo, name='delete_anexo'),
     path('download-anexo/<int:anexo_id>/', views.download_anexo, name='download_anexo'),
     path('gerar-pdf/<int:ordem_id>/', views.gerar_pdf_ordem, name='gerar_pdf_ordem'),
+    path('gerar-pdf-lista/', views.gerar_pdf_lista, name='gerar_pdf_lista'),
 ]

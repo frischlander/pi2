@@ -60,7 +60,7 @@
             <button type="button" class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#filtroModal">
                 <i class="bi bi-funnel"></i> Filtros
             </button>
-            <a href="#" class="btn btn-success me-2">
+            <a href="{% url 'gerar_pdf_lista' %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}" class="btn btn-success me-2" target="_blank" rel="noopener noreferrer">
                 <i class="bi bi-file-pdf"></i> Gerar PDF
             </a>
             <a href="{% url 'add_ordem' %}" class="btn btn-success">

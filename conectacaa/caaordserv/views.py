@@ -6,6 +6,7 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.contrib.auth.decorators import login_required
 from .models import OrdemServico, AnexoOrdemServico
 from .templates.pdf.ordem_servico_template import OrdemServicoTemplate
+from .templates.pdf.lista_ordens_template import ListaOrdensTemplate
 import os
 from io import BytesIO
 from datetime import datetime
@@ -202,3 +203,49 @@ def gerar_pdf_ordem(request, ordem_id):
     response = FileResponse(buffer, content_type='application/pdf')
     response['Content-Disposition'] = f'inline; filename="ordem_servico_{ordem.processo}.pdf"'
     return response
+
+@login_required
+def gerar_pdf_lista(request):
+    # Obtém os parâmetros de filtro da URL
+    processo = request.GET.get('processo', '').strip()
+    nome = request.GET.get('nome', '').strip()
+    tipo = request.GET.get('tipo', '')
+    endereco = request.GET.get('endereco', '').strip()
+    status = request.GET.get('status', '')
+
+    # Inicia a query
+    ordens_list = OrdemServico.objects.all()
+
+    # Aplica os filtros
+    if processo:
+        ordens_list = ordens_list.filter(processo__icontains=processo)
+    if nome:
+        ordens_list = ordens_list.filter(nome_solicitante__icontains=nome)
+    if tipo:
+        ordens_list = ordens_list.filter(tipo=tipo)
+    if endereco:
+        ordens_list = ordens_list.filter(endereco__icontains=endereco)
+    if status:
+        ordens_list = ordens_list.filter(status=status)
+
+    # Ordena por data de criação
+    ordens_list = ordens_list.order_by('-data_criacao')
+    
+    try:
+        # Criar um buffer para armazenar o PDF
+        buffer = BytesIO()
+        
+        # Criar o template e gerar o PDF
+        template = ListaOrdensTemplate(buffer)
+        template.build(ordens_list)
+        
+        # Posiciona o buffer no início
+        buffer.seek(0)
+        
+        # Criar a resposta para exibir o PDF
+        response = FileResponse(buffer, content_type='application/pdf')
+        response['Content-Disposition'] = 'inline; filename="lista_ordens_servico.pdf"'
+        return response
+    except Exception as e:
+        messages.error(request, f'Erro ao gerar PDF: {str(e)}')
+        return redirect('caaordserv')
