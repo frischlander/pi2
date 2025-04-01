@@ -5,7 +5,7 @@
 <div class="container mt-4">
     <div class="row mb-3">
         <div class="col-12">
-            <a href="{% url 'caaordserv' %}" class="btn btn-secondary">
+            <a href="{% url 'caaordserv' %}" class="btn btn-success">
                 <i class="bi bi-arrow-left"></i> Voltar para Lista
             </a>
         </div>
@@ -15,7 +15,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h4 class="mb-0">Ordem de Serviço #{{ ordem.get_processo_display }}</h4>
+                    <h4 class="mb-0">Ordem de Serviço #<strong>{{ ordem.get_processo_display }}</strong></h4>
                     <div>
                         <a href="{% url 'edit_ordem' ordem.processo %}" class="btn btn-primary me-2">
                             <i class="bi bi-pencil-fill"></i> Editar
@@ -32,7 +32,7 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="d-flex justify-content-between align-items-center mb-4">
-                                <h5 class="card-title mb-0">Informações da Ordem de Serviço</h5>
+                                <h5 class="card-title mb-0 text-success">Informações da Ordem de Serviço</h5>
                                 <span class="badge {% if ordem.status == 'nao_iniciada' %}badge-secondary
                                                     {% elif ordem.status == 'em_andamento' %}badge-info
                                                     {% elif ordem.status == 'aguardando_parecer' %}badge-warning
@@ -45,17 +45,20 @@
                                 <div class="col-md-6">
                                     <div class="card h-100 border-primary-subtle">
                                         <div class="card-header bg-primary-subtle">
-                                            <h6 class="card-title mb-0"><i class="bi bi-person-circle me-2"></i>Informações do Solicitante</h6>
+                                            <h6 class="card-title mb-0 text-success"><i class="bi bi-person-circle me-2"></i>Informações do Solicitante</h6>
                                         </div>
                                         <div class="card-body">
-                                            <div class="d-flex flex-column gap-2">
+                                            <div class="d-flex flex-column gap-3">
                                                 <div>
-                                                    <small class="text-muted">Nome Completo</small>
-                                                    <p class="mb-0">{{ ordem.nome_solicitante }}</p>
-                                                </div>
-                                                <div>
-                                                    <small class="text-muted">Telefone</small>
-                                                    <p class="mb-0">{{ ordem.telefone }}</p>
+                                                    <h6 class="text-success mb-3">Dados Pessoais</h6>
+                                                    <div class="mb-4">
+                                                        <small class="text-muted d-block mb-1">Nome Completo</small>
+                                                        <p class="mb-0">{{ ordem.nome_solicitante }}</p>
+                                                    </div>
+                                                    <div>
+                                                        <small class="text-muted d-block mb-1">Telefone</small>
+                                                        <p class="mb-0">{{ ordem.telefone }}</p>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -65,25 +68,31 @@
                                 <div class="col-md-6">
                                     <div class="card h-100 border-info-subtle">
                                         <div class="card-header bg-info-subtle">
-                                            <h6 class="card-title mb-0"><i class="bi bi-clipboard-data me-2"></i>Detalhes da Ordem</h6>
+                                            <h6 class="card-title mb-0 text-success"><i class="bi bi-clipboard-data me-2"></i>Detalhes da Ordem</h6>
                                         </div>
                                         <div class="card-body">
-                                            <div class="d-flex flex-column gap-2">
+                                            <div class="d-flex flex-column gap-3">
                                                 <div>
-                                                    <small class="text-muted">Número do Processo</small>
-                                                    <p class="mb-0">{{ ordem.get_processo_display }}</p>
+                                                    <h6 class="text-success mb-3">Identificação</h6>
+                                                    <div class="mb-4">
+                                                        <small class="text-muted d-block mb-1">Número do Processo</small>
+                                                        <p class="mb-0">{{ ordem.get_processo_display }}</p>
+                                                    </div>
+                                                    <div class="mb-4">
+                                                        <small class="text-muted d-block mb-1">Tipo de Serviço</small>
+                                                        <p class="mb-0">{{ ordem.get_tipo_display }}</p>
+                                                    </div>
                                                 </div>
                                                 <div>
-                                                    <small class="text-muted">Tipo de Serviço</small>
-                                                    <p class="mb-0">{{ ordem.get_tipo_display }}</p>
-                                                </div>
-                                                <div>
-                                                    <small class="text-muted">Endereço do Atendimento</small>
-                                                    <p class="mb-0">{{ ordem.endereco }}</p>
-                                                </div>
-                                                <div>
-                                                    <small class="text-muted">Data de Criação</small>
-                                                    <p class="mb-0">{{ ordem.data_criacao|date:"d/m/Y H:i" }}</p>
+                                                    <h6 class="text-success mb-3">Localização e Datas</h6>
+                                                    <div class="mb-4">
+                                                        <small class="text-muted d-block mb-1">Endereço do Atendimento</small>
+                                                        <p class="mb-0">{{ ordem.endereco }}</p>
+                                                    </div>
+                                                    <div>
+                                                        <small class="text-muted d-block mb-1">Data de Criação</small>
+                                                        <p class="mb-0">{{ ordem.data_criacao|date:"d/m/Y H:i" }}</p>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -95,7 +104,7 @@
                     
                     <div class="row mt-4">
                         <div class="col-12">
-                            <h5 class="card-title">Descrição</h5>
+                            <h5 class="card-title text-success">Descrição</h5>
                             <p class="card-text">{{ ordem.descricao|linebreaks }}</p>
                         </div>
                     </div>
@@ -103,7 +112,7 @@
                     {% if ordem.status == 'finalizada' and ordem.parecer %}
                     <div class="row mt-3">
                         <div class="col-12">
-                            <h5 class="card-title">Parecer Técnico</h5>
+                            <h5 class="card-title text-success">Parecer Técnico</h5>
                             <div class="card bg-light">
                                 <div class="card-body">
                                     {{ ordem.parecer|linebreaks }}
@@ -116,7 +125,7 @@
                     {% if ordem.status == 'cancelada' and ordem.justificativa_cancelamento %}
                     <div class="row mt-4">
                         <div class="col-12">
-                            <h5 class="card-title">Justificativa do Cancelamento</h5>
+                            <h5 class="card-title text-success">Justificativa do Cancelamento</h5>
                             <p class="card-text text-danger">{{ ordem.justificativa_cancelamento|linebreaks }}</p>
                         </div>
                     </div>
@@ -125,7 +134,7 @@
                     <!-- Seção de Anexos -->
                     <div class="row mt-4">
                         <div class="col-12">
-                            <h5 class="card-title">Anexos</h5>
+                            <h5 class="card-title text-success">Anexos</h5>
                             {% if ordem.anexos.exists %}
                                 <div class="row">
                                     {% for anexo in ordem.anexos.all %}
@@ -326,6 +335,58 @@
 
 .d-flex.flex-column.gap-2 > div {
     padding: 0.5rem 0;
+}
+
+.info-section {
+    padding: 1rem;
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 0.5rem;
+}
+
+.info-section h6 {
+    font-weight: 600;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    padding-bottom: 0.5rem;
+}
+
+.info-section small {
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.info-section p {
+    font-size: 1rem;
+    color: #2c3e50;
+}
+
+.gap-3 {
+    gap: 1rem !important;
+}
+
+/* Novos estilos para o layout sem caixas */
+.card-body h6 {
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.card-body small {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #6c757d;
+}
+
+.card-body p {
+    font-size: 1rem;
+    color: #2c3e50;
+    margin-bottom: 0;
+}
+
+.mb-4 {
+    margin-bottom: 1.5rem !important;
+}
+
+.mb-1 {
+    margin-bottom: 0.25rem !important;
 }
 </style>
 
