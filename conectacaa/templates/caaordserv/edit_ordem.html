@@ -203,7 +203,7 @@
                                 <button type="submit" class="btn btn-success">
                                     <i class="bi bi-check-circle"></i> Salvar Alterações
                                 </button>
-                                <a href="{% url 'caaordserv' %}" class="btn btn-secondary">
+                                <a href="{% url 'caaordserv' %}{% if request.GET.page %}?page={{ request.GET.page }}{% endif %}" class="btn btn-secondary">
                                     <i class="bi bi-x-circle"></i> Cancelar
                                 </a>
                             </div>
@@ -464,7 +464,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const successAlert = document.getElementById('successAlert');
     if (successAlert) {
         setTimeout(function() {
-            window.location.href = "{% url 'caaordserv' %}";
+            window.location.href = "{% url 'caaordserv' %}{% if request.GET.page %}?page={{ request.GET.page }}{% endif %}";
         }, 3000);
     }
 });

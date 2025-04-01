@@ -10,6 +10,7 @@ from .templates.pdf.lista_ordens_template import ListaOrdensTemplate
 import os
 from io import BytesIO
 from datetime import datetime
+from django.urls import reverse
 
 # Create your views here.
 @login_required
@@ -152,7 +153,7 @@ def edit_ordem(request, processo):
                     )
             
             messages.success(request, f'Ordem de serviço {ordem.processo} atualizada com sucesso!')
-            return redirect('caaordserv')
+            return redirect(f"{reverse('caaordserv')}?page={request.GET.get('page', '1')}")
         except Exception as e:
             messages.error(request, f'Erro ao atualizar ordem de serviço: {str(e)}')
     
@@ -176,7 +177,7 @@ def view_ordem(request, processo):
         return render(request, 'caaordserv/view_ordem.html', {'ordem': ordem})
     except Exception as e:
         messages.error(request, f'Erro ao carregar ordem de serviço: {str(e)}')
-        return redirect('caaordserv')
+        return redirect(f"{reverse('caaordserv')}?page={request.GET.get('page', '1')}")
 
 @login_required
 def delete_anexo(request, anexo_id):

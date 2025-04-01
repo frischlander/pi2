@@ -5,7 +5,7 @@
 <div class="container mt-4">
     <div class="row mb-3">
         <div class="col-12">
-            <a href="{% url 'caaordserv' %}" class="btn btn-success">
+            <a href="{% url 'caaordserv' %}{% if request.GET.page %}?page={{ request.GET.page }}{% endif %}" class="btn btn-success">
                 <i class="bi bi-arrow-left"></i> Voltar para Lista
             </a>
         </div>
@@ -105,7 +105,11 @@
                     <div class="row mt-4">
                         <div class="col-12">
                             <h5 class="card-title text-success">Descrição</h5>
-                            <p class="card-text">{{ ordem.descricao|linebreaks }}</p>
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <p class="text-justify">{{ ordem.descricao|linebreaks }}</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -115,7 +119,7 @@
                             <h5 class="card-title text-success">Parecer Técnico</h5>
                             <div class="card bg-light">
                                 <div class="card-body">
-                                    {{ ordem.parecer|linebreaks }}
+                                    <p class="text-justify">{{ ordem.parecer|linebreaks }}</p>
                                 </div>
                             </div>
                         </div>
@@ -387,6 +391,18 @@
 
 .mb-1 {
     margin-bottom: 0.25rem !important;
+}
+
+/* Estilo para garantir justificação do texto */
+.card-text.text-justify {
+    text-align: justify !important;
+    text-justify: inter-word;
+}
+
+/* Estilo específico para o parecer técnico */
+.card.bg-light .card-body p {
+    text-align: justify !important;
+    text-justify: inter-word;
 }
 </style>
 
