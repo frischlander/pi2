@@ -21,8 +21,7 @@ def index(request):
     tipo = request.GET.get('tipo', '')
     endereco = request.GET.get('endereco', '').strip()
     status = request.GET.get('status', '')
-    data_inicial = request.GET.get('data_inicial', '')
-    data_final = request.GET.get('data_final', '')
+    data_criacao = request.GET.get('data_criacao', '')
     page = request.GET.get('page', '1')
     per_page = int(request.GET.get('per_page', '10'))
 
@@ -40,10 +39,8 @@ def index(request):
         ordens_list = ordens_list.filter(endereco__icontains=endereco)
     if status:
         ordens_list = ordens_list.filter(status=status)
-    if data_inicial:
-        ordens_list = ordens_list.filter(data_criacao__gte=data_inicial)
-    if data_final:
-        ordens_list = ordens_list.filter(data_criacao__lte=data_final)
+    if data_criacao:
+        ordens_list = ordens_list.filter(data_criacao__date=data_criacao)
 
     # Ordena e aplica a paginação
     ordens_list = ordens_list.order_by('-processo')
@@ -71,8 +68,7 @@ def index(request):
             'tipo': tipo,
             'endereco': endereco,
             'status': status,
-            'data_inicial': data_inicial,
-            'data_final': data_final
+            'data_criacao': data_criacao
         }
     }
     
