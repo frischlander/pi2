@@ -49,9 +49,10 @@ class StatusPill(Flowable):
         Flowable.__init__(self)
         self.text = text
         self.color = color
-        self.width = width or 1.5*inch  # Largura fixa para todas as pills
+        self.width = width or 2.5*inch  # Largura total da pill
         self.height = 0.25 * inch
         self.fontSize = 8
+        self.content_width = self.width - 0.4*inch  # Largura do conteúdo (reduzindo as margens laterais)
         
     def draw(self):
         # Desenha o retângulo arredondado
@@ -62,7 +63,7 @@ class StatusPill(Flowable):
         self.canv.setFillColor(colors.white)
         self.canv.setFont('Helvetica-Bold', self.fontSize)
         
-        # Centraliza o texto
+        # Centraliza o texto considerando a largura do conteúdo
         text_width = self.canv.stringWidth(self.text, 'Helvetica-Bold', self.fontSize)
         x = (self.width - text_width) / 2
         y = (self.height - self.fontSize) / 2
@@ -76,9 +77,9 @@ class OrdemServicoTemplate:
         self.doc = SimpleDocTemplate(
             buffer,
             pagesize=A4,
-            rightMargin=30,
+            rightMargin=72,  # Aumentado para 72 para manter consistência
             leftMargin=72,
-            topMargin=10,  # Aumentando a margem superior para as pills
+            topMargin=50,
             bottomMargin=72
         )
         self.elements = []
@@ -178,26 +179,34 @@ class OrdemServicoTemplate:
             100
         )
     
-    def create_status_pill(self, text, color):
+    def create_status_pill(self, text, color, width=None):
         """Cria uma pill colorida para o status ou tipo"""
-        return StatusPill(text, color)
+        return StatusPill(text, color, width)
+
+    def format_pill_text(self, text):
+        """Formata o texto para exibição na pill"""
+        if text == "Captura de Animais de Grande Porte":
+            return "Captura Grande Porte"
+        return text
 
     def add_header(self, ordem):
         # Primeiro adiciona as pills no topo direito
         tipo_pill = self.create_status_pill(
-            ordem.get_tipo_display(),
-            colors.HexColor(self.tipo_colors.get(ordem.tipo, '#95a5a6'))
+            self.format_pill_text(ordem.get_tipo_display()),
+            colors.HexColor(self.tipo_colors.get(ordem.tipo, '#95a5a6')),
+            width=1.8*inch  # Define largura específica para pill de tipo
         )
         status_pill = self.create_status_pill(
             ordem.get_status_display(),
-            colors.HexColor(self.status_colors.get(ordem.status, '#95a5a6'))
+            colors.HexColor(self.status_colors.get(ordem.status, '#95a5a6')),
+            width=1.2*inch  # Define largura específica para pill de status
         )
         
         # Criar uma tabela com as pills alinhadas à direita
         pills_table = Table(
-            [[tipo_pill, Spacer(1, 0.2*inch), status_pill]],
-            colWidths=[1.2*inch, 0.20*inch, 1.2*inch],  # Aumentei o espaço entre as pills para 0.3 inch
-            hAlign='RIGHT'  # Alinha a tabela à direita
+            [[tipo_pill, Spacer(1, 0.1*inch), status_pill]],
+            colWidths=[1.8*inch, 0.40*inch, 0.5*inch],  # Ajustado para corresponder às larguras das pills
+            hAlign='RIGHT'
         )
         pills_table.setStyle(TableStyle([
             ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
@@ -206,7 +215,18 @@ class OrdemServicoTemplate:
             ('RIGHTPADDING', (0, 0), (-1, -1), 0),
         ]))
         
-        self.elements.append(pills_table)
+        # Criar uma tabela wrapper para controlar a margem direita
+        wrapper_table = Table(
+            [[pills_table]],
+            colWidths=[self.doc.width - (self.doc.leftMargin + self.doc.rightMargin)],  # Ajustado para considerar ambas as margens
+            hAlign='RIGHT'
+        )
+        wrapper_table.setStyle(TableStyle([
+            ('ALIGN', (0, 0), (-1, -1), 'RIGHT'),
+            ('RIGHTPADDING', (0, 0), (-1, -1), 0),
+        ]))
+        
+        self.elements.append(wrapper_table)
         self.elements.append(Spacer(1, 20))  # Espaço entre as pills e o cabeçalho
 
         # Tabela para o cabeçalho com logo e informações
@@ -410,13 +430,13 @@ class OrdemServicoTemplate:
             
             elementos_parecer.append(t)
             
-            # Adicionar mais espaço antes do parecer técnico
-            self.elements.append(Spacer(1, 50))  # Aumentado o espaço antes do parecer
+            # Adicionar espaço antes do parecer técnico
+            self.elements.append(Spacer(1, 20))  # Reduzido de 50 para 20
             
             # Manter título e conteúdo juntos
             keepTogether = KeepTogether(elementos_parecer)
             self.elements.append(keepTogether)
-            self.elements.append(Spacer(1, 50))  # Aumentado o espaço após o parecer
+            self.elements.append(Spacer(1, 20))  # Reduzido de 50 para 20
             
             # Cria uma tabela com a linha de assinatura e o texto abaixo
             signature_table = Table(
@@ -431,7 +451,7 @@ class OrdemServicoTemplate:
                 ('FONTSIZE', (0, 1), (-1, 1), 8),
                 ('TEXTCOLOR', (0, 1), (-1, 1), colors.HexColor('#666666')),
                 ('TOPPADDING', (0, 1), (-1, 1), 0),  # Removido o padding superior
-                ('BOTTOMPADDING', (0, 1), (-1, 1), 0),  # Removido o padding inferior
+                ('BOTTOMPADDING', (0, 1), (-1, -1), 0),  # Removido o padding inferior
             ]))
             
             signature_wrapper = Table(
@@ -467,6 +487,96 @@ class OrdemServicoTemplate:
             self.elements.append(t)
             self.elements.append(Spacer(1, 12))
     
+    def add_anexos(self, ordem):
+        # Verifica se existem anexos
+        anexos = ordem.anexos.filter(tipo='foto').order_by('data_upload')
+        if not anexos:
+            return
+
+        # Força uma nova página para os anexos
+        self.elements.append(PageBreak())
+        
+        # Adiciona o título da seção centralizado
+        self.elements.append(Spacer(1, 20))
+        title_style = ParagraphStyle(
+            'AnexosTitle',
+            parent=self.styles['Heading1'],
+            fontSize=16,
+            spaceAfter=20,
+            alignment=TA_CENTER,
+            textColor=colors.HexColor('#2c3e50')
+        )
+        self.elements.append(Paragraph("Anexos", title_style))
+        
+        # Para cada anexo do tipo foto
+        for anexo in anexos:
+            try:
+                # Cria uma lista para os elementos da tabela
+                table_elements = []
+                
+                # Cria um container para a imagem e descrição
+                container_elements = []
+                
+                # Adiciona a imagem
+                if anexo.arquivo:
+                    img = Image(anexo.arquivo.path)
+                    # Calcula as dimensões mantendo a proporção
+                    img_width, img_height = img.imageWidth, img.imageHeight
+                    aspect = img_height / float(img_width)
+                    max_width = self.doc.width - 144  # Margens de 72px
+                    max_height = 350  # Reduzido de 450 para 350px
+                    
+                    # Ajusta as dimensões mantendo a proporção
+                    if img_width > max_width:
+                        img_width = max_width
+                        img_height = img_width * aspect
+                    if img_height > max_height:
+                        img_height = max_height
+                        img_width = img_height / aspect
+                    
+                    img = Image(anexo.arquivo.path, width=img_width, height=img_height)
+                    img.hAlign = 'CENTER'
+                    container_elements.append(img)
+                    
+                    # Adiciona a descrição logo após a imagem
+                    if anexo.descricao:
+                        desc_style = ParagraphStyle(
+                            'AnexoDesc',
+                            parent=self.styles['Normal'],
+                            fontSize=10,
+                            textColor=colors.HexColor('#666666'),
+                            alignment=TA_CENTER,
+                            spaceBefore=5
+                        )
+                        container_elements.append(Paragraph(anexo.descricao, desc_style))
+
+                # Adiciona o container à tabela
+                table_elements.append([container_elements])
+
+                # Cria a tabela com borda cinza claro
+                t = Table(table_elements, colWidths=[self.doc.width - 144])
+                t.setStyle(TableStyle([
+                    ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#f8f9fa')),
+                    ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                    ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#dee2e6')),
+                    ('LEFTPADDING', (0, 0), (-1, -1), 15),
+                    ('RIGHTPADDING', (0, 0), (-1, -1), 15),
+                    ('TOPPADDING', (0, 0), (-1, -1), 10),
+                    ('BOTTOMPADDING', (0, 0), (-1, -1), 10),
+                    ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+                ]))
+                
+                # Adiciona a tabela ao documento
+                self.elements.append(t)
+                
+                # Adiciona espaço entre as tabelas, mas não após a última
+                if anexo != anexos.last():
+                    self.elements.append(Spacer(1, 15))  # Reduzido de 20 para 15
+
+            except Exception as e:
+                print(f"Erro ao adicionar anexo {anexo.id}: {str(e)}")
+                continue
+
     def add_footer(self):
         # Adiciona o rodapé com informações de contato
         footer_data = [
@@ -496,6 +606,7 @@ class OrdemServicoTemplate:
             self.add_descricao(ordem)
             self.add_parecer(ordem)
             self.add_cancelamento(ordem)
+            self.add_anexos(ordem)  # Adiciona os anexos no final
             
             # Gera o PDF com o canvas numerado
             self.doc.build(
