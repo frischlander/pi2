@@ -23,7 +23,7 @@ def index(request):
     data_inicial = request.GET.get('data_inicial', '')
     data_final = request.GET.get('data_final', '')
     page = request.GET.get('page', '1')
-    per_page = int(request.GET.get('per_page', '50'))
+    per_page = int(request.GET.get('per_page', '10'))
 
     # Inicia a query
     ordens_list = OrdemServico.objects.all()
@@ -163,7 +163,7 @@ def delete_ordem(request, processo):
     ordem = get_object_or_404(OrdemServico, processo=processo)
     try:
         ordem.delete()
-        messages.success(request, f'Ordem de serviço {ordem.processo} excluída com sucesso!')
+        messages.success(request, f'Ordem de serviço {ordem.get_processo_display()} excluída com sucesso!')
     except Exception as e:
         messages.error(request, f'Erro ao excluir ordem de serviço: {str(e)}')
     

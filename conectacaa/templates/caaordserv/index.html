@@ -196,7 +196,7 @@
                 {% if ordem.status == 'finalizada' %}
                     <span class="badge badge-success rounded-pill px-4 py-2 fs-6 d-inline-block" style="min-width: 180px; max-width: 180px;">Finalizada</span>
                 {% elif ordem.status == 'em_andamento' %}
-                    <span class="badge badge-info rounded-pill px-4 py-2 fs-6 d-inline-block" style="min-width: 180px; max-width: 180px;">Em Andamento</span>
+                    <span class="badge rounded-pill px-4 py-2 fs-6 d-inline-block" style="min-width: 180px; max-width: 180px; background-color: #17a2b8; color: white;">Em Andamento</span>
                 {% elif ordem.status == 'aguardando_parecer' %}
                     <span class="badge badge-warning rounded-pill px-4 py-2 fs-6 d-inline-block" style="min-width: 180px; max-width: 180px;">Aguardando Parecer</span>
                 {% elif ordem.status == 'cancelada' %}
