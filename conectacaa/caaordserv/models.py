@@ -21,17 +21,16 @@ class OrdemServico(models.Model):
 
     @staticmethod
     def gerar_numero_processo():
-        data_atual = datetime.now().strftime('%d%m%Y')
         ultima_ordem = OrdemServico.objects.filter(processo__startswith='CAA').order_by('-processo').first()
         
         if ultima_ordem:
             # Extrai o número da última ordem (CAA001 -> 001)
-            ultimo_numero = int(ultima_ordem.processo[3:6])
+            ultimo_numero = int(ultima_ordem.processo[3:])
             novo_numero = str(ultimo_numero + 1).zfill(3)
         else:
             novo_numero = '001'
             
-        return f'CAA{novo_numero}/{data_atual}'
+        return f'CAA{novo_numero}'
 
     processo = models.CharField(max_length=20, unique=True, editable=False)
     tipo = models.CharField(max_length=50, choices=TIPO_CHOICES)
@@ -58,6 +57,9 @@ class OrdemServico(models.Model):
         if not self.processo:
             self.processo = self.gerar_numero_processo()
         super().save(*args, **kwargs)
+
+    def get_processo_display(self):
+        return self.processo
 
 class AnexoOrdemServico(models.Model):
     ordem = models.ForeignKey(OrdemServico, on_delete=models.CASCADE, related_name='anexos')

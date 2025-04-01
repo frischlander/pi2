@@ -20,7 +20,10 @@ def index(request):
     tipo = request.GET.get('tipo', '')
     endereco = request.GET.get('endereco', '').strip()
     status = request.GET.get('status', '')
+    data_inicial = request.GET.get('data_inicial', '')
+    data_final = request.GET.get('data_final', '')
     page = request.GET.get('page', '1')
+    per_page = int(request.GET.get('per_page', '50'))
 
     # Inicia a query
     ordens_list = OrdemServico.objects.all()
@@ -36,10 +39,14 @@ def index(request):
         ordens_list = ordens_list.filter(endereco__icontains=endereco)
     if status:
         ordens_list = ordens_list.filter(status=status)
+    if data_inicial:
+        ordens_list = ordens_list.filter(data_criacao__gte=data_inicial)
+    if data_final:
+        ordens_list = ordens_list.filter(data_criacao__lte=data_final)
 
     # Ordena e aplica a paginação
     ordens_list = ordens_list.order_by('-processo')
-    paginator = Paginator(ordens_list, 10)
+    paginator = Paginator(ordens_list, per_page)
     
     try:
         ordens = paginator.page(page)
@@ -55,13 +62,16 @@ def index(request):
         'total_canceladas': ordens_list.filter(status='cancelada').count(),
         'is_paginated': True,
         'page_obj': ordens,
+        'per_page': per_page,
         # Adiciona os valores dos filtros para manter o estado do formulário
         'filtros': {
             'processo': processo,
             'nome': nome,
             'tipo': tipo,
             'endereco': endereco,
-            'status': status
+            'status': status,
+            'data_inicial': data_inicial,
+            'data_final': data_final
         }
     }
     
