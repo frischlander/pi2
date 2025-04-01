@@ -126,7 +126,7 @@ class ListaOrdensTemplate:
                 status_pill = StatusPill(ordem.get_status_display(), status_color)
                 
                 data.append([
-                    ordem.processo,
+                    ordem.get_processo_display(),
                     ordem.nome_solicitante,
                     ordem.get_tipo_display(),
                     ordem.endereco,

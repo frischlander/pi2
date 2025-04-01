@@ -106,7 +106,8 @@ def add_ordem(request):
             messages.error(request, f'Erro ao criar ordem de serviço: {str(e)}')
     
     # Gera o número do processo para visualização
-    numero_processo = OrdemServico.gerar_numero_processo()
+    numero_processo = OrdemServico()
+    numero_processo.processo = OrdemServico.gerar_numero_processo()
     return render(request, 'caaordserv/add_ordem.html', {'numero_processo': numero_processo})
 
 @login_required

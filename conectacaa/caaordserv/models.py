@@ -24,11 +24,11 @@ class OrdemServico(models.Model):
         ultima_ordem = OrdemServico.objects.filter(processo__startswith='CAA').order_by('-processo').first()
         
         if ultima_ordem:
-            # Extrai o número da última ordem (CAA001 -> 001)
+            # Extrai o número da última ordem (CAA000001 -> 000001)
             ultimo_numero = int(ultima_ordem.processo[3:])
-            novo_numero = str(ultimo_numero + 1).zfill(3)
+            novo_numero = str(ultimo_numero + 1).zfill(6)
         else:
-            novo_numero = '001'
+            novo_numero = '000001'
             
         return f'CAA{novo_numero}'
 
@@ -59,7 +59,9 @@ class OrdemServico(models.Model):
         super().save(*args, **kwargs)
 
     def get_processo_display(self):
-        return self.processo
+        # Remove os zeros à esquerda do número, mantendo o prefixo CAA
+        numero = str(int(self.processo[3:]))  # Converte para int para remover zeros à esquerda
+        return f"CAA{numero}"
 
 class AnexoOrdemServico(models.Model):
     ordem = models.ForeignKey(OrdemServico, on_delete=models.CASCADE, related_name='anexos')

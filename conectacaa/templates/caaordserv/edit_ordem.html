@@ -38,7 +38,7 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="processo" class="form-label">Número do Processo</label>
-                                <input type="text" class="form-control bg-light" id="processo" value="{{ ordem.processo }}" readonly>
+                                <input type="text" class="form-control bg-light" id="processo" value="{{ ordem.get_processo_display }}" readonly>
                                 <small class="text-muted">Número do processo não pode ser alterado</small>
                             </div>
 

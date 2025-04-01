@@ -151,7 +151,7 @@ def gerar_pdf_ordens(request):
     data = [headers]
     for ordem in ordens:
         data.append([
-            str(ordem.id),
+            ordem.get_processo_display(),
             ordem.get_tipo_display(),
             ordem.get_status_display(),
             ordem.data_criacao.strftime('%d/%m/%Y'),

@@ -118,42 +118,41 @@ class OrdemServicoTemplate:
 
     def add_header(self, ordem):
         # Tabela para o cabeçalho com logo e informações
-        logo_path = os.path.join(settings.STATIC_ROOT, 'images', 'logo.png')
-        logo_width = 100
-        logo_height = 100
-        
-        # Verifica se a logo existe
+        logo_path = os.path.join(settings.BASE_DIR, 'conectacaa', 'static', 'img', 'logo.png')
         if os.path.exists(logo_path):
-            logo = Image(logo_path, width=logo_width, height=logo_height)
-        else:
-            logo = None
-        
-        # Primeiro adiciona o número do processo como um parágrafo centralizado
-        processo_style = ParagraphStyle(
-            'Processo',
-            parent=self.styles['Normal'],
+            logo = Image(logo_path, width=100, height=100)
+            logo.hAlign = 'CENTER'
+            self.elements.append(logo)
+            self.elements.append(Spacer(1, 10))
+
+        # Título em verde
+        title_style = ParagraphStyle(
+            'CustomTitle',
+            parent=self.styles['Heading1'],
             fontSize=14,
+            spaceAfter=15,
             alignment=TA_CENTER,
-            textColor=colors.HexColor('#2c3e50'),
-            fontName='Helvetica-Bold'
+            textColor=colors.HexColor('#00a652')
         )
-        self.elements.append(Paragraph(f"{ordem.processo}", processo_style))
+        self.elements.append(Paragraph("ORDEM DE SERVIÇO", title_style))
         self.elements.append(Spacer(1, 10))
-        
-        # Agora cria a tabela com as demais informações
-        header_data = [
-            ["Data de Criação:", ordem.data_criacao.strftime("%d/%m/%Y %H:%M")],
-            ["Status:", self.create_status_pill(ordem)],
-        ]
+
+        # Dados da tabela
+        data = [['Processo', 'Tipo', 'Status']]
+        data.append([
+            ordem.get_processo_display(),  # Usa o método get_processo_display para remover zeros à esquerda
+            ordem.get_tipo_display(),
+            ordem.get_status_display()
+        ])
         
         # Se tiver logo, adiciona uma coluna para ela
         if logo:
-            header_data[0].insert(0, logo)
+            data[0].insert(0, logo)
         
         # Ajusta as larguras das colunas baseado na presença da logo
-        col_widths = [2*inch, 4*inch] if not logo else [logo_width, 4*inch]
+        col_widths = [2*inch, 4*inch] if not logo else [100, 4*inch]
         
-        t = Table(header_data, colWidths=col_widths)
+        t = Table(data, colWidths=col_widths)
         t.setStyle(TableStyle([
             ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
             ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
@@ -233,20 +232,24 @@ class OrdemServicoTemplate:
         self.elements.append(t)
     
     def build(self, ordem):
-        # Adiciona todos os elementos na ordem correta
-        self.add_header(ordem)
-        self.add_solicitante(ordem)
-        self.add_detalhes(ordem)
-        self.add_descricao(ordem)
-        self.add_parecer(ordem)
-        self.add_cancelamento(ordem)
-        
-        # Adiciona espaço para empurrar o footer para baixo
-        self.elements.append(Spacer(1, 230))
-        
-        # Adiciona o footer no final
-        self.add_footer()
-        
-        # Gera o PDF
-        self.doc.build(self.elements)
-        self.buffer.seek(0) 
+        try:
+            # Adiciona todos os elementos na ordem correta
+            self.add_header(ordem)
+            self.add_solicitante(ordem)
+            self.add_detalhes(ordem)
+            self.add_descricao(ordem)
+            self.add_parecer(ordem)
+            self.add_cancelamento(ordem)
+            
+            # Adiciona espaço para empurrar o footer para baixo
+            self.elements.append(Spacer(1, 230))
+            
+            # Adiciona o footer no final
+            self.add_footer()
+            
+            # Gera o PDF
+            self.doc.build(self.elements)
+            self.buffer.seek(0)
+        except Exception as e:
+            print(f"Erro ao gerar o PDF: {e}")
+            self.buffer.seek(0) 

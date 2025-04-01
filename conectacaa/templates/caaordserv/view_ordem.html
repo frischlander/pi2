@@ -15,7 +15,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h4 class="mb-0">Ordem de Serviço #{{ ordem.processo }}</h4>
+                    <h4 class="mb-0">Ordem de Serviço #{{ ordem.get_processo_display }}</h4>
                     <div>
                         <a href="{% url 'edit_ordem' ordem.processo %}" class="btn btn-primary me-2">
                             <i class="bi bi-pencil-fill"></i> Editar
@@ -75,7 +75,7 @@
                                             <div class="d-flex flex-column gap-2">
                                                 <div>
                                                     <small class="text-muted">Número do Processo</small>
-                                                    <p class="mb-0">{{ ordem.processo }}</p>
+                                                    <p class="mb-0">{{ ordem.get_processo_display }}</p>
                                                 </div>
                                                 <div>
                                                     <small class="text-muted">Tipo de Serviço</small>
@@ -196,7 +196,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p>Tem certeza que deseja excluir a ordem de serviço <strong>{{ ordem.processo }}</strong>?</p>
+                <p>Tem certeza que deseja excluir a ordem de serviço <strong>{{ ordem.get_processo_display }}</strong>?</p>
                 <p class="text-danger">Esta ação não poderá ser desfeita.</p>
             </div>
             <div class="modal-footer">
