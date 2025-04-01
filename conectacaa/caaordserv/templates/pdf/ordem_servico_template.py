@@ -6,8 +6,43 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, Tabl
 from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.pdfgen import canvas
 from django.conf import settings
 import os
+
+class NumberedCanvas(canvas.Canvas):
+    def __init__(self, *args, **kwargs):
+        canvas.Canvas.__init__(self, *args, **kwargs)
+        self._saved_page_states = []
+
+    def showPage(self):
+        self._saved_page_states.append(dict(self.__dict__))
+        self._startPage()
+
+    def save(self):
+        num_pages = len(self._saved_page_states)
+        for state in self._saved_page_states:
+            self.__dict__.update(state)
+            self.draw_page_footer(self._pageNumber, num_pages)
+            canvas.Canvas.showPage(self)
+        canvas.Canvas.save(self)
+
+    def draw_page_footer(self, page_num, total_pages):
+        width, height = A4
+        
+        # Desenha a linha verde clara
+        self.setStrokeColor(colors.HexColor('#90EE90'))
+        self.setLineWidth(1)
+        self.line(72, 35, width - 72, 35)  # Margens de 72px e posição Y ajustada
+        
+        # Texto do rodapé
+        self.setFont('Helvetica', 8)
+        self.setFillColor(colors.HexColor('#666666'))
+        
+        # Ajusta a posição Y do texto para ficar abaixo da linha verde
+        footer_text = f'Centro de Acolhimento Animal "São Francisco de Assis"'
+        self.drawString(72, 20, footer_text)
+        self.drawRightString(width - 72, 20, f'Página {page_num} de {total_pages}')
 
 class StatusPill(Flowable):
     def __init__(self, text, color, width=None):
@@ -43,7 +78,7 @@ class OrdemServicoTemplate:
             pagesize=A4,
             rightMargin=72,
             leftMargin=72,
-            topMargin=72,
+            topMargin=30,  # Reduzindo a margem superior
             bottomMargin=72
         )
         self.elements = []
@@ -57,6 +92,15 @@ class OrdemServicoTemplate:
             'cancelada': '#dc3545',   
             'pendente': '#f1c40f',     
             'aguardando_parecer': '#e98604',
+        }
+
+        # Dicionário de cores para os tipos
+        self.tipo_colors = {
+            'manutencao': '#3498db',    # Azul
+            'limpeza': '#2ecc71',       # Verde
+            'outros': '#9b59b6',        # Roxo
+            'emergencia': '#e74c3c',    # Vermelho
+            'preventiva': '#f39c12',    # Laranja
         }
         
         # Estilos personalizados
@@ -84,6 +128,30 @@ class OrdemServicoTemplate:
             alignment=TA_RIGHT,
             textColor=colors.HexColor('#7f8c8d')
         )
+
+        # Estilo para o número do processo
+        self.processo_style = ParagraphStyle(
+            'Processo',
+            parent=self.styles['Heading1'],
+            fontSize=14,
+            spaceAfter=10,
+            alignment=TA_CENTER,
+            textColor=colors.HexColor('#00a652'),
+            borderWidth=1,
+            borderColor=colors.HexColor('#00a652'),
+            borderPadding=(10, 5),
+            borderRadius=5
+        )
+
+        # Estilo para os detalhes do processo
+        self.processo_details_style = ParagraphStyle(
+            'ProcessoDetails',
+            parent=self.styles['Normal'],
+            fontSize=10,
+            spaceAfter=5,
+            alignment=TA_CENTER,
+            textColor=colors.HexColor('#666666')
+        )
         
         self.table_style = TableStyle([
             ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
@@ -110,60 +178,104 @@ class OrdemServicoTemplate:
             100
         )
     
-    def create_status_pill(self, status):
-        """Cria uma pill colorida para o status"""
-        status_display = status.get_status_display()
-        color = colors.HexColor(self.status_colors.get(status.status, '#95a5a6'))
-        return StatusPill(status_display, color)
+    def create_status_pill(self, text, color):
+        """Cria uma pill colorida para o status ou tipo"""
+        return StatusPill(text, color)
 
     def add_header(self, ordem):
         # Tabela para o cabeçalho com logo e informações
         logo_path = os.path.join(settings.BASE_DIR, 'conectacaa', 'static', 'img', 'logo.png')
-        if os.path.exists(logo_path):
-            logo = Image(logo_path, width=100, height=100)
-            logo.hAlign = 'CENTER'
-            self.elements.append(logo)
-            self.elements.append(Spacer(1, 10))
-
-        # Título em verde
-        title_style = ParagraphStyle(
-            'CustomTitle',
-            parent=self.styles['Heading1'],
-            fontSize=14,
-            spaceAfter=15,
-            alignment=TA_CENTER,
-            textColor=colors.HexColor('#00a652')
+        
+        # Estilo para o texto do cabeçalho
+        header_text_style = ParagraphStyle(
+            'HeaderText',
+            parent=self.styles['Normal'],
+            fontSize=8,
+            alignment=TA_LEFT,
+            textColor=colors.HexColor('#666666'),
+            spaceAfter=0,
+            spaceBefore=0,
+            leading=10
         )
-        self.elements.append(Paragraph("ORDEM DE SERVIÇO", title_style))
-        self.elements.append(Spacer(1, 10))
 
-        # Dados da tabela
-        data = [['Processo', 'Tipo', 'Status']]
-        data.append([
-            ordem.get_processo_display(),  # Usa o método get_processo_display para remover zeros à esquerda
+        # Estilo para o nome do centro
+        center_name_style = ParagraphStyle(
+            'CenterName',
+            parent=self.styles['Normal'],
+            fontSize=10,
+            alignment=TA_LEFT,
+            textColor=colors.HexColor('#00a652'),
+            spaceAfter=0,
+            spaceBefore=0,
+            leading=12,
+            fontName='Helvetica-Bold'
+        )
+
+        # Criar o cabeçalho principal
+        header_elements = []
+        
+        # Adiciona a logo e informações em uma tabela
+        if os.path.exists(logo_path):
+            logo = Image(logo_path, width=80, height=80)
+            
+            # Criar os parágrafos de informações
+            info_elements = [
+                Paragraph("Centro de Acolhimento Animal", center_name_style),
+                Paragraph('"São Francisco de Assis"', center_name_style),
+                Spacer(1, 5),
+                Paragraph("Estrada Municipal Vitorio Celso Cisoto, Km 1,5", header_text_style),
+                Paragraph("Telefone: (17) 3279-4886", header_text_style),
+                Paragraph("Email: luciano.terazima@olimpia.sp.gov.br", header_text_style),
+                Paragraph("Site: www.olimpia.sp.gov.br", header_text_style)
+            ]
+
+            # Criar uma tabela com duas colunas: logo e informações
+            header_table = Table(
+                [[logo, info_elements]],
+                colWidths=[90, self.doc.width - 162]
+            )
+            
+            header_table.setStyle(TableStyle([
+                ('ALIGN', (0, 0), (0, 0), 'CENTER'),  # Alinha a logo ao centro
+                ('ALIGN', (1, 0), (1, 0), 'LEFT'),    # Alinha o texto à esquerda
+                ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+                ('LEFTPADDING', (1, 0), (1, 0), 20),  # Aumenta o espaço entre a logo e o texto
+            ]))
+
+            self.elements.append(header_table)
+            self.elements.append(Spacer(1, 20))
+
+        # Adiciona uma linha decorativa
+        line = Table([['']], colWidths=[self.doc.width - 144])
+        line.setStyle(TableStyle([
+            ('LINEBELOW', (0, 0), (-1, -1), 1, colors.HexColor('#00a652')),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ]))
+        self.elements.append(line)
+        self.elements.append(Spacer(1, 20))
+
+        # Número do Processo centralizado
+        self.elements.append(Paragraph(f"Processo: {ordem.get_processo_display()}", self.processo_style))
+        
+        # Detalhes do processo em texto com tipo e status em pill
+        tipo_pill = self.create_status_pill(
             ordem.get_tipo_display(),
-            ordem.get_status_display()
-        ])
+            colors.HexColor(self.tipo_colors.get(ordem.tipo, '#95a5a6'))
+        )
+        status_pill = self.create_status_pill(
+            ordem.get_status_display(),
+            colors.HexColor(self.status_colors.get(ordem.status, '#95a5a6'))
+        )
         
-        # Se tiver logo, adiciona uma coluna para ela
-        if logo:
-            data[0].insert(0, logo)
-        
-        # Ajusta as larguras das colunas baseado na presença da logo
-        col_widths = [2*inch, 4*inch] if not logo else [100, 4*inch]
-        
-        t = Table(data, colWidths=col_widths)
-        t.setStyle(TableStyle([
-            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
-            ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
-            ('FONTSIZE', (0, 0), (-1, -1), 10),
-            ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
-            ('TEXTCOLOR', (0, 0), (0, -1), colors.HexColor('#2c3e50')),
-            ('TEXTCOLOR', (1, 0), (-1, -1), colors.HexColor('#34495e')),
+        details_table = Table(
+            [[tipo_pill, status_pill]],
+            colWidths=[self.doc.width/2 - 72, self.doc.width/2 - 72]
+        )
+        details_table.setStyle(TableStyle([
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
             ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
         ]))
-        
-        self.elements.append(t)
+        self.elements.append(details_table)
         self.elements.append(Spacer(1, 20))
     
     def add_solicitante(self, ordem):
@@ -201,9 +313,44 @@ class OrdemServicoTemplate:
     
     def add_parecer(self, ordem):
         if ordem.status == 'finalizada' and ordem.parecer:
-            self.elements.append(Paragraph("Parecer Técnico", self.subtitle_style))
+            # Estilo para o título do parecer
+            parecer_title_style = ParagraphStyle(
+                'ParecerTitle',
+                parent=self.subtitle_style,
+                spaceBefore=10,
+                spaceAfter=5,
+            )
+            
+            self.elements.append(Paragraph("Parecer Técnico", parecer_title_style))
             self.elements.append(Paragraph(ordem.parecer, self.styles['Normal']))
-            self.elements.append(Spacer(1, 12))
+            self.elements.append(Spacer(1, 30))  # Espaço entre o parecer e a assinatura
+            
+            # Cria uma tabela com a linha de assinatura e o texto abaixo
+            signature_table = Table(
+                [[''], ['Veterinário(a) Responsável']],
+                colWidths=[2.5*inch],  # Reduzindo um pouco a largura da linha
+                rowHeights=[15, 12]  # Reduzindo a altura da linha e do texto
+            )
+            signature_table.setStyle(TableStyle([
+                ('LINEABOVE', (0, 0), (0, 0), 0.5, colors.HexColor('#00a652')),  # Linha mais fina
+                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                ('FONTNAME', (0, 1), (-1, 1), 'Helvetica'),
+                ('FONTSIZE', (0, 1), (-1, 1), 8),
+                ('TEXTCOLOR', (0, 1), (-1, 1), colors.HexColor('#666666')),
+                ('TOPPADDING', (0, 1), (-1, 1), 2),  # Reduz o espaço entre a linha e o texto
+            ]))
+            
+            # Centraliza a tabela de assinatura
+            signature_wrapper = Table(
+                [[signature_table]],
+                colWidths=[self.doc.width - 144]
+            )
+            signature_wrapper.setStyle(TableStyle([
+                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ]))
+            
+            self.elements.append(signature_wrapper)
+            self.elements.append(Spacer(1, 20))  # Reduzindo o espaço após a assinatura
     
     def add_cancelamento(self, ordem):
         if ordem.status == 'cancelada' and ordem.justificativa_cancelamento:
@@ -241,14 +388,11 @@ class OrdemServicoTemplate:
             self.add_parecer(ordem)
             self.add_cancelamento(ordem)
             
-            # Adiciona espaço para empurrar o footer para baixo
-            self.elements.append(Spacer(1, 230))
-            
-            # Adiciona o footer no final
-            self.add_footer()
-            
-            # Gera o PDF
-            self.doc.build(self.elements)
+            # Gera o PDF com o canvas numerado
+            self.doc.build(
+                self.elements,
+                canvasmaker=NumberedCanvas
+            )
             self.buffer.seek(0)
         except Exception as e:
             print(f"Erro ao gerar o PDF: {e}")

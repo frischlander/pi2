@@ -45,7 +45,7 @@
                                 <div class="col-md-6">
                                     <div class="card h-100 border-primary-subtle">
                                         <div class="card-header bg-primary-subtle">
-                                            <h6 class="card-title mb-0"><i class="bi bi-person-circle me-2"></i>Dados do Solicitante</h6>
+                                            <h6 class="card-title mb-0"><i class="bi bi-person-circle me-2"></i>Informações do Solicitante</h6>
                                         </div>
                                         <div class="card-body">
                                             <div class="d-flex flex-column gap-2">
@@ -56,10 +56,6 @@
                                                 <div>
                                                     <small class="text-muted">Telefone</small>
                                                     <p class="mb-0">{{ ordem.telefone }}</p>
-                                                </div>
-                                                <div>
-                                                    <small class="text-muted">Endereço</small>
-                                                    <p class="mb-0">{{ ordem.endereco }}</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -80,6 +76,10 @@
                                                 <div>
                                                     <small class="text-muted">Tipo de Serviço</small>
                                                     <p class="mb-0">{{ ordem.get_tipo_display }}</p>
+                                                </div>
+                                                <div>
+                                                    <small class="text-muted">Endereço do Atendimento</small>
+                                                    <p class="mb-0">{{ ordem.endereco }}</p>
                                                 </div>
                                                 <div>
                                                     <small class="text-muted">Data de Criação</small>

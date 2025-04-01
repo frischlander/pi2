@@ -16,6 +16,33 @@
                         {% csrf_token %}
                         
                         <div class="row">
+                            <div class="col-12">
+                                <h5 class="card-title mb-3">Informações do Solicitante</h5>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="nome" class="form-label">Nome do Solicitante</label>
+                                <input type="text" class="form-control" id="nome" name="nome" required>
+                                <div class="invalid-feedback">
+                                    Por favor, informe o nome do solicitante.
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="telefone" class="form-label">Telefone</label>
+                                <input type="tel" class="form-control" id="telefone" name="telefone">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <h5 class="card-title mb-3">Detalhes da Ordem</h5>
+                            </div>
+                        </div>
+
+                        <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="processo" class="form-label">Número do Processo</label>
                                 <input type="text" class="form-control bg-light" id="processo" value="{{ numero_processo.get_processo_display }}" readonly>
@@ -41,23 +68,8 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="nome" class="form-label">Nome do Solicitante</label>
-                                <input type="text" class="form-control" id="nome" name="nome" required>
-                                <div class="invalid-feedback">
-                                    Por favor, informe o nome do solicitante.
-                                </div>
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <label for="telefone" class="form-label">Telefone</label>
-                                <input type="tel" class="form-control" id="telefone" name="telefone">
-                            </div>
-                        </div>
-
-                        <div class="row">
                             <div class="col-12 mb-3">
-                                <label for="endereco" class="form-label">Endereço</label>
+                                <label for="endereco" class="form-label">Endereço do Atendimento</label>
                                 <input type="text" class="form-control" id="endereco" name="endereco" required>
                                 <div class="invalid-feedback">
                                     Por favor, informe o endereço.

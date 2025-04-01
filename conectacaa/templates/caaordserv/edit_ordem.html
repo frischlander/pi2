@@ -1,6 +1,17 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<!-- Mensagem de Sucesso -->
+{% if request.GET.success %}
+<div id="successAlert" class="alert alert-success alert-dismissible fade show position-fixed top-0 start-0 w-100" role="alert" style="z-index: 1050;">
+    <div class="container">
+        <i class="bi bi-check-circle-fill me-2"></i>
+        Ordem de serviço CAA{{ ordem.processo|stringformat:"d"|slice:"3:" }} atualizada com sucesso!
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+</div>
+{% endif %}
+
 <div class="container-fluid p-4 mt-3">
     <div class="row">
         <div class="col-12">
@@ -36,6 +47,33 @@
                         </div>
 
                         <div class="row">
+                            <div class="col-12">
+                                <h5 class="card-title mb-3">Informações do Solicitante</h5>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="nome" class="form-label">Nome do Solicitante <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="nome" name="nome" value="{{ ordem.nome_solicitante }}" required>
+                                <div class="invalid-feedback">
+                                    Por favor, informe o nome do solicitante.
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="telefone" class="form-label">Telefone</label>
+                                <input type="tel" class="form-control" id="telefone" name="telefone" value="{{ ordem.telefone }}">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <h5 class="card-title mb-3">Detalhes da Ordem</h5>
+                            </div>
+                        </div>
+
+                        <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="processo" class="form-label">Número do Processo</label>
                                 <input type="text" class="form-control bg-light" id="processo" value="{{ ordem.get_processo_display }}" readonly>
@@ -61,23 +99,8 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="nome" class="form-label">Nome do Solicitante <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="nome" name="nome" value="{{ ordem.nome_solicitante }}" required>
-                                <div class="invalid-feedback">
-                                    Por favor, informe o nome do solicitante.
-                                </div>
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <label for="telefone" class="form-label">Telefone</label>
-                                <input type="tel" class="form-control" id="telefone" name="telefone" value="{{ ordem.telefone }}">
-                            </div>
-                        </div>
-
-                        <div class="row">
                             <div class="col-12 mb-3">
-                                <label for="endereco" class="form-label">Endereço <span class="text-danger">*</span></label>
+                                <label for="endereco" class="form-label">Endereço do Atendimento <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="endereco" name="endereco" value="{{ ordem.endereco }}" required>
                                 <div class="invalid-feedback">
                                     Por favor, informe o endereço.
@@ -205,26 +228,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal de Sucesso -->
-<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header bg-success text-white">
-                <h5 class="modal-title" id="successModalLabel">Sucesso!</h5>
-            </div>
-            <div class="modal-body text-center">
-                <i class="bi bi-check-circle-fill text-success display-4 mb-3"></i>
-                <p class="mb-0">Ordem de serviço salva com sucesso!</p>
-            </div>
-            <div class="modal-footer">
-                <a href="{% url 'caaordserv' %}" class="btn btn-success w-100">
-                    <i class="bi bi-check-circle"></i> OK
-                </a>
             </div>
         </div>
     </div>
@@ -364,6 +367,20 @@
 .btn-group .btn i {
     margin-right: 0;
 }
+
+/* Estilos para a mensagem de sucesso */
+#successMessage {
+    min-width: 300px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#successMessage .btn-close {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+}
 </style>
 
 <script>
@@ -385,7 +402,7 @@ function toggleCampos() {
     if (statusSelect.value === 'cancelada') {
         justificativaContainer.style.display = 'block';
         justificativaInput.required = true;
-    } else if (statusSelect.value === 'aguardando_parecer' || statusSelect.value === 'finalizada') {
+    } else if (statusSelect.value === 'finalizada') {
         parecerContainer.style.display = 'block';
         parecerInput.required = true;
     }
@@ -441,5 +458,15 @@ document.getElementById('anexos').addEventListener('change', function(e) {
         }, false)
     })
 })()
+
+// Adiciona o código para o redirecionamento após sucesso
+document.addEventListener('DOMContentLoaded', function() {
+    const successAlert = document.getElementById('successAlert');
+    if (successAlert) {
+        setTimeout(function() {
+            window.location.href = "{% url 'caaordserv' %}";
+        }, 3000);
+    }
+});
 </script>
 {% endblock %}
