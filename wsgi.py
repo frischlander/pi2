@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import os
 import sys
 
@@ -12,3 +13,19 @@ from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
 
+=======
+import os
+import sys
+
+# Adiciona a raiz do projeto ao PYTHONPATH
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+# Define as configurações do Django
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "conectaa.settings")
+
+from django.core.wsgi import get_wsgi_application
+
+application = get_wsgi_application()
+
+
+>>>>>>> 13558938c4ffaadc48b65d7eaa2ac762924c53e2
