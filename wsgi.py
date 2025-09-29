@@ -1,8 +1,12 @@
 import os
-from conectaa.wsgi import application
+import sys
 
+# Adiciona a pasta raiz do projeto ao PythonPath
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-# Ajuste para o nome correto do módulo de settings do seu projeto Django
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "pi2univesp.settings")
+from django.core.wsgi import get_wsgi_application
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'conectaa.settings')
 
 application = get_wsgi_application()
+
