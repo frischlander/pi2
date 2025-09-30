@@ -59,7 +59,7 @@ MIDDLEWARE = [
     
 ]
 
-ROOT_URLCONF = 'conectacaa.urls'
+ROOT_URLCONF = 'urls'
 
 TEMPLATES = [
     {
