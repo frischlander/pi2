@@ -29,12 +29,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY', '9qn38d*9#t*)oe0ic=cisa4oe%sbu2g@-2#!&wjqik%7b5!yjw')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'  # Debug True por padrão em desenvolvimento
 
-ALLOWED_HOSTS = ['pi2univesp.onrender.com', '.onrender.com', 'localhost', '127.0.0.1']
+# Hosts permitidos
+ALLOWED_HOSTS = ['*'] if DEBUG else ['pi2univesp.onrender.com', '.onrender.com']
 
 # CSRF settings
-CSRF_TRUSTED_ORIGINS = ['https://pi2univesp.onrender.com']
+CSRF_TRUSTED_ORIGINS = ['https://pi2univesp.onrender.com', 'http://localhost:8000', 'http://127.0.0.1:8000']
 
 
 # Application definition
@@ -134,13 +135,13 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage' if not DEBUG else 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
 # Configurações de segurança
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-SECURE_SSL_REDIRECT = True
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
+SECURE_SSL_REDIRECT = not DEBUG  # Só redireciona para HTTPS em produção
+SESSION_COOKIE_SECURE = not DEBUG  # Só usa cookies seguros em produção
+CSRF_COOKIE_SECURE = not DEBUG  # Só usa CSRF seguro em produção
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
