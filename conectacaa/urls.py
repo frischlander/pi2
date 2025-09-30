@@ -22,8 +22,8 @@ from . import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('caaordserv.urls')),
-    path('authentication/', include('authentication.urls')),
-    path('relatorios/', include('relatorios.urls')),
+    path('', include('conectacaa.caaordserv.urls')),
+    path('authentication/', include('conectacaa.authentication.urls')),
+    path('relatorios/', include('conectacaa.relatorios.urls')),
     path('sobre/', views.sobre, name='sobre'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
