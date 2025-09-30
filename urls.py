@@ -18,12 +18,12 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from . import views
+from pi2univesp import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('conectacaa.caaordserv.urls')),
-    path('authentication/', include('conectacaa.authentication.urls')),
-    path('relatorios/', include('conectacaa.relatorios.urls')),
+    path('authentication/', include('authentication.urls')),
+    path('relatorios/', include('relatorios.urls')),
+    path('', include('caaordserv.urls')),
     path('sobre/', views.sobre, name='sobre'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
