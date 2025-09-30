@@ -1,6 +1,13 @@
+databases:
+  - name: pi2_database_fie6
+    region: oregon
+    plan: free
+
 services:
   - type: web
     name: pi2univesp
+    plan: free
+    runtime: python
     env: python
     region: oregon
     buildCommand: "./build.sh"
@@ -13,11 +20,6 @@ services:
       - key: SECRET_KEY
         generateValue: true
       - key: DEBUG
-        value: False
+        value: true
       - key: PYTHON_VERSION
         value: 3.11.0
-
-databases:
-  - name: pi2_database_fie6
-    region: oregon
-    plan: free
