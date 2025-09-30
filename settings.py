@@ -21,6 +21,15 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Ensure template directories exist
+TEMPLATE_DIRS = [
+    BASE_DIR / 'templates',
+    BASE_DIR / 'templates/base',
+    BASE_DIR / 'authentication/templates',
+]
+for template_dir in TEMPLATE_DIRS:
+    template_dir.mkdir(parents=True, exist_ok=True)
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -69,7 +78,10 @@ ROOT_URLCONF = 'urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'DIRS': [
+            BASE_DIR / 'templates',
+            BASE_DIR / 'authentication/templates',
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
