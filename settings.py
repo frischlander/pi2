@@ -31,7 +31,10 @@ SECRET_KEY = os.environ.get('SECRET_KEY', '9qn38d*9#t*)oe0ic=cisa4oe%sbu2g@-2#!&
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = ['pi2univesp.onrender.com', '.onrender.com']
+ALLOWED_HOSTS = ['pi2univesp.onrender.com', '.onrender.com', 'localhost', '127.0.0.1']
+
+# CSRF settings
+CSRF_TRUSTED_ORIGINS = ['https://pi2univesp.onrender.com']
 
 
 # Application definition
@@ -128,15 +131,16 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 # Configurações de arquivos estáticos
-STATIC_URL = 'static/'
-STATICFILES_DIRS = []  # Removendo STATICFILES_DIRS já que todos os arquivos estáticos estão nos apps
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# Configurações do WhiteNoise
-WHITENOISE_USE_FINDERS = True
-WHITENOISE_AUTOREFRESH = True
-WHITENOISE_MANIFEST_STRICT = False
+# Configurações de segurança
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_SSL_REDIRECT = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
