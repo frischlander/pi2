@@ -2,7 +2,7 @@ import os
 import sys
 
 # Adiciona a raiz do projeto ao PYTHONPATH
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)), "conectacaa")
 
 # Define as configurações do Django
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "conectacaa.settings")
