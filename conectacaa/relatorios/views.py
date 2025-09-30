@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from caaordserv.models import OrdemServico
+from conectacaa.caaordserv.models import OrdemServico
 from django.db.models import Count
 from django.db.models.functions import ExtractYear
 from django.http import JsonResponse
