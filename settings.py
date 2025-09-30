@@ -147,10 +147,10 @@ STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # STATICFILES_DIRS apenas se o diretório existir
-if os.path.exists(BASE_DIR / 'static'):
-    STATICFILES_DIRS = [BASE_DIR / 'static']
-else:
-    STATICFILES_DIRS = []
+#if os.path.exists(BASE_DIR / 'static'):
+   # STATICFILES_DIRS = [BASE_DIR / 'static']
+#else:
+    #STATICFILES_DIRS = []
 
 # Configuração do WhiteNoise baseada no ambiente
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage' if not DEBUG else 'django.contrib.staticfiles.storage.StaticFilesStorage'
