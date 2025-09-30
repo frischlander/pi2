@@ -42,9 +42,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'conectacaa.caaordserv',
-    'conectacaa.authentication',
-    'conectacaa.relatorios',
+    'conectacaa.caaordserv.apps.CaaordservConfig',
+    'conectacaa.authentication.apps.AuthenticationConfig',
+    'conectacaa.relatorios.apps.RelatoriosConfig'
 ]
 
 MIDDLEWARE = [
