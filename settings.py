@@ -1,4 +1,5 @@
 import os
+import dj_database_url
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -84,13 +85,7 @@ WSGI_APPLICATION = 'wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('DB_NAME'),
-        'USER': os.environ.get('DB_USER'),
-        'PASSWORD': os.environ.get('DB_USER_PASSWORD'),
-        'HOST': os.environ.get('DB_HOST'),
-    }
+    'default': dj_database_url.config(conn_max_age=600, ssl_require=True)
 }
 
 
