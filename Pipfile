@@ -9,6 +9,7 @@ psycopg2 = "*"
 reportlab = ">=4.0.4"
 pillow = ">=10.0.0"
 django = "*"
+dj-database-url = "*"
 
 [dev-packages]
 
