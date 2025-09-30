@@ -100,7 +100,7 @@ WSGI_APPLICATION = 'wsgi.application'
 
 DATABASES = {
     'default': dj_database_url.config(
-        default=os.environ.get('DATABASE_URL'),
+        default='postgresql://pi2_database_fie6_user:BN7UQg9KHoOgG3CCCngrlM3ua0Rgdbc4@dpg-d3dl14ogjchc73aks1mg-a.oregon-postgres.render.com/pi2_database_fie6',
         conn_max_age=600,
         conn_health_checks=True,
         ssl_require=True
@@ -144,7 +144,7 @@ USE_TZ = True
 
 # Configurações de arquivos estáticos
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # STATICFILES_DIRS apenas se o diretório existir
 #if os.path.exists(BASE_DIR / 'static'):
