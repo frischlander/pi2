@@ -92,7 +92,8 @@ DATABASES = {
     'default': dj_database_url.config(
         default='sqlite:///' + str(BASE_DIR / 'db.sqlite3'),
         conn_max_age=600,
-        ssl_require=False
+        conn_health_checks=True,
+        ssl_require=True if os.environ.get('DATABASE_URL') else False
     )
 }
 
@@ -133,15 +134,27 @@ USE_TZ = True
 
 # Configurações de arquivos estáticos
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# STATICFILES_DIRS apenas se o diretório existir
+if os.path.exists(BASE_DIR / 'static'):
+    STATICFILES_DIRS = [BASE_DIR / 'static']
+else:
+    STATICFILES_DIRS = []
+
+# Configuração do WhiteNoise baseada no ambiente
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage' if not DEBUG else 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
-# Configurações de segurança
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-SECURE_SSL_REDIRECT = not DEBUG  # Só redireciona para HTTPS em produção
-SESSION_COOKIE_SECURE = not DEBUG  # Só usa cookies seguros em produção
-CSRF_COOKIE_SECURE = not DEBUG  # Só usa CSRF seguro em produção
+# Configurações de segurança (apenas em produção)
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+else:
+    SECURE_SSL_REDIRECT = False
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
