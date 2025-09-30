@@ -1,0 +1,300 @@
+2025-09-30T13:26:10.968486782Z     c = Context(self.get_traceback_data(), use_l10n=False)
+2025-09-30T13:26:10.968488772Z                 ~~~~~~~~~~~~~~~~~~~~~~~^^
+2025-09-30T13:26:10.968490932Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/views/debug.py", line 397, in get_traceback_data
+2025-09-30T13:26:10.968493032Z     "settings": self.filter.get_safe_settings(),
+2025-09-30T13:26:10.968495202Z                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+2025-09-30T13:26:10.968497552Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/views/debug.py", line 156, in get_safe_settings
+2025-09-30T13:26:10.968499712Z     settings_dict[k] = self.cleanse_setting(k, getattr(settings, k))
+2025-09-30T13:26:10.968506563Z                                                ~~~~~~~^^^^^^^^^^^^^
+2025-09-30T13:26:10.968508933Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/conf/__init__.py", line 90, in __getattr__
+2025-09-30T13:26:10.968511033Z     raise ImproperlyConfigured("The SECRET_KEY setting must not be empty.")
+2025-09-30T13:26:10.968513253Z django.core.exceptions.ImproperlyConfigured: The SECRET_KEY setting must not be empty.
+2025-09-30T13:26:10.968515204Z 
+2025-09-30T13:26:10.968517284Z During handling of the above exception, another exception occurred:
+2025-09-30T13:26:10.968519114Z 
+2025-09-30T13:26:10.968520994Z Traceback (most recent call last):
+2025-09-30T13:26:10.968523324Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/gunicorn/workers/sync.py", line 134, in handle
+2025-09-30T13:26:10.968525504Z     self.handle_request(listener, req, client, addr)
+2025-09-30T13:26:10.968527614Z     ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-09-30T13:26:10.968535945Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/gunicorn/workers/sync.py", line 177, in handle_request
+2025-09-30T13:26:10.968538265Z     respiter = self.wsgi(environ, resp.start_response)
+2025-09-30T13:26:10.968540655Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/core/handlers/wsgi.py", line 124, in __call__
+2025-09-30T13:26:10.968542795Z     response = self.get_response(request)
+2025-09-30T13:26:10.968544915Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 140, in get_response
+2025-09-30T13:26:10.968547105Z     response = self._middleware_chain(request)
+2025-09-30T13:26:10.968549275Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 57, in inner
+2025-09-30T13:26:10.968551516Z     response = response_for_exception(request, exc)
+2025-09-30T13:26:10.968553886Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 141, in response_for_exception
+2025-09-30T13:26:10.968556036Z     response = handle_uncaught_exception(
+2025-09-30T13:26:10.968558026Z         request, get_resolver(get_urlconf()), sys.exc_info()
+2025-09-30T13:26:10.968560066Z     )
+2025-09-30T13:26:10.968562266Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 182, in handle_uncaught_exception
+2025-09-30T13:26:10.968564406Z     return debug.technical_500_response(request, *exc_info)
+2025-09-30T13:26:10.968566476Z            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+2025-09-30T13:26:10.968568637Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/views/debug.py", line 69, in technical_500_response
+2025-09-30T13:26:10.968570847Z     html = reporter.get_traceback_html()
+2025-09-30T13:26:10.968573017Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/views/debug.py", line 428, in get_traceback_html
+2025-09-30T13:26:10.968575047Z     c = Context(self.get_traceback_data(), use_l10n=False)
+2025-09-30T13:26:10.968577097Z                 ~~~~~~~~~~~~~~~~~~~~~~~^^
+2025-09-30T13:26:10.968579127Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/views/debug.py", line 397, in get_traceback_data
+2025-09-30T13:26:10.968581297Z     "settings": self.filter.get_safe_settings(),
+2025-09-30T13:26:10.968583308Z                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+2025-09-30T13:26:10.968585558Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/views/debug.py", line 156, in get_safe_settings
+2025-09-30T13:26:10.968587828Z     settings_dict[k] = self.cleanse_setting(k, getattr(settings, k))
+2025-09-30T13:26:10.968594688Z                                                ~~~~~~~^^^^^^^^^^^^^
+2025-09-30T13:26:10.968597038Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/conf/__init__.py", line 90, in __getattr__
+2025-09-30T13:26:10.968599218Z     raise ImproperlyConfigured("The SECRET_KEY setting must not be empty.")
+2025-09-30T13:26:10.968601739Z django.core.exceptions.ImproperlyConfigured: The SECRET_KEY setting must not be empty.
+2025-09-30T13:26:13.76545158Z [2025-09-30 10:26:13 -0300] [57] [ERROR] Error handling request /
+2025-09-30T13:26:13.765475582Z Traceback (most recent call last):
+2025-09-30T13:26:13.765480882Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+2025-09-30T13:26:13.765484942Z     response = get_response(request)
+2025-09-30T13:26:13.765488953Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/utils/deprecation.py", line 119, in __call__
+2025-09-30T13:26:13.765497103Z     response = self.process_request(request)
+2025-09-30T13:26:13.765502394Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/contrib/messages/middleware.py", line 12, in process_request
+2025-09-30T13:26:13.765506514Z     request._messages = default_storage(request)
+2025-09-30T13:26:13.765510544Z                         ~~~~~~~~~~~~~~~^^^^^^^^^
+2025-09-30T13:26:13.765514694Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/contrib/messages/storage/__init__.py", line 12, in default_storage
+2025-09-30T13:26:13.765519475Z     return import_string(settings.MESSAGE_STORAGE)(request)
+2025-09-30T13:26:13.765523835Z            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+2025-09-30T13:26:13.765528305Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/contrib/messages/storage/fallback.py", line 17, in __init__
+2025-09-30T13:26:13.765532815Z     storage_class(*args, **kwargs) for storage_class in self.storage_classes
+2025-09-30T13:26:13.765536916Z     ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+2025-09-30T13:26:13.765540896Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/contrib/messages/storage/cookie.py", line 92, in __init__
+2025-09-30T13:26:13.765547326Z     self.signer = signing.get_cookie_signer(salt=self.key_salt)
+2025-09-30T13:26:13.765551837Z                   ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+2025-09-30T13:26:13.765556527Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/core/signing.py", line 112, in get_cookie_signer
+2025-09-30T13:26:13.765560667Z     key=_cookie_signer_key(settings.SECRET_KEY),
+2025-09-30T13:26:13.765564807Z                            ^^^^^^^^^^^^^^^^^^^
+2025-09-30T13:26:13.765569067Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/conf/__init__.py", line 90, in __getattr__
+2025-09-30T13:26:13.765573718Z     raise ImproperlyConfigured("The SECRET_KEY setting must not be empty.")
+2025-09-30T13:26:13.765578928Z django.core.exceptions.ImproperlyConfigured: The SECRET_KEY setting must not be empty.
+2025-09-30T13:26:13.765583428Z 
+2025-09-30T13:26:13.765588149Z During handling of the above exception, another exception occurred:
+2025-09-30T13:26:13.765592199Z 
+2025-09-30T13:26:13.765596319Z Traceback (most recent call last):
+2025-09-30T13:26:13.76560052Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+2025-09-30T13:26:13.7656044Z     response = get_response(request)
+2025-09-30T13:26:13.76560884Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/utils/deprecation.py", line 120, in __call__
+2025-09-30T13:26:13.76561282Z     response = response or self.get_response(request)
+2025-09-30T13:26:13.765627081Z                            ~~~~~~~~~~~~~~~~~^^^^^^^^^
+2025-09-30T13:26:13.765630401Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 57, in inner
+2025-09-30T13:26:13.765633111Z     response = response_for_exception(request, exc)
+2025-09-30T13:26:13.765635962Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 141, in response_for_exception
+2025-09-30T13:26:13.765638642Z     response = handle_uncaught_exception(
+2025-09-30T13:26:13.765641202Z         request, get_resolver(get_urlconf()), sys.exc_info()
+2025-09-30T13:26:13.765643842Z     )
+2025-09-30T13:26:13.765646362Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 182, in handle_uncaught_exception
+2025-09-30T13:26:13.765647512Z 127.0.0.1 - - [30/Sep/2025:10:26:13 -0300] "GET / HTTP/1.1" 500 0 "-" "-"
+2025-09-30T13:26:13.765648962Z     return debug.technical_500_response(request, *exc_info)
+2025-09-30T13:26:13.765660773Z            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+2025-09-30T13:26:13.765663933Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/views/debug.py", line 69, in technical_500_response
+2025-09-30T13:26:13.765667233Z     html = reporter.get_traceback_html()
+2025-09-30T13:26:13.765669874Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/views/debug.py", line 428, in get_traceback_html
+2025-09-30T13:26:13.765672354Z     c = Context(self.get_traceback_data(), use_l10n=False)
+2025-09-30T13:26:13.765674904Z                 ~~~~~~~~~~~~~~~~~~~~~~~^^
+2025-09-30T13:26:13.765677434Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/views/debug.py", line 397, in get_traceback_data
+2025-09-30T13:26:13.765681004Z     "settings": self.filter.get_safe_settings(),
+2025-09-30T13:26:13.765683284Z                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+2025-09-30T13:26:13.765687855Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/views/debug.py", line 156, in get_safe_settings
+2025-09-30T13:26:13.765690775Z     settings_dict[k] = self.cleanse_setting(k, getattr(settings, k))
+2025-09-30T13:26:13.765693855Z                                                ~~~~~~~^^^^^^^^^^^^^
+2025-09-30T13:26:13.765696465Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/conf/__init__.py", line 90, in __getattr__
+2025-09-30T13:26:13.765703226Z     raise ImproperlyConfigured("The SECRET_KEY setting must not be empty.")
+2025-09-30T13:26:13.765706626Z django.core.exceptions.ImproperlyConfigured: The SECRET_KEY setting must not be empty.
+2025-09-30T13:26:13.765708926Z 
+2025-09-30T13:26:13.765711326Z During handling of the above exception, another exception occurred:
+2025-09-30T13:26:13.765713546Z 
+2025-09-30T13:26:13.765716296Z Traceback (most recent call last):
+2025-09-30T13:26:13.765718996Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+2025-09-30T13:26:13.765721547Z     response = get_response(request)
+2025-09-30T13:26:13.765724117Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/utils/deprecation.py", line 120, in __call__
+2025-09-30T13:26:13.765727177Z     response = response or self.get_response(request)
+2025-09-30T13:26:13.765729797Z                            ~~~~~~~~~~~~~~~~~^^^^^^^^^
+2025-09-30T13:26:13.765732637Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 57, in inner
+2025-09-30T13:26:13.765735037Z     response = response_for_exception(request, exc)
+2025-09-30T13:26:13.765748488Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 141, in response_for_exception
+2025-09-30T13:26:13.765751798Z     response = handle_uncaught_exception(
+2025-09-30T13:26:13.765754409Z         request, get_resolver(get_urlconf()), sys.exc_info()
+2025-09-30T13:26:13.765756779Z     )
+2025-09-30T13:26:13.765759679Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 182, in handle_uncaught_exception
+2025-09-30T13:26:13.765762519Z     return debug.technical_500_response(request, *exc_info)
+2025-09-30T13:26:13.765765269Z            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+2025-09-30T13:26:13.76576801Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/views/debug.py", line 69, in technical_500_response
+2025-09-30T13:26:13.76577097Z     html = reporter.get_traceback_html()
+2025-09-30T13:26:13.76577348Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/views/debug.py", line 428, in get_traceback_html
+2025-09-30T13:26:13.76577644Z     c = Context(self.get_traceback_data(), use_l10n=False)
+2025-09-30T13:26:13.7657789Z                 ~~~~~~~~~~~~~~~~~~~~~~~^^
+2025-09-30T13:26:13.76578138Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/views/debug.py", line 397, in get_traceback_data
+2025-09-30T13:26:13.765784471Z     "settings": self.filter.get_safe_settings(),
+2025-09-30T13:26:13.765786951Z                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+2025-09-30T13:26:13.765789381Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/views/debug.py", line 156, in get_safe_settings
+2025-09-30T13:26:13.765791941Z     settings_dict[k] = self.cleanse_setting(k, getattr(settings, k))
+2025-09-30T13:26:13.765794221Z                                                ~~~~~~~^^^^^^^^^^^^^
+2025-09-30T13:26:13.765796991Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/conf/__init__.py", line 90, in __getattr__
+2025-09-30T13:26:13.765799501Z     raise ImproperlyConfigured("The SECRET_KEY setting must not be empty.")
+2025-09-30T13:26:13.765815172Z django.core.exceptions.ImproperlyConfigured: The SECRET_KEY setting must not be empty.
+2025-09-30T13:26:13.765817593Z 
+2025-09-30T13:26:13.765819802Z During handling of the above exception, another exception occurred:
+2025-09-30T13:26:13.765821953Z 
+2025-09-30T13:26:13.765826593Z Traceback (most recent call last):
+2025-09-30T13:26:13.765829473Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+2025-09-30T13:26:13.765832133Z     response = get_response(request)
+2025-09-30T13:26:13.765834783Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/utils/deprecation.py", line 120, in __call__
+2025-09-30T13:26:13.765837474Z     response = response or self.get_response(request)
+2025-09-30T13:26:13.765840064Z                            ~~~~~~~~~~~~~~~~~^^^^^^^^^
+2025-09-30T13:26:13.765842404Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 57, in inner
+2025-09-30T13:26:13.765845094Z     response = response_for_exception(request, exc)
+2025-09-30T13:26:13.765847804Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 141, in response_for_exception
+2025-09-30T13:26:13.765850154Z     response = handle_uncaught_exception(
+2025-09-30T13:26:13.765852555Z         request, get_resolver(get_urlconf()), sys.exc_info()
+2025-09-30T13:26:13.765854985Z     )
+2025-09-30T13:26:13.765857875Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 182, in handle_uncaught_exception
+2025-09-30T13:26:13.765865765Z     return debug.technical_500_response(request, *exc_info)
+2025-09-30T13:26:13.765868676Z            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+2025-09-30T13:26:13.765871416Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/views/debug.py", line 69, in technical_500_response
+2025-09-30T13:26:13.765874116Z     html = reporter.get_traceback_html()
+2025-09-30T13:26:13.765878396Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/views/debug.py", line 428, in get_traceback_html
+2025-09-30T13:26:13.765880986Z     c = Context(self.get_traceback_data(), use_l10n=False)
+2025-09-30T13:26:13.765883696Z                 ~~~~~~~~~~~~~~~~~~~~~~~^^
+2025-09-30T13:26:13.765897827Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/views/debug.py", line 397, in get_traceback_data
+2025-09-30T13:26:13.765901498Z     "settings": self.filter.get_safe_settings(),
+2025-09-30T13:26:13.765904508Z                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+2025-09-30T13:26:13.765907198Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/views/debug.py", line 156, in get_safe_settings
+2025-09-30T13:26:13.765909838Z     settings_dict[k] = self.cleanse_setting(k, getattr(settings, k))
+2025-09-30T13:26:13.765912698Z                                                ~~~~~~~^^^^^^^^^^^^^
+2025-09-30T13:26:13.765915258Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/conf/__init__.py", line 90, in __getattr__
+2025-09-30T13:26:13.765917859Z     raise ImproperlyConfigured("The SECRET_KEY setting must not be empty.")
+2025-09-30T13:26:13.765920689Z django.core.exceptions.ImproperlyConfigured: The SECRET_KEY setting must not be empty.
+2025-09-30T13:26:13.765923169Z 
+2025-09-30T13:26:13.765925919Z During handling of the above exception, another exception occurred:
+2025-09-30T13:26:13.765928359Z 
+2025-09-30T13:26:13.765931249Z Traceback (most recent call last):
+2025-09-30T13:26:13.765933729Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+2025-09-30T13:26:13.765936289Z     response = get_response(request)
+2025-09-30T13:26:13.76593898Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/utils/deprecation.py", line 120, in __call__
+2025-09-30T13:26:13.7659415Z     response = response or self.get_response(request)
+2025-09-30T13:26:13.76594658Z                            ~~~~~~~~~~~~~~~~~^^^^^^^^^
+2025-09-30T13:26:13.76594908Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 57, in inner
+2025-09-30T13:26:13.76595145Z     response = response_for_exception(request, exc)
+2025-09-30T13:26:13.765965081Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 141, in response_for_exception
+2025-09-30T13:26:13.765967711Z     response = handle_uncaught_exception(
+2025-09-30T13:26:13.765970322Z         request, get_resolver(get_urlconf()), sys.exc_info()
+2025-09-30T13:26:13.765973242Z     )
+2025-09-30T13:26:13.765976022Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 182, in handle_uncaught_exception
+2025-09-30T13:26:13.765978762Z     return debug.technical_500_response(request, *exc_info)
+2025-09-30T13:26:13.765981352Z            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+2025-09-30T13:26:13.765983842Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/views/debug.py", line 69, in technical_500_response
+2025-09-30T13:26:13.765986443Z     html = reporter.get_traceback_html()
+2025-09-30T13:26:13.765994603Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/views/debug.py", line 428, in get_traceback_html
+2025-09-30T13:26:13.765997173Z     c = Context(self.get_traceback_data(), use_l10n=False)
+2025-09-30T13:26:13.765999933Z                 ~~~~~~~~~~~~~~~~~~~~~~~^^
+2025-09-30T13:26:13.766002433Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/views/debug.py", line 397, in get_traceback_data
+2025-09-30T13:26:13.766004814Z     "settings": self.filter.get_safe_settings(),
+2025-09-30T13:26:13.766007474Z                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+2025-09-30T13:26:13.766010184Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/views/debug.py", line 156, in get_safe_settings
+2025-09-30T13:26:13.766012704Z     settings_dict[k] = self.cleanse_setting(k, getattr(settings, k))
+2025-09-30T13:26:13.766015374Z                                                ~~~~~~~^^^^^^^^^^^^^
+2025-09-30T13:26:13.766018045Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/conf/__init__.py", line 90, in __getattr__
+2025-09-30T13:26:13.766020845Z     raise ImproperlyConfigured("The SECRET_KEY setting must not be empty.")
+2025-09-30T13:26:13.766023695Z django.core.exceptions.ImproperlyConfigured: The SECRET_KEY setting must not be empty.
+2025-09-30T13:26:13.766026145Z 
+2025-09-30T13:26:13.766028815Z During handling of the above exception, another exception occurred:
+2025-09-30T13:26:13.766031295Z 
+2025-09-30T13:26:13.766034095Z Traceback (most recent call last):
+2025-09-30T13:26:13.766036815Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+2025-09-30T13:26:13.766039496Z     response = get_response(request)
+2025-09-30T13:26:13.766042496Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/whitenoise/middleware.py", line 123, in __call__
+2025-09-30T13:26:13.766045166Z     return self.get_response(request)
+2025-09-30T13:26:13.766047346Z            ~~~~~~~~~~~~~~~~~^^^^^^^^^
+2025-09-30T13:26:13.766049696Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 57, in inner
+2025-09-30T13:26:13.766052396Z     response = response_for_exception(request, exc)
+2025-09-30T13:26:13.766055277Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 141, in response_for_exception
+2025-09-30T13:26:13.766057907Z     response = handle_uncaught_exception(
+2025-09-30T13:26:13.766060477Z         request, get_resolver(get_urlconf()), sys.exc_info()
+2025-09-30T13:26:13.766063307Z     )
+2025-09-30T13:26:13.766075478Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 182, in handle_uncaught_exception
+2025-09-30T13:26:13.766078718Z     return debug.technical_500_response(request, *exc_info)
+2025-09-30T13:26:13.766081368Z            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+2025-09-30T13:26:13.766083958Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/views/debug.py", line 69, in technical_500_response
+2025-09-30T13:26:13.766086318Z     html = reporter.get_traceback_html()
+2025-09-30T13:26:13.766088509Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/views/debug.py", line 428, in get_traceback_html
+2025-09-30T13:26:13.766092549Z     c = Context(self.get_traceback_data(), use_l10n=False)
+2025-09-30T13:26:13.766095419Z                 ~~~~~~~~~~~~~~~~~~~~~~~^^
+2025-09-30T13:26:13.766097969Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/views/debug.py", line 397, in get_traceback_data
+2025-09-30T13:26:13.76610559Z     "settings": self.filter.get_safe_settings(),
+2025-09-30T13:26:13.76610781Z                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+2025-09-30T13:26:13.76610989Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/views/debug.py", line 156, in get_safe_settings
+2025-09-30T13:26:13.7661121Z     settings_dict[k] = self.cleanse_setting(k, getattr(settings, k))
+2025-09-30T13:26:13.76611425Z                                                ~~~~~~~^^^^^^^^^^^^^
+2025-09-30T13:26:13.76611683Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/conf/__init__.py", line 90, in __getattr__
+2025-09-30T13:26:13.766119411Z     raise ImproperlyConfigured("The SECRET_KEY setting must not be empty.")
+2025-09-30T13:26:13.766136692Z django.core.exceptions.ImproperlyConfigured: The SECRET_KEY setting must not be empty.
+2025-09-30T13:26:13.766139922Z 
+2025-09-30T13:26:13.766142622Z During handling of the above exception, another exception occurred:
+2025-09-30T13:26:13.766144902Z 
+2025-09-30T13:26:13.766147202Z Traceback (most recent call last):
+2025-09-30T13:26:13.766149672Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+2025-09-30T13:26:13.766152422Z     response = get_response(request)
+2025-09-30T13:26:13.766155313Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/utils/deprecation.py", line 120, in __call__
+2025-09-30T13:26:13.766158063Z     response = response or self.get_response(request)
+2025-09-30T13:26:13.766160743Z                            ~~~~~~~~~~~~~~~~~^^^^^^^^^
+2025-09-30T13:26:13.766163183Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 57, in inner
+2025-09-30T13:26:13.766165763Z     response = response_for_exception(request, exc)
+2025-09-30T13:26:13.766168443Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 141, in response_for_exception
+2025-09-30T13:26:13.766172434Z     response = handle_uncaught_exception(
+2025-09-30T13:26:13.766175274Z         request, get_resolver(get_urlconf()), sys.exc_info()
+2025-09-30T13:26:13.766177564Z     )
+2025-09-30T13:26:13.766180224Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 182, in handle_uncaught_exception
+2025-09-30T13:26:13.766182764Z     return debug.technical_500_response(request, *exc_info)
+2025-09-30T13:26:13.766185304Z            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+2025-09-30T13:26:13.766188075Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/views/debug.py", line 69, in technical_500_response
+2025-09-30T13:26:13.766190725Z     html = reporter.get_traceback_html()
+2025-09-30T13:26:13.766193685Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/views/debug.py", line 428, in get_traceback_html
+2025-09-30T13:26:13.766196315Z     c = Context(self.get_traceback_data(), use_l10n=False)
+2025-09-30T13:26:13.766199035Z                 ~~~~~~~~~~~~~~~~~~~~~~~^^
+2025-09-30T13:26:13.766201696Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/views/debug.py", line 397, in get_traceback_data
+2025-09-30T13:26:13.766204596Z     "settings": self.filter.get_safe_settings(),
+2025-09-30T13:26:13.766207146Z                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+2025-09-30T13:26:13.766209596Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/views/debug.py", line 156, in get_safe_settings
+2025-09-30T13:26:13.766212556Z     settings_dict[k] = self.cleanse_setting(k, getattr(settings, k))
+2025-09-30T13:26:13.766215046Z                                                ~~~~~~~^^^^^^^^^^^^^
+2025-09-30T13:26:13.766222487Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/conf/__init__.py", line 90, in __getattr__
+2025-09-30T13:26:13.766225057Z     raise ImproperlyConfigured("The SECRET_KEY setting must not be empty.")
+2025-09-30T13:26:13.766227547Z django.core.exceptions.ImproperlyConfigured: The SECRET_KEY setting must not be empty.
+2025-09-30T13:26:13.766229807Z 
+2025-09-30T13:26:13.766232287Z During handling of the above exception, another exception occurred:
+2025-09-30T13:26:13.766234297Z 
+2025-09-30T13:26:13.766236187Z Traceback (most recent call last):
+2025-09-30T13:26:13.766238378Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/gunicorn/workers/sync.py", line 134, in handle
+2025-09-30T13:26:13.766240548Z     self.handle_request(listener, req, client, addr)
+2025-09-30T13:26:13.766242668Z     ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-09-30T13:26:13.766258259Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/gunicorn/workers/sync.py", line 177, in handle_request
+2025-09-30T13:26:13.766261609Z     respiter = self.wsgi(environ, resp.start_response)
+2025-09-30T13:26:13.766264309Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/core/handlers/wsgi.py", line 124, in __call__
+2025-09-30T13:26:13.766267169Z     response = self.get_response(request)
+2025-09-30T13:26:13.766269689Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 140, in get_response
+2025-09-30T13:26:13.7662721Z     response = self._middleware_chain(request)
+2025-09-30T13:26:13.76627448Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 57, in inner
+2025-09-30T13:26:13.76627706Z     response = response_for_exception(request, exc)
+2025-09-30T13:26:13.7662798Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 141, in response_for_exception
+2025-09-30T13:26:13.7662824Z     response = handle_uncaught_exception(
+2025-09-30T13:26:13.766284761Z         request, get_resolver(get_urlconf()), sys.exc_info()
+2025-09-30T13:26:13.766287081Z     )
+2025-09-30T13:26:13.766289791Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 182, in handle_uncaught_exception
+2025-09-30T13:26:13.766292931Z     return debug.technical_500_response(request, *exc_info)
+2025-09-30T13:26:13.766295501Z            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+2025-09-30T13:26:13.766298381Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/views/debug.py", line 69, in technical_500_response
+2025-09-30T13:26:13.766300931Z     html = reporter.get_traceback_html()
+2025-09-30T13:26:13.766303382Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/views/debug.py", line 428, in get_traceback_html
+2025-09-30T13:26:13.766306002Z     c = Context(self.get_traceback_data(), use_l10n=False)
+2025-09-30T13:26:13.766308402Z                 ~~~~~~~~~~~~~~~~~~~~~~~^^
+2025-09-30T13:26:13.766311192Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/views/debug.py", line 397, in get_traceback_data
+2025-09-30T13:26:13.766314042Z     "settings": self.filter.get_safe_settings(),
+2025-09-30T13:26:13.766316252Z                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+2025-09-30T13:26:13.766318492Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/views/debug.py", line 156, in get_safe_settings
+2025-09-30T13:26:13.766321012Z     settings_dict[k] = self.cleanse_setting(k, getattr(settings, k))
+2025-09-30T13:26:13.766323923Z                                                ~~~~~~~^^^^^^^^^^^^^
+2025-09-30T13:26:13.766345634Z   File "/opt/render/project/src/.venv/lib/python3.13/site-packages/django/conf/__init__.py", line 90, in __getattr__
+2025-09-30T13:26:13.766348854Z     raise ImproperlyConfigured("The SECRET_KEY setting must not be empty.")
+2025-09-30T13:26:13.766351505Z django.core.exceptions.ImproperlyConfigured: The SECRET_KEY setting must not be empty.
