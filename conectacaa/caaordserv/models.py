@@ -46,6 +46,7 @@ class OrdemServico(models.Model):
     ultimo_usuario = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Último Usuário')
 
     class Meta:
+        app_label = 'caaordserv'
         verbose_name = 'Ordem de Serviço'
         verbose_name_plural = 'Ordens de Serviço'
         ordering = ['-processo']
