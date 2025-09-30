@@ -38,7 +38,7 @@ for template_dir in TEMPLATE_DIRS:
 SECRET_KEY = os.environ.get('SECRET_KEY', '9qn38d*9#t*)oe0ic=cisa4oe%sbu2g@-2#!&wjqik%7b5!yjw')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'True') == 'True'  # Debug True por padrão em desenvolvimento
+DEBUG = os.getenv('DEBUG', 'False') == 'True'  # Debug True por padrão em desenvolvimento
 
 # Hosts permitidos
 ALLOWED_HOSTS = ['*'] if DEBUG else ['pi2univesp.onrender.com', '.onrender.com']
@@ -100,10 +100,10 @@ WSGI_APPLICATION = 'wsgi.application'
 
 DATABASES = {
     'default': dj_database_url.config(
-        default='sqlite:///' + str(BASE_DIR / 'db.sqlite3'),
+        default=os.environ.get('DATABASE_URL'),
         conn_max_age=600,
         conn_health_checks=True,
-        ssl_require=True if os.environ.get('DATABASE_URL') else False
+        ssl_require=True
     )
 }
 
