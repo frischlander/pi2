@@ -15,6 +15,24 @@
 
     <link href="{% static 'css/dashboard.css' %}" rel="stylesheet">
     <link href="{% static 'css/main.css' %}" rel="stylesheet">
+    <style>
+      .card-stats-blue-light {
+        background-color: #bd0000; /* 'Finalizadas' */
+        color: white;
+      }
+      .card-stats-green-light {
+        background-color: #007512; /* 'Em Andamento' */
+        color: white;
+      }
+      .card-stats-blue-dark {
+        background-color: #b6b900; /* 'Aguardando Parecer' */
+        color: white;
+      }
+      .card-stats-green-dark {
+        background-color: #000000; /* 'Canceladas' */
+        color: white;
+      }
+    </style>
 </head>
 
 <body>
