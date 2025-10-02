@@ -1,3 +1,71 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="{% static 'img/favicon.png' %}">
+
+    <title>Conecta CAA</title>
+
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <link href="{% static 'css/dashboard.css' %}" rel="stylesheet">
+    <link href="{% static 'css/main.css' %}" rel="stylesheet">
+</head>
+
+<body>
+<nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
+    <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">Conecta CAA</a>
+    <ul class="navbar-nav px-3">
+        <li class="nav-item text-nowrap">
+            <form action="{% url 'logout' %}" method="POST">
+                {% csrf_token %}
+                <input class="btn btn-dark" type="submit" value="Sair">
+            </form>
+        </li>
+    </ul>
+</nav>
+
+<div class="container-fluid">
+    <div class="row">
+
+        {% include 'partials/_sidebar.html' %}
+
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4" id="main-content">
+            {% block content %}
+            {% endblock %}
+        </main>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+<script>window.jQuery || document.write('<script src="{% static 'js/vendor/jquery-slim.min.js' %}"><\/script>')</script>
+<script src="{% static 'js/vendor/popper.min.js' %}"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+
+<script src="https://unpkg.com/feather-icons/dist/feather.min.js"></script>
+<script>
+    feather.replace()
+</script>
+
+<style>
+  #leitor-texto-fab {
+    position: fixed; bottom: 25px; right: 25px; z-index: 1050; width: 60px;
+    height: 60px; border-radius: 50%; font-size: 24px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2); display: none;
+  }
+</style>
+
+<button id="leitor-texto-fab" class="btn btn-primary" title="Iniciar leitura (Alt + L)">
+  <i class="fas fa-volume-up"></i>
+</button>
+
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     if ('speechSynthesis' in window) {
@@ -7,7 +75,6 @@
       let chunksParaLer = [];
       let chunkAtual = 0;
 
-      // Prepara a lista de textos UMA ÚNICA VEZ
       function prepararTexto() {
           const areaDeLeitura = document.querySelector('body');
           if (!areaDeLeitura) return;
@@ -18,18 +85,14 @@
       
       prepararTexto();
 
-      // Função principal que é chamada ao clicar
       function gerenciarLeitura() {
-        // Se o navegador estiver falando, o comando é para parar.
         if (window.speechSynthesis.speaking) {
           window.speechSynthesis.cancel();
-          // O próprio evento 'onend' que será disparado vai resetar o botão.
           return;
         }
 
-        // Se não estiver falando, o comando é para ler o próximo trecho.
         if (chunkAtual >= chunksParaLer.length) {
-            chunkAtual = 0; // Reinicia se chegou ao fim da lista
+            chunkAtual = 0;
         }
         
         const textoDoChunk = chunksParaLer[chunkAtual];
@@ -39,7 +102,6 @@
             utterance.rate = 0.85; 
             utterance.lang = 'pt-BR';
 
-            // Configura o que acontece quando a fala começa
             utterance.onstart = function() {
               fabButton.innerHTML = '<i class="fas fa-stop"></i>';
               fabButton.classList.remove('btn-primary');
@@ -47,7 +109,6 @@
               fabButton.title = 'Parar leitura (Alt + L)';
             };
             
-            // Configura o que acontece quando a fala termina (seja por fim ou por cancelamento)
             utterance.onend = function() {
               fabButton.innerHTML = '<i class="fas fa-play"></i>';
               fabButton.classList.remove('btn-danger');
@@ -56,12 +117,10 @@
             };
             
             window.speechSynthesis.speak(utterance);
-            // Avança para o próximo trecho, garantindo que não se repetirá
             chunkAtual++;
         }
       }
 
-      // Conecta a função ao botão e ao atalho
       fabButton.addEventListener('click', gerenciarLeitura);
       document.addEventListener('keydown', function(event) {
         if (event.altKey && event.key === 'l') {
@@ -70,7 +129,6 @@
         }
       });
 
-      // Limpa a fala se o usuário sair da página
       window.addEventListener('beforeunload', () => {
         window.speechSynthesis.cancel();
       });
@@ -80,3 +138,6 @@
     }
   });
 </script>
+
+</body>
+</html>
