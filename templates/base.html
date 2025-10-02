@@ -8,7 +8,7 @@
     <meta name="author" content="">
     <link rel="icon" href="{% static 'img/favicon.png' %}">
 
-    <title>Conecta CAA</title>
+    <title>PI2 GAA</title>
 
     <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
@@ -19,7 +19,7 @@
 
 <body>
 <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
-    <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">Conecta CAA</a>
+    <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">PI2 GAA</a>
     <ul class="navbar-nav px-3">
         <li class="nav-item text-nowrap">
             <form action="{% url 'logout' %}" method="POST">
@@ -67,13 +67,20 @@
 </button>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
+  (function() {
+    // Verifica se já foi inicializado para evitar duplicação
+    if (window.leitorTextoInicializado) {
+      return;
+    }
+    window.leitorTextoInicializado = true;
+
     if ('speechSynthesis' in window) {
       const fabButton = document.getElementById('leitor-texto-fab');
       fabButton.style.display = 'block';
 
       let chunksParaLer = [];
       let chunkAtual = 0;
+      let estaLendo = false;
 
       function prepararTexto() {
           const areaDeLeitura = document.querySelector('body');
@@ -85,12 +92,23 @@
       
       prepararTexto();
 
+      function pararLeitura() {
+        window.speechSynthesis.cancel();
+        estaLendo = false;
+        fabButton.innerHTML = '<i class="fas fa-volume-up"></i>';
+        fabButton.classList.remove('btn-danger');
+        fabButton.classList.add('btn-primary');
+        fabButton.title = 'Iniciar leitura (Alt + L)';
+      }
+
       function gerenciarLeitura() {
-        if (window.speechSynthesis.speaking) {
-          window.speechSynthesis.cancel();
+        // Se já está lendo, para a leitura
+        if (estaLendo || window.speechSynthesis.speaking) {
+          pararLeitura();
           return;
         }
 
+        // Reinicia do começo se chegou ao fim
         if (chunkAtual >= chunksParaLer.length) {
             chunkAtual = 0;
         }
@@ -98,11 +116,15 @@
         const textoDoChunk = chunksParaLer[chunkAtual];
 
         if (textoDoChunk) {
+            // Garante que não há nada sendo falado antes de começar
+            window.speechSynthesis.cancel();
+            
             const utterance = new SpeechSynthesisUtterance(textoDoChunk);
             utterance.rate = 0.85; 
             utterance.lang = 'pt-BR';
 
             utterance.onstart = function() {
+              estaLendo = true;
               fabButton.innerHTML = '<i class="fas fa-stop"></i>';
               fabButton.classList.remove('btn-primary');
               fabButton.classList.add('btn-danger');
@@ -110,24 +132,33 @@
             };
             
             utterance.onend = function() {
+              estaLendo = false;
               fabButton.innerHTML = '<i class="fas fa-play"></i>';
               fabButton.classList.remove('btn-danger');
               fabButton.classList.add('btn-primary');
               fabButton.title = 'Ler próxima parte (Alt + L)';
+              chunkAtual++;
+            };
+
+            utterance.onerror = function() {
+              estaLendo = false;
+              pararLeitura();
             };
             
             window.speechSynthesis.speak(utterance);
-            chunkAtual++;
         }
       }
 
-      fabButton.addEventListener('click', gerenciarLeitura);
-      document.addEventListener('keydown', function(event) {
+      // Função nomeada para permitir remoção do listener
+      function handleKeydown(event) {
         if (event.altKey && event.key === 'l') {
           event.preventDefault();
           gerenciarLeitura();
         }
-      });
+      }
+
+      fabButton.addEventListener('click', gerenciarLeitura);
+      document.addEventListener('keydown', handleKeydown);
 
       window.addEventListener('beforeunload', () => {
         window.speechSynthesis.cancel();
@@ -136,7 +167,7 @@
     } else {
       console.log('Seu navegador não suporta a funcionalidade de leitura de texto.');
     }
-  });
+  })();
 </script>
 
 </body>
