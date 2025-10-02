@@ -98,7 +98,8 @@ Este projeto está licenciado sob a [MIT License](LICENSE).
 
 ## 👥 Autores
 
-- **Seu Nome** - *Trabalho Inicial* - [@frischlander](https://github.com/frischlander)
+- **Márcio Aparecido da Silva Júnior** - *Trabalho Inicial* - (https://github.com/devmarciojr)
+- **André Frischlander** - *Continuidade* - (https://github.com/frischlander)
 
 ## 📞 Suporte
 
