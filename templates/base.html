@@ -87,24 +87,24 @@
       let chunksParaLer = [];
       let chunkAtual = 0;
 
+      // Função para preparar os textos da página inteira
       function prepararTexto() {
-          // ALTERAÇÃO AQUI: Em vez de 'main-content', pegamos o 'body' inteiro
           const areaDeLeitura = document.querySelector('body');
           if (!areaDeLeitura) return;
 
           const elementos = areaDeLeitura.querySelectorAll('p, h1, h2, h3, h4, h5, h6, li, th, td, a, label');
-          chunksParaLer = Array.from(elementos).map(el => el.textContent.trim()).filter(text => text.length > 5); // Aumentamos o filtro para ignorar textos muito curtos
+          // CORREÇÃO: Removemos o filtro de caracteres
+          chunksParaLer = Array.from(elementos).map(el => el.textContent.trim()).filter(text => text);
           chunkAtual = 0;
       }
+      
+      prepararTexto(); // Prepara o texto da página logo ao carregar
 
       fabButton.addEventListener('click', function() {
-        if (falando) {
-          window.speechSynthesis.cancel();
-          return;
-        }
+        window.speechSynthesis.cancel();
 
-        if (chunksParaLer.length === 0 || chunkAtual === 0) {
-            prepararTexto();
+        if (falando) {
+          return;
         }
 
         if (chunkAtual >= chunksParaLer.length) {
@@ -135,6 +135,7 @@
             };
             
             window.speechSynthesis.speak(utterance);
+            // CORREÇÃO: Avança para o próximo trecho SÓ APÓS iniciar a fala
             chunkAtual++;
         }
       });
