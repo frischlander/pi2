@@ -46,97 +46,90 @@
     </button>
     
     
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        if ('speechSynthesis' in window) {
-          const fabButton = document.getElementById('leitor-texto-fab');
-          fabButton.style.display = 'block';
-    
-          let falando = false;
-          let chunksParaLer = [];
-          let chunkAtual = 0;
-
-          // Função para preparar os textos da página inteira
-          function prepararTexto() {
-              const areaDeLeitura = document.querySelector('body');
-              if (!areaDeLeitura) return;
-    
-              const elementos = areaDeLeitura.querySelectorAll('p, h1, h2, h3, h4, h5, h6, li, th, td, a, label');
-              // CORREÇÃO: Removemos o filtro de caracteres
-              chunksParaLer = Array.from(elementos).map(el => el.textContent.trim()).filter(text => text);
-              chunkAtual = 0;
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    if ('speechSynthesis' in window) {
+      const fabButton = document.getElementById('leitor-texto-fab');
+      fabButton.style.display = 'block';
+      // ... (código anterior para o leitor de texto) ...
+      let falando = false;
+      let chunksParaLer = [];
+      let chunkAtual = 0;
+      function prepararTexto() {
+          const areaDeLeitura = document.querySelector('body');
+          if (!areaDeLeitura) return;
+          const elementos = areaDeLeitura.querySelectorAll('p, h1, h2, h3, h4, h5, h6, li, th, td, a, label');
+          chunksParaLer = Array.from(elementos).map(el => el.textContent.trim()).filter(text => text);
+          chunkAtual = 0;
+      }
+      function tocarBoasVindas() {
+          if(sessionStorage.getItem('welcomePlayed') !== 'true') {
+              const welcomeMessage = "PI2 GESTÃO DE ATENDIMENTO ANIMAL, PÁGINA DE LOGIN. ESTE SITE CONTA COM RECURSOS DE ACESSIBILIDADE.";
+              const utterance = new SpeechSynthesisUtterance(welcomeMessage);
+              utterance.lang = 'pt-BR';
+              utterance.rate = 0.9;
+              setTimeout(() => {
+                  window.speechSynthesis.speak(utterance);
+                  sessionStorage.setItem('welcomePlayed', 'true');
+              }, 500);
           }
-
-          // **NOVO: Mensagem de boas-vindas automática**
-          function tocarBoasVindas() {
-              // Usamos sessionStorage para tocar a mensagem apenas uma vez por visita
-              if(sessionStorage.getItem('welcomePlayed') !== 'true') {
-                  const welcomeMessage = "SEJA BEM VINDO A PÁGINA DE LOGIN DO P I 2, GESTÃO DE ATENDIMENTO ANIMAL. NOSSA PÁGINA CONTA COM RECURSOS DE ACESSIBILIDADE.";
-                  const utterance = new SpeechSynthesisUtterance(welcomeMessage);
-                  utterance.lang = 'pt-BR';
-                  utterance.rate = 0.9;
-                  
-                  // Espera um pequeno instante para as vozes carregarem
-                  setTimeout(() => {
-                      window.speechSynthesis.speak(utterance);
-                      sessionStorage.setItem('welcomePlayed', 'true');
-                  }, 500);
-              }
-          }
-          
-          tocarBoasVindas();
-          prepararTexto(); // Prepara o texto da página logo ao carregar
-    
-          fabButton.addEventListener('click', function() {
-            // Cancela qualquer fala, inclusive a de boas-vindas
-            window.speechSynthesis.cancel();
-
-            if (falando) {
-              return; // O reset do botão agora é feito apenas no 'onend'
-            }
-    
-            if (chunkAtual >= chunksParaLer.length) {
-                chunkAtual = 0; // Reinicia se chegou ao fim
-            }
-            
-            const textoDoChunk = chunksParaLer[chunkAtual];
-    
-            if (textoDoChunk) {
-                const utterance = new SpeechSynthesisUtterance(textoDoChunk);
-                utterance.rate = 0.85; 
-                utterance.lang = 'pt-BR';
-    
-                utterance.onstart = function() {
-                  falando = true;
-                  fabButton.innerHTML = '<i class="fas fa-stop"></i>';
-                  fabButton.classList.remove('btn-primary');
-                  fabButton.classList.add('btn-danger');
-                  fabButton.title = 'Parar leitura';
-                };
-                
-                utterance.onend = function() {
-                  falando = false;
-                  fabButton.innerHTML = '<i class="fas fa-play"></i>';
-                  fabButton.classList.remove('btn-danger');
-                  fabButton.classList.add('btn-primary');
-                  fabButton.title = 'Ler próxima parte';
-                };
-                
-                window.speechSynthesis.speak(utterance);
-                // CORREÇÃO: Avança para o próximo trecho SÓ APÓS iniciar a fala
-                chunkAtual++;
-            }
-          });
-    
-          window.addEventListener('beforeunload', () => {
-            window.speechSynthesis.cancel();
-          });
-    
-        } else {
-          console.log('Seu navegador não suporta a funcionalidade de leitura de texto.');
+      }
+      tocarBoasVindas();
+      prepararTexto();
+      fabButton.addEventListener('click', function() {
+        window.speechSynthesis.cancel();
+        if (falando) {
+          return;
+        }
+        if (chunkAtual >= chunksParaLer.length) {
+            chunkAtual = 0;
+        }
+        const textoDoChunk = chunksParaLer[chunkAtual];
+        if (textoDoChunk) {
+            const utterance = new SpeechSynthesisUtterance(textoDoChunk);
+            utterance.rate = 0.85; 
+            utterance.lang = 'pt-BR';
+            utterance.onstart = function() {
+              falando = true;
+              fabButton.innerHTML = '<i class="fas fa-stop"></i>';
+              fabButton.classList.remove('btn-primary');
+              fabButton.classList.add('btn-danger');
+              fabButton.title = 'Parar leitura (Alt + L)';
+            };
+            utterance.onend = function() {
+              falando = false;
+              fabButton.innerHTML = '<i class="fas fa-play"></i>';
+              fabButton.classList.remove('btn-danger');
+              fabButton.classList.add('btn-primary');
+              fabButton.title = 'Ler próxima parte (Alt + L)';
+            };
+            window.speechSynthesis.speak(utterance);
+            chunkAtual++;
         }
       });
-    </script>
+      
+      // ======================================================
+      // NOVO: Escuta o teclado para o atalho Alt + L
+      // ======================================================
+      document.addEventListener('keydown', function(event) {
+        // Verifica se a tecla Alt e a tecla 'l' foram pressionadas
+        if (event.altKey && event.key === 'l') {
+          // Impede qualquer ação padrão do navegador para este atalho
+          event.preventDefault();
+          // Simula um clique no nosso botão flutuante
+          fabButton.click();
+        }
+      });
+      // ======================================================
+
+      window.addEventListener('beforeunload', () => {
+        window.speechSynthesis.cancel();
+      });
+    } else {
+      console.log('Seu navegador não suporta a funcionalidade de leitura de texto.');
+    }
+  });
+</script>
     
 </body>
 </html>
