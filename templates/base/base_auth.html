@@ -71,7 +71,7 @@
           function tocarBoasVindas() {
               // Usamos sessionStorage para tocar a mensagem apenas uma vez por visita
               if(sessionStorage.getItem('welcomePlayed') !== 'true') {
-                  const welcomeMessage = "SEJA BEM VINDO A PÁGINA DE LOGIN DO PI2, GESTÃO DE ATENDIMENTO ANIMAL. NOSSA PÁGINA CONTA COM RECURSOS DE ACESSIBILIDADE.";
+                  const welcomeMessage = "SEJA BEM VINDO A PÁGINA DE LOGIN DO P I 2, GESTÃO DE ATENDIMENTO ANIMAL. NOSSA PÁGINA CONTA COM RECURSOS DE ACESSIBILIDADE.";
                   const utterance = new SpeechSynthesisUtterance(welcomeMessage);
                   utterance.lang = 'pt-BR';
                   utterance.rate = 0.9;
