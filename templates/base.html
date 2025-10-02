@@ -18,13 +18,13 @@
 </head>
 
 <body>
-<nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
+<nav class="navbar navbar-dark sticky-top flex-md-nowrap p-0" style="background-color: #2780e3;">
     <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">PI2 GAA</a>
     <ul class="navbar-nav px-3">
         <li class="nav-item text-nowrap">
             <form action="{% url 'logout' %}" method="POST">
                 {% csrf_token %}
-                <input class="btn btn-dark" type="submit" value="Sair">
+                <input class="btn btn-light" type="submit" value="Sair">
             </form>
         </li>
     </ul>
@@ -60,6 +60,74 @@
     height: 60px; border-radius: 50%; font-size: 24px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.2); display: none;
   }
+  
+  /* Cores personalizadas para os cards */
+  .card-stats-blue-light {
+    background: linear-gradient(135deg, #2780e3 0%, #1967be 100%);
+  }
+  
+  .card-stats-green-light {
+    background: linear-gradient(135deg, #3fb618 0%, #2f8912 100%);
+  }
+  
+  .card-stats-blue-dark {
+    background: linear-gradient(135deg, #1967be 0%, #144376 100%);
+  }
+  
+  .card-stats-green-dark {
+    background: linear-gradient(135deg, #2f8912 0%, #1e7e34 100%);
+  }
+  
+  /* Responsividade melhorada */
+  @media (max-width: 767.98px) {
+    .navbar-brand {
+      font-size: 0.9rem;
+    }
+    
+    .sidebar {
+      position: relative;
+      padding: 0;
+    }
+    
+    [role="main"] {
+      padding-top: 80px !important;
+    }
+    
+    .card-stats {
+      padding: 20px !important;
+    }
+    
+    .card-stats .icon {
+      font-size: 2rem !important;
+    }
+    
+    .card-stats .number {
+      font-size: 1.5rem !important;
+    }
+  }
+  
+  @media (min-width: 768px) and (max-width: 991.98px) {
+    .card-stats .icon {
+      font-size: 2.2rem;
+    }
+    
+    .card-stats .number {
+      font-size: 1.6rem;
+    }
+  }
+  
+  /* Melhorias na sidebar para mobile */
+  @media (max-width: 767.98px) {
+    .sidebar-sticky {
+      height: auto;
+      overflow-y: visible;
+    }
+    
+    .container-fluid {
+      padding-left: 0;
+      padding-right: 0;
+    }
+  }
 </style>
 
 <button id="leitor-texto-fab" class="btn btn-primary" title="Iniciar leitura (Alt + L)">
@@ -85,8 +153,36 @@
       function prepararTexto() {
           const areaDeLeitura = document.querySelector('body');
           if (!areaDeLeitura) return;
-          const elementos = areaDeLeitura.querySelectorAll('p, h1, h2, h3, h4, h5, h6, li, th, td, a, label');
-          chunksParaLer = Array.from(elementos).map(el => el.textContent.trim()).filter(text => text);
+          
+          // Seleciona elementos principais, evitando elementos que geralmente estão aninhados
+          const elementos = areaDeLeitura.querySelectorAll('p, h1, h2, h3, h4, h5, h6, li, th, td, label, button:not(#leitor-texto-fab)');
+          const textosUnicos = new Set();
+          const textosOrdenados = [];
+          
+          elementos.forEach(el => {
+              // Pega apenas o texto direto do elemento, não de filhos
+              let texto = '';
+              el.childNodes.forEach(node => {
+                  if (node.nodeType === Node.TEXT_NODE) {
+                      texto += node.textContent;
+                  }
+              });
+              
+              // Se não há texto direto, pega o textContent completo (para elementos sem filhos)
+              if (!texto.trim() && el.children.length === 0) {
+                  texto = el.textContent;
+              }
+              
+              texto = texto.trim();
+              
+              // Adiciona apenas se for texto único, não vazio e maior que 2 caracteres
+              if (texto && texto.length > 2 && !textosUnicos.has(texto)) {
+                  textosUnicos.add(texto);
+                  textosOrdenados.push(texto);
+              }
+          });
+          
+          chunksParaLer = textosOrdenados;
           chunkAtual = 0;
       }
       
