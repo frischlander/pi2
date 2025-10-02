@@ -8,7 +8,7 @@
     <meta name="author" content="">
     <link rel="icon" href="{% static 'img/favicon.png' %}">
 
-    <title>Conecta CAA</title>
+    <title>PI2</title>
 
     <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
@@ -20,7 +20,7 @@
 
 <body>
 <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
-    <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">Conecta CAA</a>
+    <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">PI2</a>
     <ul class="navbar-nav px-3">
         <li class="nav-item text-nowrap">
             <form action="{% url 'logout' %}" method="POST">
@@ -73,7 +73,7 @@
 </style>
 
 <button id="leitor-texto-fab" class="btn btn-primary" title="Iniciar leitura parte por parte">
-  <i class="fas fa-play"></i>
+  <i class="fas fa-volume-up"></i>
 </button>
 
 
@@ -87,47 +87,35 @@
       let chunksParaLer = [];
       let chunkAtual = 0;
 
-      // Função para preparar os trechos de texto da página
       function prepararTexto() {
-          const mainContent = document.getElementById('main-content');
-          if (!mainContent) return;
+          // ALTERAÇÃO AQUI: Em vez de 'main-content', pegamos o 'body' inteiro
+          const areaDeLeitura = document.querySelector('body');
+          if (!areaDeLeitura) return;
 
-          // Seleciona parágrafos, títulos e itens de lista para ler como "partes"
-          const elementos = mainContent.querySelectorAll('p, h1, h2, h3, h4, h5, h6, li, th, td');
-          chunksParaLer = Array.from(elementos).map(el => el.textContent.trim()).filter(text => text.length > 0);
+          const elementos = areaDeLeitura.querySelectorAll('p, h1, h2, h3, h4, h5, h6, li, th, td, a, label');
+          chunksParaLer = Array.from(elementos).map(el => el.textContent.trim()).filter(text => text.length > 5); // Aumentamos o filtro para ignorar textos muito curtos
           chunkAtual = 0;
       }
 
       fabButton.addEventListener('click', function() {
         if (falando) {
-          // Se já estiver falando, para a leitura atual
           window.speechSynthesis.cancel();
-          // O estado será resetado pelo evento 'onend'
           return;
         }
 
-        // Se a lista de textos estiver vazia, prepara ela
-        if (chunksParaLer.length === 0) {
+        if (chunksParaLer.length === 0 || chunkAtual === 0) {
             prepararTexto();
         }
 
-        // Se chegou ao fim, reinicia
         if (chunkAtual >= chunksParaLer.length) {
             chunkAtual = 0;
         }
         
-        // Pega o próximo trecho para ler
         const textoDoChunk = chunksParaLer[chunkAtual];
 
         if (textoDoChunk) {
             const utterance = new SpeechSynthesisUtterance(textoDoChunk);
-            
-            // ======================================================
-            // 1. AJUSTE DE VELOCIDADE
-            // O valor padrão é 1. Valores menores deixam a fala mais lenta.
             utterance.rate = 0.85; 
-            // ======================================================
-            
             utterance.lang = 'pt-BR';
 
             utterance.onstart = function() {
@@ -147,11 +135,10 @@
             };
             
             window.speechSynthesis.speak(utterance);
-            chunkAtual++; // Prepara para o próximo clique
+            chunkAtual++;
         }
       });
 
-      // Se o usuário sair da página, para a fala
       window.addEventListener('beforeunload', () => {
         window.speechSynthesis.cancel();
       });
