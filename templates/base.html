@@ -62,68 +62,100 @@
     position: fixed;
     bottom: 25px;
     right: 25px;
-    z-index: 1050; /* Garante que fique acima de outros elementos */
+    z-index: 1050;
     width: 60px;
     height: 60px;
     border-radius: 50%;
     font-size: 24px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    display: none; /* O botão começa escondido e o script o mostrará se houver suporte */
+    display: none;
   }
 </style>
 
-<button id="leitor-texto-fab" class="btn btn-primary" title="Ler conteúdo da página">
-  <i class="fas fa-volume-up"></i>
+<button id="leitor-texto-fab" class="btn btn-primary" title="Iniciar leitura parte por parte">
+  <i class="fas fa-play"></i>
 </button>
 
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    // Verifica se o navegador do usuário suporta a API de Fala
     if ('speechSynthesis' in window) {
       const fabButton = document.getElementById('leitor-texto-fab');
-      fabButton.style.display = 'block'; // Mostra o botão se houver suporte
+      fabButton.style.display = 'block';
 
       let falando = false;
-      let utterance = null;
+      let chunksParaLer = [];
+      let chunkAtual = 0;
+
+      // Função para preparar os trechos de texto da página
+      function prepararTexto() {
+          const mainContent = document.getElementById('main-content');
+          if (!mainContent) return;
+
+          // Seleciona parágrafos, títulos e itens de lista para ler como "partes"
+          const elementos = mainContent.querySelectorAll('p, h1, h2, h3, h4, h5, h6, li, th, td');
+          chunksParaLer = Array.from(elementos).map(el => el.textContent.trim()).filter(text => text.length > 0);
+          chunkAtual = 0;
+      }
 
       fabButton.addEventListener('click', function() {
         if (falando) {
-          // Se já estiver falando, para a leitura
+          // Se já estiver falando, para a leitura atual
           window.speechSynthesis.cancel();
-          return; // A lógica de resetar o botão está no evento 'onend'
+          // O estado será resetado pelo evento 'onend'
+          return;
+        }
+
+        // Se a lista de textos estiver vazia, prepara ela
+        if (chunksParaLer.length === 0) {
+            prepararTexto();
+        }
+
+        // Se chegou ao fim, reinicia
+        if (chunkAtual >= chunksParaLer.length) {
+            chunkAtual = 0;
         }
         
-        // Pega o conteúdo principal da página. Usamos o ID 'main-content' que já existe no seu <main>
-        const mainContent = document.getElementById('main-content');
-        if (mainContent) {
-          // Extrai o texto de forma inteligente, ignorando botões e scripts.
-          let textoParaLer = mainContent.innerText || mainContent.textContent;
-          textoParaLer = textoParaLer.replace(/(\r\n|\n|\r)/gm, " ").replace(/\s+/g, ' ').trim();
+        // Pega o próximo trecho para ler
+        const textoDoChunk = chunksParaLer[chunkAtual];
 
-          if (textoParaLer) {
-            utterance = new SpeechSynthesisUtterance(textoParaLer);
-            utterance.lang = 'pt-BR'; // Garante a voz em português
-            utterance.rate = 1;
+        if (textoDoChunk) {
+            const utterance = new SpeechSynthesisUtterance(textoDoChunk);
+            
+            // ======================================================
+            // 1. AJUSTE DE VELOCIDADE
+            // O valor padrão é 1. Valores menores deixam a fala mais lenta.
+            utterance.rate = 0.85; 
+            // ======================================================
+            
+            utterance.lang = 'pt-BR';
 
-            // Evento que é disparado quando a fala termina ou é cancelada
+            utterance.onstart = function() {
+              falando = true;
+              fabButton.innerHTML = '<i class="fas fa-stop"></i>';
+              fabButton.classList.remove('btn-primary');
+              fabButton.classList.add('btn-danger');
+              fabButton.title = 'Parar leitura';
+            };
+            
             utterance.onend = function() {
               falando = false;
-              fabButton.innerHTML = '<i class="fas fa-volume-up"></i>';
+              fabButton.innerHTML = '<i class="fas fa-play"></i>';
               fabButton.classList.remove('btn-danger');
               fabButton.classList.add('btn-primary');
-              fabButton.title = 'Ler conteúdo da página';
+              fabButton.title = 'Ler próxima parte';
             };
-
+            
             window.speechSynthesis.speak(utterance);
-            falando = true;
-            fabButton.innerHTML = '<i class="fas fa-stop"></i>'; // Muda o ícone para 'parar'
-            fabButton.classList.remove('btn-primary');
-            fabButton.classList.add('btn-danger'); // Muda a cor para vermelho
-            fabButton.title = 'Parar leitura';
-          }
+            chunkAtual++; // Prepara para o próximo clique
         }
       });
+
+      // Se o usuário sair da página, para a fala
+      window.addEventListener('beforeunload', () => {
+        window.speechSynthesis.cancel();
+      });
+
     } else {
       console.log('Seu navegador não suporta a funcionalidade de leitura de texto.');
     }
