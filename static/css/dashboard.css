@@ -102,26 +102,3 @@ body {
   border-color: transparent;
   box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.25);
 }
-/*
- * Estilos customizados para os Cards do Dashboard
- */
-
-.card-stats-blue-light {
-  background-color: #bd0000; /* Sua cor para 'Finalizadas' */
-  color: white;
-}
-
-.card-stats-green-light {
-  background-color: #007512; /* Sua cor para 'Em Andamento' */
-  color: white;
-}
-
-.card-stats-blue-dark {
-  background-color: #b6b900; /* Sua cor para 'Aguardando Parecer' */
-  color: white;
-}
-
-.card-stats-green-dark {
-  background-color: #000000; /* Sua cor para 'Canceladas' */
-  color: white;
-}
