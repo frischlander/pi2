@@ -12,7 +12,6 @@ import os # Importe o módulo os
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('account/', include(('two_factor.urls', 'two_factor'))),
     path('authentication/', include('authentication.urls')),
     path('relatorios/', include('relatorios.urls')),
     path('', include('caaordserv.urls')),
