@@ -4,6 +4,7 @@ from django.core.files.storage import default_storage
 from django.http import FileResponse
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.contrib.auth.decorators import login_required
+from django_otp.decorators import otp_required
 from .models import OrdemServico, AnexoOrdemServico
 from .templates.pdf.ordem_servico_template import OrdemServicoTemplate
 from .templates.pdf.lista_ordens_template import ListaOrdensTemplate
@@ -13,6 +14,7 @@ from datetime import datetime
 from django.urls import reverse
 
 # Create your views here.
+@otp_required
 @login_required
 def index(request):
     # Obtém os parâmetros de filtro da URL

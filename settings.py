@@ -43,6 +43,9 @@ DEBUG = os.getenv('DEBUG', 'False') == 'True'  # Debug True por padrão em desen
 # Hosts permitidos
 ALLOWED_HOSTS = ['*'] if DEBUG else ['pi2univesp.onrender.com', '.onrender.com']
 
+# Silenciar check de URLs para o django-two-factor-auth que usa re_path
+SILENCED_SYSTEM_CHECKS = ['urls.E004']
+
 
 
 # CSRF settings
@@ -74,6 +77,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django_otp.middleware.OTPMiddleware',
     'two_factor.middleware.threadlocals.ThreadLocals',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',

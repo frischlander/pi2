@@ -15,6 +15,9 @@ class LoginView(View):
         
         if user is not None:
             login(request, user)
+            # Redirecionar para verificação de 2FA se o usuário tiver 2FA habilitado
+            if user.staticdevice_set.exists() or user.totpdevice_set.exists():
+                return redirect('two_factor:backup_tokens')  # Redireciona para verificação de 2FA
             messages.success(request, 'Bem-vindo de volta!')
             return redirect('caaordserv')
         else:
