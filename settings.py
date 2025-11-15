@@ -45,7 +45,6 @@ INSTALLED_APPS = [
     'django_otp.plugins.otp_static',
     'django_otp.plugins.otp_totp',
     'two_factor',
-    'two_factor.plugins.phonenumber',
     'caaordserv.apps.CaaordservConfig',
     'authentication.apps.AuthenticationConfig',
     'relatorios.apps.RelatoriosConfig',
