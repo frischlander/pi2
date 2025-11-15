@@ -12,12 +12,10 @@ import os # Importe o módulo os
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('account/', include('two_factor.urls', namespace='two_factor')),
     path('authentication/', include('authentication.urls')),
     path('relatorios/', include('relatorios.urls')),
     path('', include('caaordserv.urls')),
     path('sobre/', views.sobre, name='sobre'),
-    path('two_factor/', include('two_factor.urls')),
-
-
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
