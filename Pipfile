@@ -5,13 +5,16 @@ name = "pypi"
 
 [packages]
 python-dotenv = "*"
-psycopg2 = "*"
 reportlab = ">=4.0.4"
 pillow = ">=10.0.0"
 django = "*"
 dj-database-url = "*"
+django-two-factor-auth = "*"
+django-allauth = "*"
+psycopg2-binary = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.13"
+python_version = "3.11"
+django-allauth = "*"

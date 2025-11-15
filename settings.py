@@ -43,6 +43,8 @@ DEBUG = os.getenv('DEBUG', 'False') == 'True'  # Debug True por padrão em desen
 # Hosts permitidos
 ALLOWED_HOSTS = ['*'] if DEBUG else ['pi2univesp.onrender.com', '.onrender.com']
 
+
+
 # CSRF settings
 CSRF_TRUSTED_ORIGINS = ['https://pi2univesp.onrender.com', 'http://localhost:8000', 'http://127.0.0.1:8000']
 
@@ -56,6 +58,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'two_factor',
+    'django_otp',
+    'django_otp.plugins.otp_static',
+    'django_otp.plugins.otp_totp',
     'caaordserv.apps.CaaordservConfig',
     'authentication.apps.AuthenticationConfig',
     'relatorios.apps.RelatoriosConfig',
@@ -68,6 +74,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'two_factor.middleware.threadlocals.ThreadLocals',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     
@@ -122,7 +129,7 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME'    'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
 
@@ -180,6 +187,10 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'caaordserv'
 LOGOUT_REDIRECT_URL = 'login'
+
+# Django-two-factor-auth settings
+TWO_FACTOR_CALL_GATEWAY = 'two_factor.gateways.twilio.gateway.Twilio'
+TWO_FACTOR_SMS_GATEWAY = 'two_factor.gateways.twilio.gateway.Twilio'
 
 # Configurações de sessão
 SESSION_COOKIE_AGE = 86400  # 24 horas em segundos
