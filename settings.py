@@ -58,10 +58,17 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+<<<<<<< HEAD
     'two_factor',
     'django_otp',
     'django_otp.plugins.otp_static',
     'django_otp.plugins.otp_totp',
+=======
+    'django_otp',
+    'django_otp.plugins.otp_totp',
+    'django_otp.plugins.otp_static',
+    'two_factor',
+>>>>>>> a5d7afdc04631afdd0e4cd1501efff3df6336e88
     'caaordserv.apps.CaaordservConfig',
     'authentication.apps.AuthenticationConfig',
     'relatorios.apps.RelatoriosConfig',
@@ -74,7 +81,11 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+<<<<<<< HEAD
     'two_factor.middleware.threadlocals.ThreadLocals',
+=======
+    'django_otp.middleware.OTPMiddleware',
+>>>>>>> a5d7afdc04631afdd0e4cd1501efff3df6336e88
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     
@@ -107,10 +118,10 @@ WSGI_APPLICATION = 'wsgi.application'
 
 DATABASES = {
     'default': dj_database_url.config(
-        default='postgresql://pi2_database_fie6_user:BN7UQg9KHoOgG3CCCngrlM3ua0Rgdbc4@dpg-d3dl14ogjchc73aks1mg-a.oregon-postgres.render.com/pi2_database_fie6',
+        default='sqlite:///' + str(BASE_DIR / 'db.sqlite3'),
         conn_max_age=600,
-        conn_health_checks=True,
-        ssl_require=True
+        conn_health_checks=False,
+        ssl_require=False
     )
 }
 
@@ -184,9 +195,9 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Configurações de autenticação
-LOGIN_URL = 'login'
-LOGIN_REDIRECT_URL = 'caaordserv'
-LOGOUT_REDIRECT_URL = 'login'
+LOGIN_URL = 'two_factor:login'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
 
 # Django-two-factor-auth settings
 TWO_FACTOR_CALL_GATEWAY = 'two_factor.gateways.twilio.gateway.Twilio'
@@ -195,3 +206,11 @@ TWO_FACTOR_SMS_GATEWAY = 'two_factor.gateways.twilio.gateway.Twilio'
 # Configurações de sessão
 SESSION_COOKIE_AGE = 86400  # 24 horas em segundos
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False  # A sessão não expira quando o navegador é fechado
+
+# Configurações de Autenticação de Dois Fatores (2FA)
+OTP_TOTP_ISSUER = 'Conecta CAA'
+
+# Silenciar avisos de verificação que são falsos positivos
+SILENCED_SYSTEM_CHECKS = [
+    'urls.E004',  # Ignorar erro de URL do django-two-factor-auth
+]
