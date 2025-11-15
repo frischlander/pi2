@@ -184,3 +184,11 @@ LOGOUT_REDIRECT_URL = 'login'
 # Configurações de sessão
 SESSION_COOKIE_AGE = 86400  # 24 horas em segundos
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False  # A sessão não expira quando o navegador é fechado
+
+# Configurações de Autenticação de Dois Fatores (2FA)
+OTP_TOTP_ISSUER = 'Conecta CAA'
+
+# Silenciar avisos de verificação que são falsos positivos
+SILENCED_SYSTEM_CHECKS = [
+    'urls.E004',  # Ignorar erro de URL do django-two-factor-auth
+]
