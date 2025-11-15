@@ -164,9 +164,9 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # ============================================
 # CONFIGURAÇÕES DE AUTENTICAÇÃO E 2FA
 # ============================================
-LOGIN_URL = 'accounts:login'
-LOGIN_REDIRECT_URL = 'caaordserv'
-LOGOUT_REDIRECT_URL = 'accounts:login'
+LOGIN_URL = 'two_factor:login'
+LOGIN_REDIRECT_URL = 'caaordserv'  # A sua página principal
+LOGOUT_REDIRECT_URL = 'two_factor:login'
 
 # Django-two-factor-auth settings
 TWO_FACTOR_PATCH_ADMIN = True  # Protege o admin com 2FA
