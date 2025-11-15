@@ -68,7 +68,8 @@ ROOT_URLCONF = 'urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
+        # V-- CORREÇÃO: Adicionado 'templates/base' para encontrar base_auth.html
+        'DIRS': [BASE_DIR / 'templates', BASE_DIR / 'templates/base'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -126,7 +127,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_DIRS = [BASE_DIR / 'static']
+# V-- CORREÇÃO: Removido para evitar conflitos com 'app/static/'
+# STATICFILES_DIRS = [BASE_DIR / 'static']
+STATICFILES_DIRS = []
 
 # Configuração do WhiteNoise baseada no ambiente
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage' if not DEBUG else 'django.contrib.staticfiles.storage.StaticFilesStorage'
