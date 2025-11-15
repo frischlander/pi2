@@ -7,7 +7,7 @@ import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     
-    # ESTA É A LINHA CORRETA PARA O 2FA
+    # Esta é a linha correta para a autenticação de dois fatores
     path('account/', include(('two_factor.urls', 'two_factor'))),
     
     # Suas outras rotas
