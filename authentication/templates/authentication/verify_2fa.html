@@ -1,0 +1,65 @@
+{% extends 'base/base_auth.html' %}
+{% load static %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-4"></div>
+  <div class="col-md-4">
+    <div class="card mt-5">
+      <div class="card-body">
+        <div class="text-center mb-3">
+          <h4>Autenticação de Dois Fatores</h4>
+        </div>
+
+        {% include 'partials/_messages.html' %}
+
+        <form method="post">
+          {% csrf_token %}
+          
+          <div class="form-group">
+            <label for="token">Código de Autenticação</label>
+            <input
+              type="text"
+              name="token"
+              id="token"
+              placeholder="Digite o código de 6 dígitos"
+              class="form-control form-control-sm text-center"
+              maxlength="6"
+              pattern="[0-9]{6}"
+              inputmode="numeric"
+            />
+            <small class="form-text text-muted">Do seu aplicativo autenticador (Google Authenticator, Microsoft Authenticator, etc.)</small>
+          </div>
+
+          <hr>
+
+          <p class="text-center text-muted">Ou</p>
+
+          <div class="form-group">
+            <label for="backup_code">Código de Backup</label>
+            <input
+              type="text"
+              name="backup_code"
+              id="backup_code"
+              placeholder="Digite um código de backup"
+              class="form-control form-control-sm"
+            />
+            <small class="form-text text-muted">Se você perdeu seu dispositivo autenticador</small>
+          </div>
+
+          <button type="submit" class="btn btn-block btn-success" style="background-color: #00a652; border-color: #00a652;">
+            Verificar
+          </button>
+        </form>
+
+        <hr>
+
+        <div class="text-center">
+          <a href="{% url 'login' %}" class="btn btn-link btn-sm">Voltar ao login</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4"></div>
+</div>
+{% endblock %}

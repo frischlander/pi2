@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="row">
+    <div class="col-md-8 offset-md-2">
+      <div class="card">
+        <div class="card-header bg-success text-white">
+          <h5 class="mb-0">Códigos de Backup</h5>
+        </div>
+        <div class="card-body">
+          <div class="alert alert-danger">
+            <strong>⚠️ IMPORTANTE:</strong> Salve estes códigos em um local seguro. Cada código pode ser usado uma única vez se você perder acesso ao seu dispositivo autenticador.
+          </div>
+
+          <h6>Seus Códigos de Backup:</h6>
+          <div class="card bg-light">
+            <div class="card-body">
+              <code style="font-size: 1.1em; line-height: 2;">
+                {% for code in backup_codes %}
+                  {{ code }}<br>
+                {% endfor %}
+              </code>
+            </div>
+          </div>
+
+          <div class="mt-3">
+            <button onclick="copiarCodigos()" class="btn btn-primary mr-2">
+              📋 Copiar Códigos
+            </button>
+            <button onclick="window.print()" class="btn btn-secondary">
+              🖨️ Imprimir
+            </button>
+          </div>
+
+          <hr>
+
+          <div class="alert alert-info">
+            <strong>Próximos passos:</strong>
+            <ul>
+              <li>Salve estes códigos em um local seguro</li>
+              <li>Não compartilhe estes códigos com ninguém</li>
+              <li>Cada código só funciona uma vez</li>
+              <li>Guarde para emergências</li>
+            </ul>
+          </div>
+
+          <a href="{% url 'setup_2fa' %}" class="btn btn-success btn-block">
+            ✓ Concluído
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function copiarCodigos() {
+  const codigos = document.querySelector('code').innerText;
+  navigator.clipboard.writeText(codigos).then(() => {
+    alert('Códigos copiados para a área de transferência!');
+  });
+}
+</script>
+{% endblock %}
