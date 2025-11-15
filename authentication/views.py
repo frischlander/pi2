@@ -17,7 +17,7 @@ class LoginView(View):
             login(request, user)
             # Redirecionar para verificação de 2FA se o usuário tiver 2FA habilitado
             if user.staticdevice_set.exists() or user.totpdevice_set.exists():
-                return redirect('two_factor:backup_tokens')  # Redireciona para verificação de 2FA
+                return redirect('accounts:backup_tokens')  # Redireciona para verificação de 2FA
             messages.success(request, 'Bem-vindo de volta!')
             return redirect('caaordserv')
         else:
@@ -27,6 +27,6 @@ class LoginView(View):
 class LogoutView(View):
     def post(self, request):
         logout(request)
-        return redirect('login')
+        return redirect('accounts:login')
 
 
