@@ -1,0 +1,8 @@
+__pycache__
+db.sqlite3
+caaordserv/__pycache__/views.cpython-313.pyc
+caaordserv/__pycache__
+caaordserv/__pycache__
+caaordserv/management/commands/criar_ordens_harry_potter.py
+caaordserv/management/commands/deletar_ordens.py
+media

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h2 class="text-center mb-4">Sobre o Centro de Acolhimento Animal</h2>
+                    
+                    <!-- Espaço para a foto -->
+                    <div class="text-center mb-4">
+                        <img src="{% static 'img/centro-acolhimento.jpeg' %}" 
+                             alt="Centro de Acolhimento Animal São Francisco de Assis" 
+                             class="img-fluid rounded"
+                             style="max-height: 400px; width: auto;">
+                    </div>
+
+                    <div class="text-justify">
+                        <p class="lead">
+                            Inaugurado em 13 de novembro de 2019, o Centro de Acolhimento Animal "São Francisco de Assis" é um marco no compromisso da Estância Turística de Olímpia com a proteção e o bem-estar animal. Localizado na Estrada Municipal "Vitório Celso Cizotto", o Centro acolhe cães e gatos abandonados, vítimas de maus-tratos ou em situação de risco, oferecendo cuidados veterinários, castração e a oportunidade de uma adoção responsável. Atualmente, o Centro está sob coordenação da Secretaria de Zeladoria e Meio Ambiente.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

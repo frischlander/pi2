@@ -1,0 +1,418 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-3">
+        <div class="col-12">
+            <a href="{% url 'caaordserv' %}{% if request.GET.page %}?page={{ request.GET.page }}{% endif %}" class="btn btn-success">
+                <i class="bi bi-arrow-left"></i> Voltar para Lista
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Ordem de Serviço #<strong>{{ ordem.get_processo_display }}</strong></h4>
+                    <div>
+                        <a href="{% url 'edit_ordem' ordem.processo %}" class="btn btn-primary me-2">
+                            <i class="bi bi-pencil-fill"></i> Editar
+                        </a>
+                        <a href="{% url 'gerar_pdf_ordem' ordem.processo %}" class="btn btn-success me-2" target="_blank">
+                            <i class="bi bi-file-pdf"></i> Gerar PDF
+                        </a>
+                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                            <i class="bi bi-trash"></i> Excluir
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h5 class="card-title mb-0 text-success">Informações da Ordem de Serviço</h5>
+                                <span class="badge {% if ordem.status == 'nao_iniciada' %}badge-secondary
+                                                    {% elif ordem.status == 'em_andamento' %}badge-info
+                                                    {% elif ordem.status == 'aguardando_parecer' %}badge-warning
+                                                    {% elif ordem.status == 'finalizada' %}badge-success
+                                                    {% elif ordem.status == 'cancelada' %}badge-danger{% endif %} 
+                                         rounded-pill px-3 py-2">{{ ordem.get_status_display }}</span>
+                            </div>
+                            
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <div class="card h-100 border-primary-subtle">
+                                        <div class="card-header bg-primary-subtle">
+                                            <h6 class="card-title mb-0 text-success"><i class="bi bi-person-circle me-2"></i>Informações do Solicitante</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="d-flex flex-column gap-3">
+                                                <div>
+                                                    <h6 class="text-success mb-3">Dados Pessoais</h6>
+                                                    <div class="mb-4">
+                                                        <small class="text-muted d-block mb-1">Nome Completo</small>
+                                                        <p class="mb-0">{{ ordem.nome_solicitante }}</p>
+                                                    </div>
+                                                    <div>
+                                                        <small class="text-muted d-block mb-1">Telefone</small>
+                                                        <p class="mb-0">{{ ordem.telefone }}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="card h-100 border-info-subtle">
+                                        <div class="card-header bg-info-subtle">
+                                            <h6 class="card-title mb-0 text-success"><i class="bi bi-clipboard-data me-2"></i>Detalhes da Ordem</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="d-flex flex-column gap-3">
+                                                <div>
+                                                    <h6 class="text-success mb-3">Identificação</h6>
+                                                    <div class="mb-4">
+                                                        <small class="text-muted d-block mb-1">Número do Processo</small>
+                                                        <p class="mb-0">{{ ordem.get_processo_display }}</p>
+                                                    </div>
+                                                    <div class="mb-4">
+                                                        <small class="text-muted d-block mb-1">Tipo de Serviço</small>
+                                                        <p class="mb-0">{{ ordem.get_tipo_display }}</p>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <h6 class="text-success mb-3">Localização e Datas</h6>
+                                                    <div class="mb-4">
+                                                        <small class="text-muted d-block mb-1">Endereço do Atendimento</small>
+                                                        <p class="mb-0">{{ ordem.endereco }}</p>
+                                                    </div>
+                                                    <div>
+                                                        <small class="text-muted d-block mb-1">Data de Criação</small>
+                                                        <p class="mb-0">{{ ordem.data_criacao|date:"d/m/Y H:i" }}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <h5 class="card-title text-success">Descrição</h5>
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <p class="text-justify">{{ ordem.descricao|linebreaks }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if ordem.status == 'finalizada' and ordem.parecer %}
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <h5 class="card-title text-success">Parecer Técnico</h5>
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <p class="text-justify">{{ ordem.parecer|linebreaks }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if ordem.status == 'cancelada' and ordem.justificativa_cancelamento %}
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <h5 class="card-title text-success">Justificativa do Cancelamento</h5>
+                            <p class="card-text text-danger">{{ ordem.justificativa_cancelamento|linebreaks }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Seção de Anexos -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <h5 class="card-title text-success">Anexos</h5>
+                            {% if ordem.anexos.exists %}
+                                <div class="row">
+                                    {% for anexo in ordem.anexos.all %}
+                                        <div class="col-md-4 mb-3">
+                                            <div class="card h-100">
+                                                <div class="card-body">
+                                                    {% if anexo.tipo == 'foto' %}
+                                                        <img src="{{ anexo.arquivo.url }}" class="img-fluid rounded mb-2" alt="{{ anexo.descricao }}">
+                                                    {% else %}
+                                                        <div class="text-center mb-2">
+                                                            <i class="bi bi-file-earmark-text display-4"></i>
+                                                        </div>
+                                                    {% endif %}
+                                                    <p class="card-text small text-muted mb-1">{{ anexo.descricao }}</p>
+                                                    <p class="card-text small text-muted mb-2">Enviado em: {{ anexo.data_upload|date:"d/m/Y H:i" }}</p>
+                                                    <div class="d-flex justify-content-center gap-2">
+                                                        <a href="{{ anexo.arquivo.url }}" target="_blank" class="btn btn-sm btn-info flex-grow-1">
+                                                            <i class="bi bi-eye"></i> Visualizar
+                                                        </a>
+                                                        <a href="{% url 'download_anexo' anexo.id %}" class="btn btn-sm btn-primary flex-grow-1">
+                                                            <i class="bi bi-download"></i> Baixar
+                                                        </a>
+                                                        <a href="{% url 'delete_anexo' anexo.id %}" class="btn btn-sm btn-danger flex-grow-1" 
+                                                           onclick="return confirm('Tem certeza que deseja excluir este anexo?')">
+                                                            <i class="bi bi-trash"></i> Excluir
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <p class="text-muted">Nenhum anexo disponível para esta ordem de serviço.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Informações de Data e Usuário -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <hr>
+                            <div class="d-flex justify-content-center align-items-center text-muted small">
+                                <div class="d-flex align-items-center">
+                                    <span><strong>Data de Criação:</strong> {{ ordem.data_criacao|date:"d/m/Y H:i" }}</span>
+                                    <span class="mx-3">|</span>
+                                    <span><strong>Última Atualização:</strong> {{ ordem.data_atualizacao|date:"d/m/Y H:i" }}</span>
+                                    <span class="mx-3">|</span>
+                                    {% if ordem.ultimo_usuario %}
+                                    <span><strong>Último Usuário:</strong> {{ ordem.ultimo_usuario.get_full_name|default:ordem.ultimo_usuario.username }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Confirmação de Exclusão -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirmar Exclusão</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Tem certeza que deseja excluir a ordem de serviço <strong>{{ ordem.get_processo_display }}</strong>?</p>
+                <p class="text-danger">Esta ação não poderá ser desfeita.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <a href="{% url 'delete_ordem' ordem.processo %}" class="btn btn-danger">
+                    <i class="bi bi-trash"></i> Confirmar Exclusão
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.card-title {
+    color: #495057;
+    font-weight: 600;
+}
+
+.badge {
+    font-size: 0.9em;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.modal-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.modal-footer {
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+}
+
+.modal-title {
+    color: #dc3545;
+    font-weight: 600;
+}
+
+/* Cores personalizadas para os badges */
+.bg-primary-subtle {
+    background-color: rgba(13, 110, 253, 0.1) !important;
+}
+
+.bg-secondary-subtle {
+    background-color: rgba(108, 117, 125, 0.1) !important;
+}
+
+.bg-success-subtle {
+    background-color: rgba(25, 135, 84, 0.1) !important;
+}
+
+.bg-danger-subtle {
+    background-color: rgba(220, 53, 69, 0.1) !important;
+}
+
+.bg-warning-subtle {
+    background-color: rgba(255, 193, 7, 0.1) !important;
+}
+
+.bg-info-subtle {
+    background-color: rgba(13, 202, 240, 0.1) !important;
+}
+
+.text-primary {
+    color: #0d6efd !important;
+}
+
+.text-secondary {
+    color: #6c757d !important;
+}
+
+.text-success {
+    color: #198754 !important;
+}
+
+.text-danger {
+    color: #dc3545 !important;
+}
+
+.text-warning {
+    color: #ffc107 !important;
+}
+
+.text-info {
+    color: #0dcaf0 !important;
+}
+
+.border-primary-subtle {
+    border-color: rgba(13, 110, 253, 0.2) !important;
+}
+
+.border-secondary-subtle {
+    border-color: rgba(108, 117, 125, 0.2) !important;
+}
+
+.border-success-subtle {
+    border-color: rgba(25, 135, 84, 0.2) !important;
+}
+
+.border-danger-subtle {
+    border-color: rgba(220, 53, 69, 0.2) !important;
+}
+
+.border-warning-subtle {
+    border-color: rgba(255, 193, 7, 0.2) !important;
+}
+
+.border-info-subtle {
+    border-color: rgba(13, 202, 240, 0.2) !important;
+}
+
+/* Ajustes para os ícones e texto */
+.bi {
+    font-size: 1.1em;
+}
+
+.d-flex.flex-column.gap-2 > div {
+    padding: 0.5rem 0;
+}
+
+.info-section {
+    padding: 1rem;
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 0.5rem;
+}
+
+.info-section h6 {
+    font-weight: 600;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    padding-bottom: 0.5rem;
+}
+
+.info-section small {
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.info-section p {
+    font-size: 1rem;
+    color: #2c3e50;
+}
+
+.gap-3 {
+    gap: 1rem !important;
+}
+
+/* Novos estilos para o layout sem caixas */
+.card-body h6 {
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.card-body small {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #6c757d;
+}
+
+.card-body p {
+    font-size: 1rem;
+    color: #2c3e50;
+    margin-bottom: 0;
+}
+
+.mb-4 {
+    margin-bottom: 1.5rem !important;
+}
+
+.mb-1 {
+    margin-bottom: 0.25rem !important;
+}
+
+/* Estilo para garantir justificação do texto */
+.card-text.text-justify {
+    text-align: justify !important;
+    text-justify: inter-word;
+}
+
+/* Estilo específico para o parecer técnico */
+.card.bg-light .card-body p {
+    text-align: justify !important;
+    text-justify: inter-word;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Inicializa o modal com configurações básicas
+    var deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'), {
+        keyboard: false,
+        backdrop: true
+    });
+});
+</script>
+{% endblock %}

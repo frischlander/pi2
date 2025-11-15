@@ -1,0 +1,472 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Mensagem de Sucesso -->
+{% if request.GET.success %}
+<div id="successAlert" class="alert alert-success alert-dismissible fade show position-fixed top-0 start-0 w-100" role="alert" style="z-index: 1050;">
+    <div class="container">
+        <i class="bi bi-check-circle-fill me-2"></i>
+        Ordem de serviço CAA{{ ordem.processo|stringformat:"d"|slice:"3:" }} atualizada com sucesso!
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+</div>
+{% endif %}
+
+<div class="container-fluid p-4 mt-3">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4">Editar Ordem de Serviço</h1>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <form method="POST" class="needs-validation" novalidate enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="d-flex flex-column align-items-center">
+                                    <label class="form-label mb-2">Status da Ordem</label>
+                                    <div class="select-wrapper" style="min-width: 300px;">
+                                        <select class="form-select custom-select fs-5" id="status" name="status" required onchange="toggleCampos()">
+                                            <option value="">Selecione o status...</option>
+                                            <option value="nao_iniciada" {% if ordem.status == 'nao_iniciada' %}selected{% endif %}>Não Iniciada</option>
+                                            <option value="em_andamento" {% if ordem.status == 'em_andamento' %}selected{% endif %}>Em Andamento</option>
+                                            <option value="aguardando_parecer" {% if ordem.status == 'aguardando_parecer' %}selected{% endif %}>Aguardando Parecer</option>
+                                            <option value="finalizada" {% if ordem.status == 'finalizada' %}selected{% endif %}>Finalizada</option>
+                                            <option value="cancelada" {% if ordem.status == 'cancelada' %}selected{% endif %}>Cancelada</option>
+                                        </select>
+                                        <div class="select-arrow"></div>
+                                    </div>
+                                    <small class="text-muted mt-2">Altere o status da ordem de serviço para atualizar seu progresso</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <h5 class="card-title mb-3">Informações do Solicitante</h5>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="nome" class="form-label">Nome do Solicitante <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="nome" name="nome" value="{{ ordem.nome_solicitante }}" required>
+                                <div class="invalid-feedback">
+                                    Por favor, informe o nome do solicitante.
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="telefone" class="form-label">Telefone</label>
+                                <input type="tel" class="form-control" id="telefone" name="telefone" value="{{ ordem.telefone }}">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <h5 class="card-title mb-3">Detalhes da Ordem</h5>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="processo" class="form-label">Número do Processo</label>
+                                <input type="text" class="form-control bg-light" id="processo" value="{{ ordem.get_processo_display }}" readonly>
+                                <small class="text-muted">Número do processo não pode ser alterado</small>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="tipo" class="form-label">Tipo de Serviço <span class="text-danger">*</span></label>
+                                <div class="select-wrapper">
+                                    <select class="form-select custom-select" id="tipo" name="tipo" required>
+                                        <option value="">Selecione o tipo de serviço...</option>
+                                        <option value="atendimento_veterinario" {% if ordem.tipo == 'atendimento_veterinario' %}selected{% endif %}>Atendimento Veterinário</option>
+                                        <option value="denuncia_maus_tratos" {% if ordem.tipo == 'denuncia_maus_tratos' %}selected{% endif %}>Denúncia de Maus Tratos</option>
+                                        <option value="castracao" {% if ordem.tipo == 'castracao' %}selected{% endif %}>Castração</option>
+                                        <option value="captura_grande_porte" {% if ordem.tipo == 'captura_grande_porte' %}selected{% endif %}>Captura de Animais de Grande Porte</option>
+                                    </select>
+                                    <div class="select-arrow"></div>
+                                </div>
+                                <div class="invalid-feedback">
+                                    Por favor, selecione o tipo de serviço.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <label for="endereco" class="form-label">Endereço do Atendimento <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="endereco" name="endereco" value="{{ ordem.endereco }}" required>
+                                <div class="invalid-feedback">
+                                    Por favor, informe o endereço.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <label for="descricao" class="form-label">Descrição do Serviço <span class="text-danger">*</span></label>
+                                <textarea class="form-control" id="descricao" name="descricao" rows="3" required>{{ ordem.descricao }}</textarea>
+                                <div class="invalid-feedback">
+                                    Por favor, descreva o serviço necessário.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="justificativaContainer" style="display: none;">
+                            <div class="row">
+                                <div class="col-12 mb-3">
+                                    <label for="justificativa_cancelamento" class="form-label">Justificativa do Cancelamento</label>
+                                    <textarea class="form-control" id="justificativa_cancelamento" name="justificativa_cancelamento" rows="3" required>{{ ordem.justificativa_cancelamento|default:'' }}</textarea>
+                                    <div class="invalid-feedback">
+                                        Por favor, informe a justificativa do cancelamento.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="parecerContainer" style="display: none;">
+                            <div class="row">
+                                <div class="col-12 mb-3">
+                                    <label for="parecer" class="form-label">Parecer Técnico</label>
+                                    <textarea class="form-control" id="parecer" name="parecer" rows="3" required>{{ ordem.parecer|default:'' }}</textarea>
+                                    <div class="invalid-feedback">
+                                        Por favor, informe o parecer técnico para finalização da ordem.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <h5 class="card-title">Anexos Existentes</h5>
+                                <div class="row">
+                                    {% for anexo in ordem.anexos.all %}
+                                    <div class="col-md-3 mb-3">
+                                        <div class="card h-100">
+                                            {% if anexo.tipo == 'foto' %}
+                                            <img src="{{ anexo.arquivo.url }}" class="card-img-top anexo-img" alt="{{ anexo.descricao }}">
+                                            {% else %}
+                                            <div class="card-body text-center">
+                                                <i class="bi bi-file-earmark-text file-icon"></i>
+                                            </div>
+                                            {% endif %}
+                                            <div class="card-body">
+                                                <p class="card-text small">{{ anexo.descricao }}</p>
+                                                <div class="btn-group w-100">
+                                                    <a href="{{ anexo.arquivo.url }}" target="_blank" class="btn btn-sm btn-outline-info">
+                                                        <i class="bi bi-eye"></i>
+                                                    </a>
+                                                    <a href="{% url 'download_anexo' anexo.id %}" class="btn btn-sm btn-outline-primary">
+                                                        <i class="bi bi-download"></i>
+                                                    </a>
+                                                    <a href="{% url 'delete_anexo' anexo.id %}" class="btn btn-sm btn-outline-danger" 
+                                                       onclick="return confirm('Tem certeza que deseja excluir este anexo?')">
+                                                        <i class="bi bi-trash"></i>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% empty %}
+                                    <div class="col-12">
+                                        <p class="text-muted">Nenhum anexo encontrado.</p>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <label for="anexos" class="form-label">Adicionar Novos Anexos</label>
+                                <input type="file" class="form-control" id="anexos" name="anexos" multiple accept="image/*,.pdf,.doc,.docx">
+                                <small class="text-muted">Você pode selecionar múltiplos arquivos. Formatos aceitos: imagens, PDF, DOC, DOCX</small>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <div id="preview-container" class="mb-3">
+                                    <!-- Preview dos novos arquivos será exibido aqui -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-success">
+                                    <i class="bi bi-check-circle"></i> Salvar Alterações
+                                </button>
+                                <a href="{% url 'caaordserv' %}{% if request.GET.page %}?page={{ request.GET.page }}{% endif %}" class="btn btn-secondary">
+                                    <i class="bi bi-x-circle"></i> Cancelar
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- Informações de Data e Usuário -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <hr>
+                            <div class="d-flex justify-content-center align-items-center text-muted small">
+                                <div class="d-flex align-items-center">
+                                    <span><strong>Data de Criação:</strong> {{ ordem.data_criacao|date:"d/m/Y H:i" }}</span>
+                                    <span class="mx-3">|</span>
+                                    <span><strong>Última Atualização:</strong> {{ ordem.data_atualizacao|date:"d/m/Y H:i" }}</span>
+                                    <span class="mx-3">|</span>
+                                    {% if ordem.ultimo_usuario %}
+                                    <span><strong>Último Usuário:</strong> {{ ordem.ultimo_usuario.get_full_name|default:ordem.ultimo_usuario.username }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.select-wrapper {
+    position: relative;
+}
+
+.select-wrapper select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    padding-right: 40px;
+    cursor: pointer;
+    background-color: white;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.select-wrapper select:focus {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.select-arrow {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid #6c757d;
+    pointer-events: none;
+}
+
+.form-control:read-only {
+    background-color: #f8f9fa;
+    cursor: not-allowed;
+}
+
+.btn i {
+    margin-right: 5px;
+}
+
+.input-group-text {
+    min-width: 140px;
+}
+
+.anexo-img {
+    height: 150px;
+    object-fit: cover;
+}
+
+.file-icon {
+    font-size: 48px;
+    color: #6c757d;
+}
+
+.preview-item {
+    display: inline-block;
+    margin: 10px;
+    padding: 10px;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.preview-item img {
+    max-width: 150px;
+    max-height: 150px;
+    object-fit: cover;
+}
+
+.preview-item .file-icon {
+    font-size: 48px;
+    color: #6c757d;
+}
+
+.preview-item .file-name {
+    display: block;
+    margin-top: 5px;
+    font-size: 0.9em;
+    word-break: break-all;
+}
+
+#preview-container {
+    min-height: 100px;
+    padding: 10px;
+    border: 2px dashed #dee2e6;
+    border-radius: 4px;
+}
+
+.card {
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.modal-image {
+    max-height: 80vh;
+    width: auto;
+    object-fit: contain;
+}
+
+.modal-dialog.modal-lg {
+    max-width: 90%;
+}
+
+.modal-header {
+    padding: 1rem;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.modal-body {
+    padding: 0;
+    background-color: #f8f9fa;
+}
+
+.modal-footer {
+    padding: 1rem;
+    border-top: 1px solid #dee2e6;
+}
+
+.btn-group .btn {
+    flex: 1;
+}
+
+.btn-group .btn i {
+    margin-right: 0;
+}
+
+/* Estilos para a mensagem de sucesso */
+#successMessage {
+    min-width: 300px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#successMessage .btn-close {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+</style>
+
+<script>
+// Função para mostrar/esconder campos baseado no status
+function toggleCampos() {
+    var statusSelect = document.getElementById('status');
+    var justificativaContainer = document.getElementById('justificativaContainer');
+    var parecerContainer = document.getElementById('parecerContainer');
+    var justificativaInput = document.getElementById('justificativa_cancelamento');
+    var parecerInput = document.getElementById('parecer');
+    
+    // Esconde todos os containers primeiro
+    justificativaContainer.style.display = 'none';
+    parecerContainer.style.display = 'none';
+    justificativaInput.required = false;
+    parecerInput.required = false;
+    
+    // Mostra o container apropriado baseado no status
+    if (statusSelect.value === 'cancelada') {
+        justificativaContainer.style.display = 'block';
+        justificativaInput.required = true;
+    } else if (statusSelect.value === 'finalizada') {
+        parecerContainer.style.display = 'block';
+        parecerInput.required = true;
+    }
+}
+
+// Adiciona o evento onchange ao select de status
+document.getElementById('status').addEventListener('change', toggleCampos);
+
+// Chama a função quando a página carrega para configurar o estado inicial
+document.addEventListener('DOMContentLoaded', function() {
+    toggleCampos();
+});
+
+// Preview de arquivos
+document.getElementById('anexos').addEventListener('change', function(e) {
+    const container = document.getElementById('preview-container');
+    container.innerHTML = '';
+    
+    Array.from(e.target.files).forEach(file => {
+        const previewItem = document.createElement('div');
+        previewItem.className = 'preview-item';
+        
+        if (file.type.startsWith('image/')) {
+            const img = document.createElement('img');
+            img.src = URL.createObjectURL(file);
+            previewItem.appendChild(img);
+        } else {
+            const icon = document.createElement('i');
+            icon.className = 'bi bi-file-earmark file-icon';
+            previewItem.appendChild(icon);
+        }
+        
+        const fileName = document.createElement('span');
+        fileName.className = 'file-name';
+        fileName.textContent = file.name;
+        previewItem.appendChild(fileName);
+        
+        container.appendChild(previewItem);
+    });
+});
+
+// Validação do formulário
+(function() {
+    'use strict'
+    var forms = document.querySelectorAll('.needs-validation')
+    Array.prototype.slice.call(forms).forEach(function(form) {
+        form.addEventListener('submit', function(event) {
+            if (!form.checkValidity()) {
+                event.preventDefault()
+                event.stopPropagation()
+            }
+            form.classList.add('was-validated')
+        }, false)
+    })
+})()
+
+// Adiciona o código para o redirecionamento após sucesso
+document.addEventListener('DOMContentLoaded', function() {
+    const successAlert = document.getElementById('successAlert');
+    if (successAlert) {
+        setTimeout(function() {
+            window.location.href = "{% url 'caaordserv' %}{% if request.GET.page %}?page={{ request.GET.page }}{% endif %}";
+        }, 3000);
+    }
+});
+</script>
+{% endblock %}

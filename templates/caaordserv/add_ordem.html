@@ -1,0 +1,249 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid p-4 mt-3">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4">Adicionar Ordem de Serviço</h1>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <form method="POST" class="needs-validation" novalidate enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-12">
+                                <h5 class="card-title mb-3">Informações do Solicitante</h5>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="nome" class="form-label">Nome do Solicitante</label>
+                                <input type="text" class="form-control" id="nome" name="nome" required>
+                                <div class="invalid-feedback">
+                                    Por favor, informe o nome do solicitante.
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="telefone" class="form-label">Telefone</label>
+                                <input type="tel" class="form-control" id="telefone" name="telefone">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <h5 class="card-title mb-3">Detalhes da Ordem</h5>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="processo" class="form-label">Número do Processo</label>
+                                <input type="text" class="form-control bg-light" id="processo" value="{{ numero_processo.get_processo_display }}" readonly>
+                                <small class="text-muted">Número gerado automaticamente</small>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="tipo" class="form-label">Tipo de Serviço</label>
+                                <div class="select-wrapper">
+                                    <select class="form-select custom-select" id="tipo" name="tipo" required>
+                                        <option value="">Selecione o tipo de serviço...</option>
+                                        <option value="atendimento_veterinario">Atendimento Veterinário</option>
+                                        <option value="denuncia_maus_tratos">Denúncia de Maus Tratos</option>
+                                        <option value="castracao">Castração</option>
+                                        <option value="captura_grande_porte">Captura de Animais de Grande Porte</option>
+                                    </select>
+                                    <div class="select-arrow"></div>
+                                </div>
+                                <div class="invalid-feedback">
+                                    Por favor, selecione o tipo de serviço.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <label for="endereco" class="form-label">Endereço do Atendimento</label>
+                                <input type="text" class="form-control" id="endereco" name="endereco" required>
+                                <div class="invalid-feedback">
+                                    Por favor, informe o endereço.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <label for="descricao" class="form-label">Descrição do Serviço</label>
+                                <textarea class="form-control" id="descricao" name="descricao" rows="3" required></textarea>
+                                <div class="invalid-feedback">
+                                    Por favor, descreva o serviço necessário.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <label for="anexos" class="form-label">Anexos</label>
+                                <input type="file" class="form-control" id="anexos" name="anexos" multiple accept="image/*,.pdf,.doc,.docx">
+                                <small class="text-muted">Você pode selecionar múltiplos arquivos. Formatos aceitos: imagens, PDF, DOC, DOCX</small>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <div id="preview-container" class="mb-3">
+                                    <!-- Preview dos arquivos será exibido aqui -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-success">
+                                    <i class="bi bi-check-circle"></i> Salvar Ordem de Serviço
+                                </button>
+                                <a href="{% url 'caaordserv' %}" class="btn btn-secondary">
+                                    <i class="bi bi-x-circle"></i> Cancelar
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.select-wrapper {
+    position: relative;
+}
+
+.select-wrapper select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    padding-right: 40px;
+    cursor: pointer;
+    background-color: white;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.select-wrapper select:focus {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.select-arrow {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid #6c757d;
+    pointer-events: none;
+}
+
+.form-control:read-only {
+    background-color: #f8f9fa;
+    cursor: not-allowed;
+}
+
+.btn i {
+    margin-right: 5px;
+}
+
+.preview-item {
+    display: inline-block;
+    margin: 10px;
+    padding: 10px;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.preview-item img {
+    max-width: 150px;
+    max-height: 150px;
+    object-fit: cover;
+}
+
+.preview-item .file-icon {
+    font-size: 48px;
+    color: #6c757d;
+}
+
+.preview-item .file-name {
+    display: block;
+    margin-top: 5px;
+    font-size: 0.9em;
+    word-break: break-all;
+}
+
+#preview-container {
+    min-height: 100px;
+    padding: 10px;
+    border: 2px dashed #dee2e6;
+    border-radius: 4px;
+}
+</style>
+
+<script>
+// Validação do formulário
+(function() {
+    'use strict'
+    var forms = document.querySelectorAll('.needs-validation')
+    Array.prototype.slice.call(forms).forEach(function(form) {
+        form.addEventListener('submit', function(event) {
+            if (!form.checkValidity()) {
+                event.preventDefault()
+                event.stopPropagation()
+            }
+            form.classList.add('was-validated')
+        }, false)
+    })
+})()
+
+// Preview de arquivos
+document.getElementById('anexos').addEventListener('change', function(e) {
+    const container = document.getElementById('preview-container');
+    container.innerHTML = '';
+    
+    Array.from(e.target.files).forEach(file => {
+        const previewItem = document.createElement('div');
+        previewItem.className = 'preview-item';
+        
+        if (file.type.startsWith('image/')) {
+            const img = document.createElement('img');
+            img.src = URL.createObjectURL(file);
+            previewItem.appendChild(img);
+        } else {
+            const icon = document.createElement('i');
+            icon.className = 'bi bi-file-earmark file-icon';
+            previewItem.appendChild(icon);
+        }
+        
+        const fileName = document.createElement('span');
+        fileName.className = 'file-name';
+        fileName.textContent = file.name;
+        previewItem.appendChild(fileName);
+        
+        container.appendChild(previewItem);
+    });
+});
+</script>
+{% endblock %}
+
+

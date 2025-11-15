@@ -1,0 +1,270 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="{% static 'img/favicon.png' %}">
+
+    <title>PI2 GAA</title>
+
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <link href="{% static 'css/dashboard.css' %}" rel="stylesheet">
+    <link href="{% static 'css/main.css' %}" rel="stylesheet">
+</head>
+
+<body>
+<nav class="navbar navbar-dark sticky-top flex-md-nowrap p-0" style="background-color: #2780e3;">
+    <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">PI2 GAA</a>
+    <ul class="navbar-nav px-3">
+        <li class="nav-item text-nowrap">
+            <form action="{% url 'logout' %}" method="POST">
+                {% csrf_token %}
+                <input class="btn btn-light" type="submit" value="Sair">
+            </form>
+        </li>
+    </ul>
+</nav>
+
+<div class="container-fluid">
+    <div class="row">
+
+        {% include 'partials/_sidebar.html' %}
+
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4" id="main-content">
+            {% block content %}
+            {% endblock %}
+        </main>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+<script>window.jQuery || document.write('<script src="{% static 'js/vendor/jquery-slim.min.js' %}"><\/script>')</script>
+<script src="{% static 'js/vendor/popper.min.js' %}"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+
+<script src="https://unpkg.com/feather-icons/dist/feather.min.js"></script>
+<script>
+    feather.replace()
+</script>
+
+<style>
+  #leitor-texto-fab {
+    position: fixed; bottom: 25px; right: 25px; z-index: 1050; width: 60px;
+    height: 60px; border-radius: 50%; font-size: 24px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2); display: none;
+  }
+  
+  /* Cores personalizadas para os cards */
+  .card-stats-blue-light {
+    background: linear-gradient(135deg, #2780e3 0%, #1967be 100%);
+  }
+  
+  .card-stats-green-light {
+    background: linear-gradient(135deg, #3fb618 0%, #2f8912 100%);
+  }
+  
+  .card-stats-blue-dark {
+    background: linear-gradient(135deg, #1967be 0%, #144376 100%);
+  }
+  
+  .card-stats-green-dark {
+    background: linear-gradient(135deg, #2f8912 0%, #1e7e34 100%);
+  }
+  
+  /* Responsividade melhorada */
+  @media (max-width: 767.98px) {
+    .navbar-brand {
+      font-size: 0.9rem;
+    }
+    
+    .sidebar {
+      position: relative;
+      padding: 0;
+    }
+    
+    [role="main"] {
+      padding-top: 80px !important;
+    }
+    
+    .card-stats {
+      padding: 20px !important;
+    }
+    
+    .card-stats .icon {
+      font-size: 2rem !important;
+    }
+    
+    .card-stats .number {
+      font-size: 1.5rem !important;
+    }
+  }
+  
+  @media (min-width: 768px) and (max-width: 991.98px) {
+    .card-stats .icon {
+      font-size: 2.2rem;
+    }
+    
+    .card-stats .number {
+      font-size: 1.6rem;
+    }
+  }
+  
+  /* Melhorias na sidebar para mobile */
+  @media (max-width: 767.98px) {
+    .sidebar-sticky {
+      height: auto;
+      overflow-y: visible;
+    }
+    
+    .container-fluid {
+      padding-left: 0;
+      padding-right: 0;
+    }
+  }
+</style>
+
+<button id="leitor-texto-fab" class="btn btn-primary" title="Iniciar leitura (Alt + L)">
+  <i class="fas fa-volume-up"></i>
+</button>
+
+<script>
+  (function() {
+    // Verifica se já foi inicializado para evitar duplicação
+    if (window.leitorTextoInicializado) {
+      return;
+    }
+    window.leitorTextoInicializado = true;
+
+    if ('speechSynthesis' in window) {
+      const fabButton = document.getElementById('leitor-texto-fab');
+      fabButton.style.display = 'block';
+
+      let chunksParaLer = [];
+      let chunkAtual = 0;
+      let estaLendo = false;
+
+      function prepararTexto() {
+          const areaDeLeitura = document.querySelector('body');
+          if (!areaDeLeitura) return;
+          
+          // Seleciona elementos principais, evitando elementos que geralmente estão aninhados
+          const elementos = areaDeLeitura.querySelectorAll('p, h1, h2, h3, h4, h5, h6, li, th, td, label, button:not(#leitor-texto-fab)');
+          const textosUnicos = new Set();
+          const textosOrdenados = [];
+          
+          elementos.forEach(el => {
+              // Pega apenas o texto direto do elemento, não de filhos
+              let texto = '';
+              el.childNodes.forEach(node => {
+                  if (node.nodeType === Node.TEXT_NODE) {
+                      texto += node.textContent;
+                  }
+              });
+              
+              // Se não há texto direto, pega o textContent completo (para elementos sem filhos)
+              if (!texto.trim() && el.children.length === 0) {
+                  texto = el.textContent;
+              }
+              
+              texto = texto.trim();
+              
+              // Adiciona apenas se for texto único, não vazio e maior que 2 caracteres
+              if (texto && texto.length > 2 && !textosUnicos.has(texto)) {
+                  textosUnicos.add(texto);
+                  textosOrdenados.push(texto);
+              }
+          });
+          
+          chunksParaLer = textosOrdenados;
+          chunkAtual = 0;
+      }
+      
+      prepararTexto();
+
+      function pararLeitura() {
+        window.speechSynthesis.cancel();
+        estaLendo = false;
+        fabButton.innerHTML = '<i class="fas fa-volume-up"></i>';
+        fabButton.classList.remove('btn-danger');
+        fabButton.classList.add('btn-primary');
+        fabButton.title = 'Iniciar leitura (Alt + L)';
+      }
+
+      function gerenciarLeitura() {
+        // Se já está lendo, para a leitura
+        if (estaLendo || window.speechSynthesis.speaking) {
+          pararLeitura();
+          return;
+        }
+
+        // Reinicia do começo se chegou ao fim
+        if (chunkAtual >= chunksParaLer.length) {
+            chunkAtual = 0;
+        }
+        
+        const textoDoChunk = chunksParaLer[chunkAtual];
+
+        if (textoDoChunk) {
+            // Garante que não há nada sendo falado antes de começar
+            window.speechSynthesis.cancel();
+            
+            const utterance = new SpeechSynthesisUtterance(textoDoChunk);
+            utterance.rate = 0.85; 
+            utterance.lang = 'pt-BR';
+
+            utterance.onstart = function() {
+              estaLendo = true;
+              fabButton.innerHTML = '<i class="fas fa-stop"></i>';
+              fabButton.classList.remove('btn-primary');
+              fabButton.classList.add('btn-danger');
+              fabButton.title = 'Parar leitura (Alt + L)';
+            };
+            
+            utterance.onend = function() {
+              estaLendo = false;
+              fabButton.innerHTML = '<i class="fas fa-play"></i>';
+              fabButton.classList.remove('btn-danger');
+              fabButton.classList.add('btn-primary');
+              fabButton.title = 'Ler próxima parte (Alt + L)';
+              chunkAtual++;
+            };
+
+            utterance.onerror = function() {
+              estaLendo = false;
+              pararLeitura();
+            };
+            
+            window.speechSynthesis.speak(utterance);
+        }
+      }
+
+      // Função nomeada para permitir remoção do listener
+      function handleKeydown(event) {
+        if (event.altKey && event.key === 'l') {
+          event.preventDefault();
+          gerenciarLeitura();
+        }
+      }
+
+      fabButton.addEventListener('click', gerenciarLeitura);
+      document.addEventListener('keydown', handleKeydown);
+
+      window.addEventListener('beforeunload', () => {
+        window.speechSynthesis.cancel();
+      });
+
+    } else {
+      console.log('Seu navegador não suporta a funcionalidade de leitura de texto.');
+    }
+  })();
+</script>
+
+</body>
+</html>
