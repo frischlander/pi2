@@ -7,9 +7,9 @@ from django.utils.decorators import method_decorator
 from .models import UserTwoFactorAuth
 import json
 
-class LoginView(View):
+'''class LoginView(View):
     def get(self, request):
-        return render(request, 'authentication/login.html')
+        #return render(request, 'authentication/login.html')
     
     def post(self, request):
         username = request.POST.get('username')
@@ -34,7 +34,7 @@ class LoginView(View):
             return redirect('caaordserv')
         else:
             messages.error(request, 'Usuário ou senha inválidos')
-            return render(request, 'authentication/login.html')
+            return render(request, 'authentication/login.html')'''
 
 class Verify2FAView(View):
     def get(self, request):

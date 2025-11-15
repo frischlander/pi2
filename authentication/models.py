@@ -5,19 +5,17 @@ import qrcode
 from io import BytesIO
 import base64
 
-class UserTwoFactorAuth(models.Model):
-    """
-    Modelo para armazenar configurações de autenticação de dois fatores
-    """
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='two_factor_auth')
-    is_enabled = models.BooleanField(default=False)
-    secret_key = models.CharField(max_length=32, blank=True)
-    backup_codes = models.TextField(blank=True)  # Códigos de backup JSON
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+#class UserTwoFactorAuth(models.Model):
+    #Modelo para armazenar configurações de autenticação de dois fatores
+    #user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='two_factor_auth')
+    #is_enabled = models.BooleanField(default=False)
+    #secret_key = models.CharField(max_length=32, blank=True)
+    #backup_codes = models.TextField(blank=True)  # Códigos de backup JSON
+    #created_at = models.DateTimeField(auto_now_add=True)
+    #updated_at = models.DateTimeField(auto_now=True)
 
-    def __str__(self):
-        return f"2FA - {self.user.username}"
+    #def __str__(self):
+       # return f"2FA - {self.user.username}"
 
     def generate_secret(self):
         """Gera uma nova chave secreta"""
