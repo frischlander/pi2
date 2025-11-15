@@ -100,10 +100,10 @@ WSGI_APPLICATION = 'wsgi.application'
 
 DATABASES = {
     'default': dj_database_url.config(
-        default='postgresql://pi2_database_fie6_user:BN7UQg9KHoOgG3CCCngrlM3ua0Rgdbc4@dpg-d3dl14ogjchc73aks1mg-a.oregon-postgres.render.com/pi2_database_fie6',
+        default='sqlite:///' + str(BASE_DIR / 'db.sqlite3'),
         conn_max_age=600,
-        conn_health_checks=True,
-        ssl_require=True
+        conn_health_checks=False,
+        ssl_require=False
     )
 }
 
